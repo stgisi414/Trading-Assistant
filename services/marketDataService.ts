@@ -1,0 +1,68 @@
+import type { HistoricalDataPoint, FmpSearchResult } from '../types.ts';
+
+const FMP_API_KEY = process.env.FMP_API_KEY;
+const FMP_BASE_URL = 'https://financialmodelingprep.com/api/v3';
+
+if (!FMP_API_KEY) {
+    console.warn("FMP_API_KEY environment variable not set. Please get a free API key from financialmodelingprep.com for live data. Falling back to mock data.");
+}
+
+const generateMockData = (symbol: string): HistoricalDataPoint[] => {
+    const mockData: HistoricalDataPoint[] = [];
+    let lastClose = 150 + Math.random() * 50; // Random starting point
+    const today = new Date();
+
+    for (let i = 29; i >= 0; i--) {
+        const date = new Date(today);
+        date.setDate(today.getDate() - i);
+        const change = (Math.random() - 0.48) * (lastClose * 0.05); // up to 5% change per day
+        lastClose += change;
+        mockData.push({
+            date: date.toISOString().split('T')[0],
+            close: Math.max(10, lastClose)
+        });
+    }
+    return mockData;
+}
+
+
+export const searchSymbols = async (query: string): Promise<FmpSearchResult[]> => {
+    if (!query || !FMP_API_KEY) return [];
+    try {
+        const response = await fetch(`${FMP_BASE_URL}/search-ticker?query=${query}&limit=10&exchange=NASDAQ,NYSE,AMEX,TSX,EURONEXT&apikey=${FMP_API_KEY}`);
+        if (!response.ok) {
+            throw new Error(`Failed to search symbols: ${response.statusText}`);
+        }
+        const data: FmpSearchResult[] = await response.json();
+        return data;
+    } catch (error) {
+        console.error("Error searching symbols:", error);
+        return [];
+    }
+};
+
+export const fetchHistoricalData = async (symbol: string, from: string, to: string): Promise<HistoricalDataPoint[]> => {
+    if(!FMP_API_KEY) {
+        return generateMockData(symbol);
+    }
+
+    try {
+        const response = await fetch(`${FMP_BASE_URL}/historical-price-full/${symbol}?from=${from}&to=${to}&apikey=${FMP_API_KEY}`);
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData['Error Message'] || `Failed to fetch historical data for ${symbol}`);
+        }
+        const data = await response.json();
+        if (!data.historical || data.historical.length === 0) {
+             throw new Error(`No historical data found for ${symbol}. It may be an invalid symbol or have no data in the selected date range.`);
+        }
+        // FMP returns data in reverse chronological order
+        return data.historical.map((d: any) => ({
+            date: d.date,
+            close: d.close,
+        })).reverse();
+    } catch (error) {
+        console.error(`Error fetching historical data for ${symbol}:`, error);
+        throw error;
+    }
+};
