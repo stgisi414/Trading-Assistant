@@ -180,10 +180,10 @@ function App() {
                         console.log(`Using simulated data for ${symbol} - markets may be closed or data unavailable`);
                     }
 
-                    setAnalyses(prev => prev.map(a => a.symbol === symbol ? { ...a, historicalData: data } : a));
+                    setAnalyses(prev => prev.map(a => a.symbol === symbol ? { ...a, historicalData } : a));
 
-                    const result = await getTradingPosition(symbol, parseFloat(walletAmount), selectedIndicators, data);
-                    const patterns = await analyzeChartPatterns(symbol, data, selectedIndicators);
+                    const result = await getTradingPosition(symbol, parseFloat(walletAmount), selectedIndicators, historicalData);
+                    const patterns = await analyzeChartPatterns(symbol, historicalData, selectedIndicators);
 
                     setAnalyses(prev => prev.map(a => a.symbol === symbol ? { 
                         ...a, 
