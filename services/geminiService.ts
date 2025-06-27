@@ -11,17 +11,19 @@ const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
 function createSearchTermsPrompt(assetSymbol: string): string {
     return `
-    You are a financial research assistant. Generate 3-5 relevant search terms to find recent news articles about ${assetSymbol}.
+    You are a financial research assistant. Generate 3-4 specific search terms to find recent, high-quality news articles about ${assetSymbol}.
 
-    The search terms should help find:
-    - Recent company news and announcements
-    - Financial performance and earnings
-    - Market sentiment and analyst opinions
-    - Industry trends affecting the company
-    - Regulatory or economic factors
+    Create search terms that are:
+    - Specific to the company/asset (use company name, not just ticker)
+    - Focused on recent financial developments
+    - Likely to find articles from reputable financial news sources
+    - Avoiding generic terms that return outdated results
 
-    Return only the search terms, one per line, without any additional formatting or explanations.
-    Focus on terms that would yield high-quality financial news results.
+    Good examples for AAPL: "Apple earnings report", "Apple iPhone sales", "Apple stock analysis"
+    Bad examples: "AAPL", "Apple news", "technology stocks"
+
+    Return only the search terms, one per line, without quotes or additional formatting.
+    Focus on terms that would find recent, specific financial news.
 
     Asset Symbol: ${assetSymbol}
     `;
