@@ -18,15 +18,6 @@ interface AssetResultCardProps {
 // Placeholder components for OptionsAnalysisSection and OrderAnalysisSection
 
 
-const OrderAnalysisSection = ({ orderAnalysis }: any) => {
-    return (
-        <div>
-            <h3>Order Analysis</h3>
-            <p>{JSON.stringify(orderAnalysis)}</p>
-        </div>
-    );
-};
-
 export const AssetResultCard: React.FC<AssetResultCardProps> = ({ analysis, theme }) => {
     const { symbol, isLoading, error, analysisResult, historicalData } = analysis;
 
