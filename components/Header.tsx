@@ -1,4 +1,6 @@
-import React from 'react';
+
+import React, { useState } from 'react';
+import { SignatexChatbot } from './SignatexChatbot.tsx';
 
 interface ThemeToggleProps {
     theme: 'light' | 'dark';
@@ -20,31 +22,61 @@ const ThemeToggle: React.FC<ThemeToggleProps> = ({ theme, toggleTheme }) => (
     </button>
 );
 
-
 interface HeaderProps {
     theme: 'light' | 'dark';
     toggleTheme: () => void;
+    currentInputs?: {
+        selectedSymbols: string[];
+        walletAmount: string;
+        selectedIndicators: string[];
+        selectedTimeframe: string;
+        selectedMarketType: string;
+    };
+    analysisResults?: any[];
 }
 
-export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme }) => {
+export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme, currentInputs, analysisResults }) => {
+    const [isChatbotOpen, setIsChatbotOpen] = useState(false);
+
     return (
-        <header className="relative overflow-hidden mesh-gradient animate-gradient-xy text-white p-8 shadow-2xl text-center card-glow border-4 border-gray-800" style={{clipPath: 'polygon(20px 0%, 100% 0%, calc(100% - 20px) 100%, 0% 100%)'}}>
-            <div className="absolute inset-0 bg-black/10 dark:bg-white/5"></div>
-            <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
-            <div className="relative z-10">
-                <div className="animate-float">
-                    <h1 className="text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white via-cyan-100 to-blue-100 drop-shadow-lg" style={{letterSpacing: '-0.05em'}}>
-                        AI-Powered Trading Assistant
-                    </h1>
-                    <div className="flex items-center justify-center gap-2 mt-3">
-                        <div className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse"></div>
-                        <p className="text-blue-100 text-lg font-medium">Leveraging Gemini for Market Insights</p>
-                        <div className="w-2 h-2 bg-amber-400 rounded-full animate-pulse animation-delay-300"></div>
+        <>
+            <header className="relative overflow-hidden mesh-gradient animate-gradient-xy text-white p-8 shadow-2xl text-center card-glow border-4 border-gray-800" style={{clipPath: 'polygon(20px 0%, 100% 0%, calc(100% - 20px) 100%, 0% 100%)'}}>
+                <div className="absolute inset-0 bg-black/10 dark:bg-white/5"></div>
+                <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
+                <div className="relative z-10">
+                    <div className="animate-float">
+                        <h1 className="text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white via-cyan-100 to-blue-100 drop-shadow-lg" style={{letterSpacing: '-0.05em'}}>
+                            AI-Powered Trading Assistant
+                        </h1>
+                        <div className="flex items-center justify-center gap-2 mt-3">
+                            <div className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse"></div>
+                            <p className="text-blue-100 text-lg font-medium">Leveraging Gemini for Market Insights</p>
+                            <div className="w-2 h-2 bg-amber-400 rounded-full animate-pulse animation-delay-300"></div>
+                        </div>
                     </div>
+                    <div className="absolute top-4 left-4 w-16 h-16 bg-gradient-to-br from-cyan-400/20 to-blue-500/20 rounded-full blur-xl animate-pulse-slow"></div>
+                    <div className="absolute bottom-4 right-4 w-12 h-12 bg-gradient-to-br from-blue-400/20 to-cyan-500/20 rounded-full blur-lg animate-pulse-slow animation-delay-1000"></div>
                 </div>
-                <div className="absolute top-4 left-4 w-16 h-16 bg-gradient-to-br from-cyan-400/20 to-blue-500/20 rounded-full blur-xl animate-pulse-slow"></div>
-                <div className="absolute bottom-4 right-4 w-12 h-12 bg-gradient-to-br from-blue-400/20 to-cyan-500/20 rounded-full blur-lg animate-pulse-slow animation-delay-1000"></div>
-            </div>
-        </header>
+            </header>
+
+            {/* Floating Chatbot Toggle */}
+            <button
+                onClick={() => setIsChatbotOpen(true)}
+                className="fixed bottom-6 right-6 z-50 bg-blue-500 hover:bg-blue-600 text-white p-4 rounded-full shadow-lg transition-all duration-300 hover:scale-110 focus:outline-none focus:ring-4 focus:ring-blue-300"
+                aria-label="Open Signatex Assistant"
+            >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                </svg>
+            </button>
+
+            {/* Signatex Chatbot */}
+            <SignatexChatbot
+                isOpen={isChatbotOpen}
+                onClose={() => setIsChatbotOpen(false)}
+                currentInputs={currentInputs}
+                analysisResults={analysisResults}
+            />
+        </>
     );
 };
