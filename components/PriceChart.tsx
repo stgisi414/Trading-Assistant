@@ -31,11 +31,107 @@ interface PriceChartProps {
 
 type ChartType = 'line' | 'candlestick' | 'ohlc' | 'area';
 
+interface IndicatorSettings {
+    sma9: boolean;
+    sma20: boolean;
+    sma50: boolean;
+    sma200: boolean;
+    ema12: boolean;
+    ema26: boolean;
+    vwap: boolean;
+    bollinger: boolean;
+}
+
 export const PriceChart: React.FC<PriceChartProps> = ({ data, theme }) => {
     const chartRef = useRef<SVGSVGElement | null>(null);
     const containerRef = useRef<HTMLDivElement | null>(null);
     const [chartType, setChartType] = useState<ChartType>('line');
     const [showVolume, setShowVolume] = useState(false);
+    const [indicators, setIndicators] = useState<IndicatorSettings>({
+        sma9: false,
+        sma20: true,
+        sma50: false,
+        sma200: false,
+        ema12: false,
+        ema26: false,
+        vwap: false,
+        bollinger: false
+    });
+
+    // Calculate Simple Moving Average
+    const calculateSMA = (data: any[], period: number) => {
+        const sma = [];
+        for (let i = period - 1; i < data.length; i++) {
+            const sum = data.slice(i - period + 1, i + 1).reduce((acc, d) => acc + d.close, 0);
+            sma.push({
+                date: data[i].date,
+                value: sum / period
+            });
+        }
+        return sma;
+    };
+
+    // Calculate Exponential Moving Average
+    const calculateEMA = (data: any[], period: number) => {
+        const ema = [];
+        const multiplier = 2 / (period + 1);
+        let emaValue = data[0].close; // Start with first close price
+        
+        for (let i = 0; i < data.length; i++) {
+            if (i === 0) {
+                emaValue = data[i].close;
+            } else {
+                emaValue = (data[i].close * multiplier) + (emaValue * (1 - multiplier));
+            }
+            ema.push({
+                date: data[i].date,
+                value: emaValue
+            });
+        }
+        return ema;
+    };
+
+    // Calculate VWAP (Volume Weighted Average Price)
+    const calculateVWAP = (data: any[]) => {
+        let cumulativeTPV = 0; // Typical Price * Volume
+        let cumulativeVolume = 0;
+        const vwap = [];
+        
+        for (let i = 0; i < data.length; i++) {
+            const typicalPrice = (data[i].high + data[i].low + data[i].close) / 3;
+            const tpv = typicalPrice * data[i].volume;
+            cumulativeTPV += tpv;
+            cumulativeVolume += data[i].volume;
+            
+            vwap.push({
+                date: data[i].date,
+                value: cumulativeVolume > 0 ? cumulativeTPV / cumulativeVolume : typicalPrice
+            });
+        }
+        return vwap;
+    };
+
+    // Calculate Bollinger Bands
+    const calculateBollingerBands = (data: any[], period: number = 20, stdDevMultiplier: number = 2) => {
+        const smaData = calculateSMA(data, period);
+        const bands = [];
+        
+        for (let i = 0; i < smaData.length; i++) {
+            const dataIndex = i + period - 1;
+            const subset = data.slice(dataIndex - period + 1, dataIndex + 1);
+            const mean = smaData[i].value;
+            const variance = subset.reduce((acc, d) => acc + Math.pow(d.close - mean, 2), 0) / period;
+            const stdDev = Math.sqrt(variance);
+            
+            bands.push({
+                date: data[dataIndex].date,
+                upper: mean + (stdDev * stdDevMultiplier),
+                middle: mean,
+                lower: mean - (stdDev * stdDevMultiplier)
+            });
+        }
+        return bands;
+    };
 
     useEffect(() => {
         if (!data || data.length === 0 || !chartRef.current || !containerRef.current) return;
@@ -117,6 +213,154 @@ export const PriceChart: React.FC<PriceChartProps> = ({ data, theme }) => {
 
         svg.selectAll(".grid line").attr("stroke", gridColor).attr("stroke-opacity", 0.7);
         svg.selectAll(".grid path").attr("stroke-width", 0);
+
+        // Calculate and render indicators
+        const indicatorColors = {
+            sma9: "#ff6b6b",
+            sma20: "#4ecdc4", 
+            sma50: "#45b7d1",
+            sma200: "#96ceb4",
+            ema12: "#feca57",
+            ema26: "#ff9ff3",
+            vwap: "#54a0ff",
+            bollinger: "#5f27cd"
+        };
+
+        // Render indicators
+        if (indicators.sma9) {
+            const sma9Data = calculateSMA(processedData, 9);
+            mainChart.append("path")
+                .datum(sma9Data)
+                .attr("fill", "none")
+                .attr("stroke", indicatorColors.sma9)
+                .attr("stroke-width", 1.5)
+                .attr("stroke-dasharray", "3,3")
+                .attr("d", line<{date: Date, value: number}>()
+                    .x(d => xScale(d.date))
+                    .y(d => yScale(d.value))
+                );
+        }
+
+        if (indicators.sma20) {
+            const sma20Data = calculateSMA(processedData, 20);
+            mainChart.append("path")
+                .datum(sma20Data)
+                .attr("fill", "none")
+                .attr("stroke", indicatorColors.sma20)
+                .attr("stroke-width", 2)
+                .attr("d", line<{date: Date, value: number}>()
+                    .x(d => xScale(d.date))
+                    .y(d => yScale(d.value))
+                );
+        }
+
+        if (indicators.sma50) {
+            const sma50Data = calculateSMA(processedData, 50);
+            mainChart.append("path")
+                .datum(sma50Data)
+                .attr("fill", "none")
+                .attr("stroke", indicatorColors.sma50)
+                .attr("stroke-width", 2)
+                .attr("d", line<{date: Date, value: number}>()
+                    .x(d => xScale(d.date))
+                    .y(d => yScale(d.value))
+                );
+        }
+
+        if (indicators.sma200) {
+            const sma200Data = calculateSMA(processedData, 200);
+            mainChart.append("path")
+                .datum(sma200Data)
+                .attr("fill", "none")
+                .attr("stroke", indicatorColors.sma200)
+                .attr("stroke-width", 2.5)
+                .attr("d", line<{date: Date, value: number}>()
+                    .x(d => xScale(d.date))
+                    .y(d => yScale(d.value))
+                );
+        }
+
+        if (indicators.ema12) {
+            const ema12Data = calculateEMA(processedData, 12);
+            mainChart.append("path")
+                .datum(ema12Data)
+                .attr("fill", "none")
+                .attr("stroke", indicatorColors.ema12)
+                .attr("stroke-width", 1.5)
+                .attr("stroke-dasharray", "5,2")
+                .attr("d", line<{date: Date, value: number}>()
+                    .x(d => xScale(d.date))
+                    .y(d => yScale(d.value))
+                );
+        }
+
+        if (indicators.ema26) {
+            const ema26Data = calculateEMA(processedData, 26);
+            mainChart.append("path")
+                .datum(ema26Data)
+                .attr("fill", "none")
+                .attr("stroke", indicatorColors.ema26)
+                .attr("stroke-width", 1.5)
+                .attr("stroke-dasharray", "5,2")
+                .attr("d", line<{date: Date, value: number}>()
+                    .x(d => xScale(d.date))
+                    .y(d => yScale(d.value))
+                );
+        }
+
+        if (indicators.vwap) {
+            const vwapData = calculateVWAP(processedData);
+            mainChart.append("path")
+                .datum(vwapData)
+                .attr("fill", "none")
+                .attr("stroke", indicatorColors.vwap)
+                .attr("stroke-width", 2)
+                .attr("stroke-dasharray", "8,4")
+                .attr("d", line<{date: Date, value: number}>()
+                    .x(d => xScale(d.date))
+                    .y(d => yScale(d.value))
+                );
+        }
+
+        if (indicators.bollinger) {
+            const bollingerData = calculateBollingerBands(processedData);
+            
+            // Upper band
+            mainChart.append("path")
+                .datum(bollingerData)
+                .attr("fill", "none")
+                .attr("stroke", indicatorColors.bollinger)
+                .attr("stroke-width", 1)
+                .attr("stroke-opacity", 0.7)
+                .attr("d", line<{date: Date, upper: number}>()
+                    .x(d => xScale(d.date))
+                    .y(d => yScale(d.upper))
+                );
+            
+            // Lower band
+            mainChart.append("path")
+                .datum(bollingerData)
+                .attr("fill", "none")
+                .attr("stroke", indicatorColors.bollinger)
+                .attr("stroke-width", 1)
+                .attr("stroke-opacity", 0.7)
+                .attr("d", line<{date: Date, lower: number}>()
+                    .x(d => xScale(d.date))
+                    .y(d => yScale(d.lower))
+                );
+            
+            // Fill between bands
+            const areaGenerator = area<{date: Date, upper: number, lower: number}>()
+                .x(d => xScale(d.date))
+                .y0(d => yScale(d.lower))
+                .y1(d => yScale(d.upper));
+
+            mainChart.append("path")
+                .datum(bollingerData)
+                .attr("fill", indicatorColors.bollinger)
+                .attr("fill-opacity", 0.1)
+                .attr("d", areaGenerator);
+        }
 
         // Price chart based on type
         if (chartType === 'line') {
@@ -283,7 +527,7 @@ export const PriceChart: React.FC<PriceChartProps> = ({ data, theme }) => {
                 .text("Volume");
         }
 
-    }, [data, theme, chartType, showVolume, containerRef.current?.clientWidth]);
+    }, [data, theme, chartType, showVolume, indicators, containerRef.current?.clientWidth]);
 
     const chartTypeOptions = [
         { value: 'line' as ChartType, label: 'Line' },
@@ -325,6 +569,108 @@ export const PriceChart: React.FC<PriceChartProps> = ({ data, theme }) => {
                         <label htmlFor="showVolume" className="text-sm font-medium text-gray-600 dark:text-gray-400">
                             Show Volume
                         </label>
+                    </div>
+                </div>
+            </div>
+            
+            {/* Indicators Panel */}
+            <div className="mb-4 p-3 bg-gray-100 dark:bg-gray-800 rounded-lg">
+                <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Technical Indicators</h4>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    <div className="flex items-center gap-2">
+                        <input
+                            type="checkbox"
+                            id="sma9"
+                            checked={indicators.sma9}
+                            onChange={(e) => setIndicators(prev => ({ ...prev, sma9: e.target.checked }))}
+                            className="rounded border-gray-300 dark:border-gray-600"
+                        />
+                        <label htmlFor="sma9" className="text-xs text-gray-600 dark:text-gray-400">SMA 9</label>
+                        <div className="w-3 h-3 border-2 border-dashed" style={{ borderColor: '#ff6b6b' }}></div>
+                    </div>
+                    
+                    <div className="flex items-center gap-2">
+                        <input
+                            type="checkbox"
+                            id="sma20"
+                            checked={indicators.sma20}
+                            onChange={(e) => setIndicators(prev => ({ ...prev, sma20: e.target.checked }))}
+                            className="rounded border-gray-300 dark:border-gray-600"
+                        />
+                        <label htmlFor="sma20" className="text-xs text-gray-600 dark:text-gray-400">SMA 20</label>
+                        <div className="w-3 h-3 border-2" style={{ borderColor: '#4ecdc4' }}></div>
+                    </div>
+                    
+                    <div className="flex items-center gap-2">
+                        <input
+                            type="checkbox"
+                            id="sma50"
+                            checked={indicators.sma50}
+                            onChange={(e) => setIndicators(prev => ({ ...prev, sma50: e.target.checked }))}
+                            className="rounded border-gray-300 dark:border-gray-600"
+                        />
+                        <label htmlFor="sma50" className="text-xs text-gray-600 dark:text-gray-400">SMA 50</label>
+                        <div className="w-3 h-3 border-2" style={{ borderColor: '#45b7d1' }}></div>
+                    </div>
+                    
+                    <div className="flex items-center gap-2">
+                        <input
+                            type="checkbox"
+                            id="sma200"
+                            checked={indicators.sma200}
+                            onChange={(e) => setIndicators(prev => ({ ...prev, sma200: e.target.checked }))}
+                            className="rounded border-gray-300 dark:border-gray-600"
+                        />
+                        <label htmlFor="sma200" className="text-xs text-gray-600 dark:text-gray-400">SMA 200</label>
+                        <div className="w-3 h-3 border-2" style={{ borderColor: '#96ceb4' }}></div>
+                    </div>
+                    
+                    <div className="flex items-center gap-2">
+                        <input
+                            type="checkbox"
+                            id="ema12"
+                            checked={indicators.ema12}
+                            onChange={(e) => setIndicators(prev => ({ ...prev, ema12: e.target.checked }))}
+                            className="rounded border-gray-300 dark:border-gray-600"
+                        />
+                        <label htmlFor="ema12" className="text-xs text-gray-600 dark:text-gray-400">EMA 12</label>
+                        <div className="w-3 h-3 border-2 border-dashed" style={{ borderColor: '#feca57' }}></div>
+                    </div>
+                    
+                    <div className="flex items-center gap-2">
+                        <input
+                            type="checkbox"
+                            id="ema26"
+                            checked={indicators.ema26}
+                            onChange={(e) => setIndicators(prev => ({ ...prev, ema26: e.target.checked }))}
+                            className="rounded border-gray-300 dark:border-gray-600"
+                        />
+                        <label htmlFor="ema26" className="text-xs text-gray-600 dark:text-gray-400">EMA 26</label>
+                        <div className="w-3 h-3 border-2 border-dashed" style={{ borderColor: '#ff9ff3' }}></div>
+                    </div>
+                    
+                    <div className="flex items-center gap-2">
+                        <input
+                            type="checkbox"
+                            id="vwap"
+                            checked={indicators.vwap}
+                            onChange={(e) => setIndicators(prev => ({ ...prev, vwap: e.target.checked }))}
+                            className="rounded border-gray-300 dark:border-gray-600"
+                        />
+                        <label htmlFor="vwap" className="text-xs text-gray-600 dark:text-gray-400">VWAP</label>
+                        <div className="w-3 h-3 border-2 border-dashed" style={{ borderColor: '#54a0ff' }}></div>
+                    </div>
+                    
+                    <div className="flex items-center gap-2">
+                        <input
+                            type="checkbox"
+                            id="bollinger"
+                            checked={indicators.bollinger}
+                            onChange={(e) => setIndicators(prev => ({ ...prev, bollinger: e.target.checked }))}
+                            className="rounded border-gray-300 dark:border-gray-600"
+                        />
+                        <label htmlFor="bollinger" className="text-xs text-gray-600 dark:text-gray-400">Bollinger</label>
+                        <div className="w-3 h-3 border-2" style={{ borderColor: '#5f27cd' }}></div>
                     </div>
                 </div>
             </div>
