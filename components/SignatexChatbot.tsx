@@ -545,5 +545,6 @@ Patterns work best when combined with other technical indicators!`;
                 </div>
             </div>
         </div>
+        </div>
     );
 };
