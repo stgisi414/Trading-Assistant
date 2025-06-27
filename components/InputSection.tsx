@@ -185,7 +185,7 @@ export const InputSection: React.FC<InputSectionProps> = ({
                     </div>
                 </div>
 
-                <div className="mt-6 p-6 bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-200 dark:border-gray-600">
+                <div className="mt-4 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-200 dark:border-gray-600">
                     <h3 className="text-lg font-medium text-gray-800 dark:text-gray-200 mb-4">Analysis Options</h3>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div className="space-y-3">
