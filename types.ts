@@ -81,10 +81,26 @@ export interface FmpSearchResult {
 }
 
 // New type to hold all info for a single asset analysis
+export interface PatternDetails {
+    patternType: 'HeadAndShouldersTop' | 'HeadAndShouldersBottom' | 'DoubleTop' | 'DoubleBottom';
+    confidence: number; // 0-100
+    description: string;
+    tradingImplications: string;
+    keyLevels: {
+        neckline?: number;
+        support?: number;
+        resistance?: number;
+        targetPrice?: number;
+    };
+    timeframe: string;
+    reliability: 'High' | 'Medium' | 'Low';
+}
+
 export interface AssetAnalysis {
     symbol: string;
     historicalData: HistoricalDataPoint[];
     analysisResult: AnalysisResult | null;
     isLoading: boolean;
     error?: string;
+    patternDetails?: PatternDetails[];
 }

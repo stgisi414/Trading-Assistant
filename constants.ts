@@ -10,6 +10,10 @@ export const INDICATOR_OPTIONS: IndicatorOption[] = [
     { value: 'ADX', label: 'Average Directional Index (ADX)' },
     { value: 'Volume', label: 'Volume' },
     { value: 'Volatility', label: 'Volatility' },
+    { value: 'HeadAndShouldersTop', label: 'Head and Shoulders Top Pattern' },
+    { value: 'HeadAndShouldersBottom', label: 'Head and Shoulders Bottom (Inverse H&S)' },
+    { value: 'DoubleTop', label: 'Double Top Pattern' },
+    { value: 'DoubleBottom', label: 'Double Bottom Pattern' },
 ];
 
 export const NON_TECHNICAL_INDICATOR_OPTIONS: IndicatorOption[] = [

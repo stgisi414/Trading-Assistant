@@ -5,6 +5,7 @@ import { PriceChart } from './PriceChart.tsx';
 import { NewsSection } from './NewsSection.tsx';
 import { Spinner } from './Spinner.tsx';
 import { ErrorMessage } from './ErrorMessage.tsx';
+import { PatternAnalysisSection } from './PatternAnalysisSection';
 
 interface AssetResultCardProps {
     analysis: AssetAnalysis;
@@ -54,7 +55,13 @@ export const AssetResultCard: React.FC<AssetResultCardProps> = ({ analysis, them
                     {analysisResult.orderAnalysis && (
                         <OrderAnalysisSection orderAnalysis={analysisResult.orderAnalysis} />
                     )}
-                    <NewsSection news={analysisResult.news} />
+                    {analysisResult?.news && analysisResult.news.length > 0 && (
+                        <NewsSection news={analysisResult.news} theme={theme} />
+                    )}
+
+                    {analysis.patternDetails && analysis.patternDetails.length > 0 && (
+                        <PatternAnalysisSection patterns={analysis.patternDetails} theme={theme} />
+                    )}
                 </div>
             );
         }

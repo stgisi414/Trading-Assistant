@@ -4,6 +4,7 @@ import { InputSection } from './components/InputSection.tsx';
 import { ResultsSection } from './components/ResultsSection.tsx';
 import { getTradingPosition } from './services/geminiService.ts';
 import { fetchHistoricalData } from './services/marketDataService.ts';
+import { analyzeChartPatterns } from './services/patternAnalysisService.ts';
 import type { AnalysisResult, HistoricalDataPoint, AssetAnalysis } from './types.ts';
 import { INDICATOR_OPTIONS, NON_TECHNICAL_INDICATOR_OPTIONS, TIMEFRAME_OPTIONS } from './constants.ts';
 import { ErrorMessage } from './components/ErrorMessage.tsx';
@@ -152,8 +153,14 @@ function App() {
                     setAnalyses(prev => prev.map(a => a.symbol === symbol ? { ...a, historicalData: data } : a));
 
                     const result = await getTradingPosition(symbol, parseFloat(walletAmount), selectedIndicators, data);
+                    const patterns = await analyzeChartPatterns(symbol, data, selectedIndicators);
                     
-                    setAnalyses(prev => prev.map(a => a.symbol === symbol ? { ...a, isLoading: false, analysisResult: result } : a));
+                    setAnalyses(prev => prev.map(a => a.symbol === symbol ? { 
+                        ...a, 
+                        isLoading: false, 
+                        analysisResult: result,
+                        patternDetails: patterns 
+                    } : a));
 
                 } catch(err) {
                     const errorMessage = err instanceof Error ? err.message : String(err);
