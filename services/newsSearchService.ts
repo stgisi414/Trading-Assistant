@@ -54,6 +54,110 @@ const isRecentArticle = (snippet: string, title: string, timeframe: string): boo
     return !oldDatePatterns.some(pattern => pattern.test(text));
 };
 
+// Helper function to construct intelligent search queries with boolean operators
+const constructIntelligentQuery = (searchTerm: string): string => {
+    // Common financial keywords that indicate intent
+    const intentKeywords = {
+        analysis: ['analysis', 'outlook', 'forecast', 'commentary', 'review', 'report'],
+        earnings: ['earnings', 'results', 'revenue', 'profit', 'financial results'],
+        news: ['news', 'announcement', 'update', 'development', 'breaking'],
+        performance: ['performance', 'returns', 'gains', 'losses', 'movement'],
+        rating: ['rating', 'upgrade', 'downgrade', 'recommendation', 'target price'],
+        general: ['stock', 'shares', 'financial', 'market', 'trading']
+    };
+
+    // Common ticker symbols and their full names for major ETFs and stocks
+    const assetMapping: Record<string, string[]> = {
+        'SPDR S&P 500 ETF': ['SPY', 'SPDR S&P 500'],
+        'iShares Russell 2000 ETF': ['IWM', 'Russell 2000'],
+        'Invesco QQQ Trust': ['QQQ', 'NASDAQ-100'],
+        'Apple': ['AAPL', 'Apple Inc'],
+        'Microsoft': ['MSFT', 'Microsoft Corporation'],
+        'Tesla': ['TSLA', 'Tesla Inc'],
+        'Amazon': ['AMZN', 'Amazon.com'],
+        'Google': ['GOOGL', 'GOOG', 'Alphabet'],
+        'Meta': ['META', 'Facebook'],
+        'NVIDIA': ['NVDA', 'Nvidia Corporation']
+    };
+
+    // Parse the search term to identify asset and intent
+    const termLower = searchTerm.toLowerCase();
+    let assetPart = '';
+    let intentPart = '';
+    let detectedTickers: string[] = [];
+
+    // Find the primary asset in the search term
+    for (const [fullName, tickers] of Object.entries(assetMapping)) {
+        if (termLower.includes(fullName.toLowerCase())) {
+            assetPart = fullName;
+            detectedTickers = tickers;
+            break;
+        }
+        // Check if any ticker is mentioned
+        for (const ticker of tickers) {
+            if (termLower.includes(ticker.toLowerCase())) {
+                assetPart = fullName;
+                detectedTickers = tickers;
+                break;
+            }
+        }
+        if (assetPart) break;
+    }
+
+    // If no known asset found, extract potential asset name (usually the first part)
+    if (!assetPart) {
+        const words = searchTerm.trim().split(/\s+/);
+        // Take first 2-4 words as potential asset name
+        if (words.length >= 2) {
+            assetPart = words.slice(0, Math.min(4, words.length - 1)).join(' ');
+            // Try to extract ticker if it looks like one (2-5 uppercase letters)
+            const potentialTicker = words.find(word => /^[A-Z]{2,5}$/.test(word));
+            if (potentialTicker) {
+                detectedTickers = [potentialTicker];
+            }
+        } else {
+            assetPart = searchTerm;
+        }
+    }
+
+    // Identify intent keywords in the search term
+    let intentKeywordSet: string[] = [];
+    for (const [category, keywords] of Object.entries(intentKeywords)) {
+        for (const keyword of keywords) {
+            if (termLower.includes(keyword)) {
+                intentKeywordSet = keywords;
+                break;
+            }
+        }
+        if (intentKeywordSet.length > 0) break;
+    }
+
+    // If no specific intent found, use general financial keywords
+    if (intentKeywordSet.length === 0) {
+        intentKeywordSet = intentKeywords.general;
+    }
+
+    // Construct the boolean query
+    let query = '';
+
+    // Asset part with OR for tickers
+    if (detectedTickers.length > 0) {
+        const assetOptions = [`"${assetPart}"`, ...detectedTickers.map(ticker => `"${ticker}"`)];
+        query += `(${assetOptions.join(' OR ')})`;
+    } else {
+        query += `"${assetPart}"`;
+    }
+
+    // Intent part with OR for related keywords
+    const intentOptions = intentKeywordSet.slice(0, 4); // Limit to avoid too long queries
+    query += ` AND (${intentOptions.join(' OR ')})`;
+
+    // Add exclusions for better results
+    query += ' -site:news.google.com -site:finance.yahoo.com/quote -site:marketwatch.com/tools';
+
+    return query;
+};
+
 // Helper function to convert timeframe to appropriate date restriction
 const getDateRestrictionFromTimeframe = (timeframe: string): string => {
     const timeframeLower = timeframe.toLowerCase();
@@ -99,11 +203,11 @@ export const searchNews = async (searchTerms: string[], timeframe: string = '1M'
     try {
         const allNews: NewsArticle[] = [];
         
-        // Search for each term with improved query construction
+        // Search for each term with intelligent query construction
         for (const term of searchTerms.slice(0, 3)) {
-            // Construct better search query for financial news
-            const enhancedQuery = `"${term}" (news OR earnings OR announcement OR financial OR stock OR shares) -site:news.google.com -site:finance.yahoo.com/quote`;
-            const query = encodeURIComponent(enhancedQuery);
+            // Parse and construct intelligent query using boolean operators
+            const intelligentQuery = constructIntelligentQuery(term);
+            const query = encodeURIComponent(intelligentQuery);
             
             // Add date restriction based on selected timeframe
             const dateRestrict = getDateRestrictionFromTimeframe(timeframe);
