@@ -16,11 +16,25 @@ const generateMockData = (symbol: string): HistoricalDataPoint[] => {
         const date = new Date(today);
         date.setDate(today.getDate() - i);
         const change = (Math.random() - 0.48) * (lastClose * 0.05); // up to 5% change per day
-        lastClose += change;
+        const newClose = Math.max(10, lastClose + change);
+        
+        // Generate realistic OHLC data
+        const volatility = 0.02; // 2% daily volatility
+        const open = lastClose;
+        const high = Math.max(open, newClose) * (1 + Math.random() * volatility);
+        const low = Math.min(open, newClose) * (1 - Math.random() * volatility);
+        const volume = Math.floor(Math.random() * 10000000) + 1000000; // 1M to 11M volume
+
         mockData.push({
             date: date.toISOString().split('T')[0],
-            close: Math.max(10, lastClose)
+            open: open,
+            high: high,
+            low: low,
+            close: newClose,
+            volume: volume
         });
+        
+        lastClose = newClose;
     }
     return mockData;
 }
@@ -112,7 +126,11 @@ export const fetchHistoricalData = async (symbol: string, timeframe: string, fro
         // Transform and sort data
         return historicalData.map((d: any) => ({
             date: d.date,
+            open: d.open || d.close,
+            high: d.high || d.close,
+            low: d.low || d.close,
             close: d.close,
+            volume: d.volume || 0
         })).reverse();
     } catch (error) {
         console.error(`Error fetching historical data for ${symbol}:`, error);
