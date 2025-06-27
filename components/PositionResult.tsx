@@ -73,7 +73,7 @@ export const PositionResult: React.FC<PositionResultProps> = ({ result }) => {
                             li: ({children}) => <li className="text-sm">{children}</li>,
                             strong: ({children}) => <strong className="font-semibold text-gray-900 dark:text-white">{children}</strong>,
                             em: ({children}) => <em className="italic">{children}</em>,
-                            code: ({children}) => <code className="bg-gray-100 dark:bg-gray-800 px-1 py-0.5 rounded text-xs font-mono">{children}</code>,
+                            code: ({children}) => <code className="bg-accent px-1 py-0.5 rounded text-xs font-mono">{children}</code>,
                             blockquote: ({children}) => <blockquote className="border-l-4 border-blue-500 pl-4 italic bg-blue-50 dark:bg-blue-900/20 py-2">{children}</blockquote>
                         }}
                     >

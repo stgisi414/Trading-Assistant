@@ -263,7 +263,7 @@ Run an analysis first, then ask me to explain your specific results!`;
 This data helps confirm or contradict your technical analysis signals.`;
         }
 
-        if (lowerMessage.includes('wallet') || lowerMessage.includes('amount') || lowerMessage.includes('money')) {
+        iflowerMessage.includes('wallet') || lowerMessage.includes('amount') || lowerMessage.includes('money')) {
             const currentWallet = parseFloat(currentInputs?.walletAmount || '0');
 
             return `## Wallet Amount & Risk Management 💰
@@ -444,7 +444,7 @@ Patterns work best when combined with other technical indicators!`;
                                 }]);
                                 localStorage.removeItem('signatex_chat_history');
                             }}
-                            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors text-gray-500 dark:text-gray-400"
+                            className="p-2 hover:bg-accent rounded-lg transition-colors text-gray-500 dark:text-gray-400"
                             title="Clear conversation"
                         >
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -453,9 +453,8 @@ Patterns work best when combined with other technical indicators!`;
                         </button>
                         <button
                             onClick={onClose}
-                            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
-                        >
-                            <svg className="w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            className="p-2 hover:bg-accent rounded-lg transition-colors">
+                            <svg className="w-6 h-6 text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                             </svg>
                         </button>

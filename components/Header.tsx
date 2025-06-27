@@ -1,6 +1,6 @@
-
 import React, { useState } from 'react';
 import { SignatexChatbot } from './SignatexChatbot.tsx';
+import { Moon, Sun, MessageCircle } from 'lucide-react';
 
 interface ThemeToggleProps {
     theme: 'light' | 'dark';
@@ -44,25 +44,45 @@ interface HeaderProps {
 
 export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme, currentInputs, analysisResults }) => {
     const [isChatbotOpen, setIsChatbotOpen] = useState(false);
+    const [showChatbot, setShowChatbot] = useState(false);
 
     return (
         <>
-            <header className="relative overflow-hidden mesh-gradient animate-gradient-xy text-white p-8 shadow-2xl text-center card-glow border-4 border-gray-800" style={{clipPath: 'polygon(20px 0%, 100% 0%, calc(100% - 20px) 100%, 0% 100%)'}}>
-                <div className="absolute inset-0 bg-black/10 dark:bg-white/5"></div>
-                <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
+            <header className="glass-effect p-6 rounded-2xl shadow-2xl border-border backdrop-blur-xl card-glow sharp-corners relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent dark:from-white/10 dark:to-transparent"></div>
                 <div className="relative z-10">
-                    <div className="animate-float">
-                        <h1 className="text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white via-cyan-100 to-blue-100 drop-shadow-lg" style={{letterSpacing: '-0.05em'}}>
-                            AI-Powered Trading Assistant
-                        </h1>
-                        <div className="flex items-center justify-center gap-2 mt-3">
-                            <div className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse"></div>
-                            <p className="text-blue-100 text-lg font-medium">Leveraging Gemini for Market Insights</p>
-                            <div className="w-2 h-2 bg-amber-400 rounded-full animate-pulse animation-delay-300"></div>
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 bg-clip-text text-transparent mb-2">
+                                AI-Powered Trading Assistant
+                            </h1>
+                            <p className="text-lg text-muted mb-4">
+                                Leveraging Gemini for Market Insights
+                            </p>
                         </div>
+
+                        <button
+                            onClick={toggleTheme}
+                            className="p-3 rounded-xl bg-card/80 backdrop-blur-sm border border-border hover:bg-accent transition-all duration-300 text-foreground"
+                            title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
+                        >
+                            {theme === 'light' ? (
+                                <Moon className="w-5 h-5" />
+                            ) : (
+                                <Sun className="w-5 h-5" />
+                            )}
+                        </button>
                     </div>
-                    <div className="absolute top-4 left-4 w-16 h-16 bg-gradient-to-br from-cyan-400/20 to-blue-500/20 rounded-full blur-xl animate-pulse-slow"></div>
-                    <div className="absolute bottom-4 right-4 w-12 h-12 bg-gradient-to-br from-blue-400/20 to-cyan-500/20 rounded-full blur-lg animate-pulse-slow animation-delay-1000"></div>
+                    <div className="flex justify-center">
+                        <button
+                            onClick={() => setShowChatbot(true)}
+                            className="flex items-center gap-2 px-4 py-3 rounded-xl bg-primary text-white font-medium hover:bg-primary/90 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
+                            title="Open Signatex Assistant"
+                        >
+                            <MessageCircle className="w-5 h-5" />
+                            <span className="hidden sm:inline">Ask Signatex</span>
+                        </button>
+                    </div>
                 </div>
             </header>
 
