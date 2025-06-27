@@ -29,6 +29,21 @@ export interface IndicatorOption {
     label: string;
 }
 
+export interface TimeframeOption {
+    value: string;
+    label: string;
+    duration: number; // in minutes
+}
+
+export enum TimeframeType {
+    MINUTES = 'MINUTES',
+    HOURS = 'HOURS', 
+    DAYS = 'DAYS',
+    WEEKS = 'WEEKS',
+    MONTHS = 'MONTHS',
+    YEARS = 'YEARS'
+}
+
 // New type for FMP search results
 export interface FmpSearchResult {
     symbol: string;

@@ -3,18 +3,26 @@ import type { IndicatorOption } from '../types.ts';
 import { Spinner } from './Spinner.tsx';
 import { SymbolSearchInput } from './SymbolSearchInput.tsx';
 
+interface TimeframeOption {
+    value: string;
+    label: string;
+}
+
 interface InputSectionProps {
     selectedSymbols: string[];
     setSelectedSymbols: (symbols: string[]) => void;
     walletAmount: string;
-    setWalletAmount: (value: string) => void;
+    setWalletAmount: (amount: string) => void;
     startDate: string;
     setStartDate: (date: string) => void;
     endDate: string;
     setEndDate: (date: string) => void;
     selectedIndicators: string[];
-    setSelectedIndicators: (values: string[]) => void;
+    setSelectedIndicators: (indicators: string[]) => void;
     indicatorOptions: IndicatorOption[];
+    selectedTimeframe: string;
+    setSelectedTimeframe: (timeframe: string) => void;
+    timeframeOptions: TimeframeOption[];
     onAnalyze: () => void;
     isLoading: boolean;
 }
@@ -31,8 +39,11 @@ export const InputSection: React.FC<InputSectionProps> = ({
     selectedIndicators,
     setSelectedIndicators,
     indicatorOptions,
+    selectedTimeframe,
+    setSelectedTimeframe,
+    timeframeOptions,
     onAnalyze,
-    isLoading
+    isLoading,
 }) => {
     const handleIndicatorChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         const options = Array.from(event.target.selectedOptions, option => option.value);
@@ -115,6 +126,20 @@ export const InputSection: React.FC<InputSectionProps> = ({
                                 disabled={isLoading}
                             />
                         </div>
+                    </div>
+                    <div>
+                        <label htmlFor="timeframeSelect" className={labelClasses}>Timeframe</label>
+                        <select
+                            id="timeframeSelect"
+                            value={selectedTimeframe}
+                            onChange={(e) => setSelectedTimeframe(e.target.value)}
+                            className={inputClasses}
+                            disabled={isLoading}
+                        >
+                            {timeframeOptions.map(option => (
+                                <option key={option.value} value={option.value}>{option.label}</option>
+                            ))}
+                        </select>
                     </div>
                 </div>
             </div>

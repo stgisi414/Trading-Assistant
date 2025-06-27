@@ -41,23 +41,76 @@ export const searchSymbols = async (query: string): Promise<FmpSearchResult[]> =
     }
 };
 
-export const fetchHistoricalData = async (symbol: string, from: string, to: string): Promise<HistoricalDataPoint[]> => {
+const getTimeframeEndpoint = (timeframe: string): string => {
+    // For intraday timeframes (minutes/hours), use different endpoint
+    if (timeframe.includes('m') || timeframe.includes('h')) {
+        return 'historical-chart';
+    }
+    return 'historical-price-full';
+};
+
+const getTimeframeInterval = (timeframe: string): string => {
+    // Map timeframe to FMP interval format
+    const intervalMap: Record<string, string> = {
+        '5m': '5min',
+        '15m': '15min',
+        '30m': '30min',
+        '1h': '1hour',
+        '4h': '4hour',
+    };
+    return intervalMap[timeframe] || '1day';
+};
+
+export const fetchHistoricalData = async (symbol: string, timeframe: string, from?: string, to?: string): Promise<HistoricalDataPoint[]> => {
     if(!FMP_API_KEY) {
         return generateMockData(symbol);
     }
 
     try {
-        const response = await fetch(`${FMP_BASE_URL}/historical-price-full/${symbol}?from=${from}&to=${to}&apikey=${FMP_API_KEY}`);
+        const endpoint = getTimeframeEndpoint(timeframe);
+        let url = `${FMP_BASE_URL}/${endpoint}/${symbol}`;
+        
+        if (endpoint === 'historical-chart') {
+            // For intraday data
+            const interval = getTimeframeInterval(timeframe);
+            url += `/${interval}`;
+            if (from && to) {
+                url += `?from=${from}&to=${to}`;
+            }
+        } else {
+            // For daily and longer timeframes
+            if (from && to) {
+                url += `?from=${from}&to=${to}`;
+            }
+        }
+        
+        url += `${url.includes('?') ? '&' : '?'}apikey=${FMP_API_KEY}`;
+
+        const response = await fetch(url);
         if (!response.ok) {
             const errorData = await response.json();
             throw new Error(errorData['Error Message'] || `Failed to fetch historical data for ${symbol}`);
         }
         const data = await response.json();
-        if (!data.historical || data.historical.length === 0) {
-             throw new Error(`No historical data found for ${symbol}. It may be an invalid symbol or have no data in the selected date range.`);
+        
+        let historicalData;
+        if (endpoint === 'historical-chart') {
+            // Intraday data comes as array directly
+            historicalData = data;
+        } else {
+            // Daily data comes in historical property
+            if (!data.historical || data.historical.length === 0) {
+                throw new Error(`No historical data found for ${symbol}. It may be an invalid symbol or have no data in the selected date range.`);
+            }
+            historicalData = data.historical;
         }
-        // FMP returns data in reverse chronological order
-        return data.historical.map((d: any) => ({
+
+        if (!historicalData || historicalData.length === 0) {
+            throw new Error(`No historical data found for ${symbol} with timeframe ${timeframe}.`);
+        }
+
+        // Transform and sort data
+        return historicalData.map((d: any) => ({
             date: d.date,
             close: d.close,
         })).reverse();

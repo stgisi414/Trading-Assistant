@@ -5,7 +5,7 @@ import { ResultsSection } from './components/ResultsSection.tsx';
 import { getTradingPosition } from './services/geminiService.ts';
 import { fetchHistoricalData } from './services/marketDataService.ts';
 import type { AnalysisResult, HistoricalDataPoint, AssetAnalysis } from './types.ts';
-import { INDICATOR_OPTIONS } from './constants.ts';
+import { INDICATOR_OPTIONS, TIMEFRAME_OPTIONS } from './constants.ts';
 import { ErrorMessage } from './components/ErrorMessage.tsx';
 
 const getInitialDates = () => {
@@ -30,6 +30,7 @@ function App() {
     const [selectedSymbols, setSelectedSymbols] = useState<string[]>(['AAPL']);
     const [walletAmount, setWalletAmount] = useState('10000');
     const [selectedIndicators, setSelectedIndicators] = useState<string[]>(['SMA', 'RSI', 'Volume']);
+    const [selectedTimeframe, setSelectedTimeframe] = useState<string>('1M');
     const [dates, setDates] = useState(getInitialDates());
     const [analyses, setAnalyses] = useState<AssetAnalysis[]>([]);
     const [isLoading, setIsLoading] = useState(false);
@@ -50,8 +51,8 @@ function App() {
     };
 
     const handleAnalyze = useCallback(async () => {
-        if (selectedSymbols.length === 0 || !walletAmount || parseFloat(walletAmount) <= 0 || selectedIndicators.length === 0) {
-            setError("Please select at least one asset symbol, enter a positive wallet amount, and select at least one indicator.");
+        if (selectedSymbols.length === 0 || !walletAmount || parseFloat(walletAmount) <= 0 || selectedIndicators.length === 0 || !selectedTimeframe) {
+            setError("Please select at least one asset symbol, enter a positive wallet amount, select at least one indicator, and choose a timeframe.");
             return;
         }
 
@@ -70,7 +71,7 @@ function App() {
         try {
             const analysisPromises = selectedSymbols.map(async (symbol, index) => {
                 try {
-                    const data = await fetchHistoricalData(symbol, dates.startDate, dates.endDate);
+                    const data = await fetchHistoricalData(symbol, selectedTimeframe, dates.startDate, dates.endDate);
                     
                     setAnalyses(prev => prev.map(a => a.symbol === symbol ? { ...a, historicalData: data } : a));
 
@@ -92,7 +93,7 @@ function App() {
         } finally {
             setIsLoading(false);
         }
-    }, [selectedSymbols, walletAmount, selectedIndicators, dates]);
+    }, [selectedSymbols, walletAmount, selectedIndicators, selectedTimeframe, dates]);
 
     return (
         <div className="text-gray-800 dark:text-gray-200 min-h-screen p-4 sm:p-6 md:p-8 relative overflow-hidden">
@@ -118,6 +119,9 @@ function App() {
                                 selectedIndicators={selectedIndicators}
                                 setSelectedIndicators={setSelectedIndicators}
                                 indicatorOptions={INDICATOR_OPTIONS}
+                                selectedTimeframe={selectedTimeframe}
+                                setSelectedTimeframe={setSelectedTimeframe}
+                                timeframeOptions={TIMEFRAME_OPTIONS}
                                 onAnalyze={handleAnalyze}
                                 isLoading={isLoading}
                             />
