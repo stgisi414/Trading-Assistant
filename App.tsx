@@ -238,8 +238,15 @@ function App() {
                         selectedSymbols,
                         walletAmount,
                         selectedIndicators,
+                        selectedNonTechnicalIndicators,
                         selectedTimeframe,
-                        selectedMarketType
+                        selectedMarketType,
+                        includeOptionsAnalysis,
+                        includeCallOptions,
+                        includePutOptions,
+                        includeOrderAnalysis,
+                        startDate: dates.startDate,
+                        endDate: dates.endDate
                     }}
                     analysisResults={analyses}
                 />

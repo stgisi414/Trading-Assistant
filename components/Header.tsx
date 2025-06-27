@@ -29,8 +29,15 @@ interface HeaderProps {
         selectedSymbols: string[];
         walletAmount: string;
         selectedIndicators: string[];
+        selectedNonTechnicalIndicators?: string[];
         selectedTimeframe: string;
         selectedMarketType: string;
+        includeOptionsAnalysis?: boolean;
+        includeCallOptions?: boolean;
+        includePutOptions?: boolean;
+        includeOrderAnalysis?: boolean;
+        startDate?: string;
+        endDate?: string;
     };
     analysisResults?: any[];
 }

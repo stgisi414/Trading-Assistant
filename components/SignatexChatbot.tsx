@@ -19,6 +19,13 @@ interface SignatexChatbotProps {
         selectedIndicators: string[];
         selectedTimeframe: string;
         selectedMarketType: string;
+        selectedNonTechnicalIndicators?: string[];
+        includeOptionsAnalysis?: boolean;
+        includeCallOptions?: boolean;
+        includePutOptions?: boolean;
+        includeOrderAnalysis?: boolean;
+        startDate?: string;
+        endDate?: string;
     };
     analysisResults?: any[];
 }
@@ -29,11 +36,22 @@ export const SignatexChatbot: React.FC<SignatexChatbotProps> = ({
     currentInputs,
     analysisResults 
 }) => {
-    const [messages, setMessages] = useState<ChatMessage[]>([
-        {
-            id: '1',
-            type: 'bot',
-            content: `# Welcome to Signatex Assistant! 🤖
+    // Load conversation history from localStorage
+    const [messages, setMessages] = useState<ChatMessage[]>(() => {
+        const savedMessages = localStorage.getItem('signatex_chat_history');
+        if (savedMessages) {
+            try {
+                return JSON.parse(savedMessages);
+            } catch (error) {
+                console.error('Failed to parse chat history:', error);
+            }
+        }
+        
+        return [
+            {
+                id: '1',
+                type: 'bot',
+                content: `# Welcome to Signatex Assistant! 🤖
 
 I'm here to help you understand and optimize your trading analysis settings. I can:
 
@@ -56,9 +74,10 @@ I'm here to help you understand and optimize your trading analysis settings. I c
 - "Should I increase my wallet amount?"
 
 How can I assist you today?`,
-            timestamp: new Date()
-        }
-    ]);
+                timestamp: new Date()
+            }
+        ];
+    });
     const [inputMessage, setInputMessage] = useState('');
     const [isThinking, setIsThinking] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -67,16 +86,32 @@ How can I assist you today?`,
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     };
 
+    // Save conversation history to localStorage
+    useEffect(() => {
+        localStorage.setItem('signatex_chat_history', JSON.stringify(messages));
+    }, [messages]);
+
     useEffect(() => {
         scrollToBottom();
     }, [messages]);
 
     const generateResponse = async (userMessage: string): Promise<string> => {
-        // Create context about current state
+        // Create detailed context about current state
         const context = {
             inputs: currentInputs,
             results: analysisResults?.length || 0,
-            hasResults: analysisResults && analysisResults.length > 0
+            hasResults: analysisResults && analysisResults.length > 0,
+            conversationHistory: messages.slice(-6), // Last 6 messages for context
+            analysisDetails: analysisResults ? analysisResults.map(result => ({
+                symbol: result.symbol,
+                position: result.analysisResult?.position,
+                confidence: result.analysisResult?.confidence,
+                reasoning: result.analysisResult?.reasoning?.substring(0, 200) + '...',
+                hasPatterns: result.patternDetails && result.patternDetails.length > 0,
+                hasOpenInterest: result.analysisResult?.openInterestAnalysis !== undefined,
+                hasOptions: result.analysisResult?.optionsAnalysis !== undefined,
+                hasNews: result.analysisResult?.news && result.analysisResult.news.length > 0
+            })) : []
         };
 
         // Simple pattern matching for common queries
@@ -143,7 +178,7 @@ What specific indicator would you like to know more about?`;
 Would you like specific recommendations for your wallet size?`;
         }
 
-        if (lowerMessage.includes('confidence') || lowerMessage.includes('buy') || lowerMessage.includes('sell')) {
+        if (lowerMessage.includes('confidence') || lowerMessage.includes('buy') || lowerMessage.includes('sell') || lowerMessage.includes('results') || lowerMessage.includes('analysis')) {
             if (!context.hasResults) {
                 return `## Understanding Trading Signals 🎯
 
@@ -164,34 +199,43 @@ I notice you haven't run an analysis yet. Once you do, I can help explain:
 Run an analysis first, then ask me to explain your specific results!`;
             }
 
-            return `## Interpreting Your Trading Signals 📈
+            // Generate detailed analysis of current results
+            let resultsSummary = `## Your Current Analysis Results 📊\n\n`;
+            
+            context.analysisDetails.forEach(result => {
+                resultsSummary += `**${result.symbol}:**\n`;
+                resultsSummary += `- Position: **${result.position}** (${result.confidence} confidence)\n`;
+                resultsSummary += `- Analysis: ${result.reasoning}\n`;
+                
+                if (result.hasPatterns) {
+                    resultsSummary += `- ✅ Chart patterns detected\n`;
+                }
+                if (result.hasOpenInterest) {
+                    resultsSummary += `- ✅ Open interest analysis included\n`;
+                }
+                if (result.hasOptions) {
+                    resultsSummary += `- ✅ Options analysis available\n`;
+                }
+                if (result.hasNews) {
+                    resultsSummary += `- ✅ News sentiment analyzed\n`;
+                }
+                resultsSummary += `\n`;
+            });
 
-**Understanding Confidence Levels:**
+            resultsSummary += `**Risk Assessment:**\n`;
+            resultsSummary += `- Your wallet: $${currentInputs?.walletAmount || '0'}\n`;
+            resultsSummary += `- Recommended position size: 2-3% per trade\n`;
+            resultsSummary += `- Max risk per trade: $${Math.round(parseFloat(currentInputs?.walletAmount || '0') * 0.03).toLocaleString()}\n\n`;
 
-**High Confidence (70%+):**
-- Multiple indicators align
-- Strong trend confirmation
-- News sentiment supports technical analysis
-- Consider taking the position
+            resultsSummary += `**Next Steps:**\n`;
+            resultsSummary += `- Review each position's reasoning carefully\n`;
+            resultsSummary += `- Consider confidence levels for position sizing\n`;
+            resultsSummary += `- Check news sentiment alignment\n`;
+            resultsSummary += `- Set appropriate stop-losses\n\n`;
 
-**Medium Confidence (50-70%):**
-- Some conflicting signals
-- Market uncertainty present
-- Consider smaller position sizes
-- Wait for additional confirmation
+            resultsSummary += `Ask me specific questions about any of these results!`;
 
-**Low Confidence (<50%):**
-- Indicators disagree
-- High market uncertainty
-- Avoid taking positions
-- Wait for clearer signals
-
-**Risk Management Tips:**
-- Never risk more than 2-3% of your wallet on a single trade
-- Use stop-losses to limit downside
-- Consider position sizing based on confidence level
-
-Would you like me to analyze your specific results?`;
+            return resultsSummary;
         }
 
         if (lowerMessage.includes('open interest') || lowerMessage.includes('options')) {
@@ -293,38 +337,45 @@ Would you like specific position sizing recommendations?`;
 Patterns work best when combined with other technical indicators!`;
         }
 
-        // Default response for unrecognized queries
-        return `## I'm here to help! 🤝
+        // Enhanced default response with context awareness
+        let defaultResponse = `## I'm here to help! 🤝\n\n`;
+        
+        // Add context about current state
+        if (context.hasResults) {
+            defaultResponse += `I see you have analysis results for ${context.results} asset(s). `;
+            defaultResponse += `I can help explain these results or answer questions about your trading setup.\n\n`;
+        } else {
+            defaultResponse += `I notice you haven't run an analysis yet. I can help you optimize your settings first.\n\n`;
+        }
 
-I didn't quite understand your question, but I can help with:
+        if (currentInputs?.selectedSymbols && currentInputs.selectedSymbols.length > 0) {
+            defaultResponse += `**Your Current Setup:**\n`;
+            defaultResponse += `- Assets: ${currentInputs.selectedSymbols.join(', ')}\n`;
+            defaultResponse += `- Wallet: $${currentInputs.walletAmount}\n`;
+            defaultResponse += `- Indicators: ${currentInputs.selectedIndicators.join(', ')}\n`;
+            defaultResponse += `- Timeframe: ${currentInputs.selectedTimeframe}\n\n`;
+        }
 
-**📊 Technical Analysis:**
-- Indicator selection and interpretation
-- Timeframe optimization
-- Pattern recognition
+        defaultResponse += `**I can help with:**\n\n`;
+        defaultResponse += `**📊 Technical Analysis:**\n- Indicator selection and interpretation\n- Timeframe optimization\n- Pattern recognition\n\n`;
+        defaultResponse += `**💰 Risk Management:**\n- Position sizing\n- Wallet allocation\n- Stop-loss strategies\n\n`;
+        defaultResponse += `**📈 Results Interpretation:**\n- Confidence levels\n- Buy/sell/hold signals\n- Options analysis\n\n`;
+        defaultResponse += `**🔧 Setup Optimization:**\n- Best practices for your account size\n- Market selection guidance\n- Analysis customization\n\n`;
 
-**💰 Risk Management:**
-- Position sizing
-- Wallet allocation
-- Stop-loss strategies
+        defaultResponse += `**Try asking:**\n`;
+        if (context.hasResults) {
+            defaultResponse += `- "Explain my ${currentInputs?.selectedSymbols?.[0] || 'analysis'} results"\n`;
+            defaultResponse += `- "Should I take the ${currentInputs?.selectedSymbols?.[0] || 'recommended'} position?"\n`;
+            defaultResponse += `- "What's my risk for this trade?"\n`;
+        } else {
+            defaultResponse += `- "What indicators work best for ${currentInputs?.selectedTimeframe || 'my timeframe'}?"\n`;
+            defaultResponse += `- "Is my wallet amount appropriate?"\n`;
+            defaultResponse += `- "How should I analyze ${currentInputs?.selectedSymbols?.join(' and ') || 'these assets'}?"\n`;
+        }
+        
+        defaultResponse += `\nWhat would you like to know?`;
 
-**📈 Results Interpretation:**
-- Confidence levels
-- Buy/sell/hold signals
-- Options analysis
-
-**🔧 Setup Optimization:**
-- Best practices for your account size
-- Market selection guidance
-- Analysis customization
-
-Try asking something like:
-- "What's the best timeframe for swing trading?"
-- "How do I interpret RSI signals?"
-- "What should my position size be?"
-- "Explain my analysis results"
-
-What specific topic interests you most?`;
+        return defaultResponse;
     };
 
     const handleSendMessage = async () => {
@@ -383,14 +434,33 @@ What specific topic interests you most?`;
                             </p>
                         </div>
                     </div>
-                    <button
-                        onClick={onClose}
-                        className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
-                    >
-                        <svg className="w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </button>
+                    <div className="flex items-center gap-2">
+                        <button
+                            onClick={() => {
+                                setMessages([{
+                                    id: '1',
+                                    type: 'bot',
+                                    content: `# Welcome back to Signatex Assistant! 🤖\n\nConversation cleared. How can I help you today?`,
+                                    timestamp: new Date()
+                                }]);
+                                localStorage.removeItem('signatex_chat_history');
+                            }}
+                            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors text-gray-500 dark:text-gray-400"
+                            title="Clear conversation"
+                        >
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                        </button>
+                        <button
+                            onClick={onClose}
+                            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                        >
+                            <svg className="w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    
                 </div>
 
                 {/* Messages */}
