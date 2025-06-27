@@ -229,7 +229,7 @@ function App() {
                                 setSelectedMarketType={setSelectedMarketType}
                                 selectedMarket={selectedMarket}
                                 setSelectedMarket={setSelectedMarket}
-                                marketOptions={MARKET_OPTIONS}
+                                marketOptions={MARKET_OPTIONS[selectedMarketType] || []}
                                 includeOptionsAnalysis={includeOptionsAnalysis}
                                 setIncludeOptionsAnalysis={setIncludeOptionsAnalysis}
                                 includeCallOptions={includeCallOptions}

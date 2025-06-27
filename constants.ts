@@ -1,4 +1,4 @@
-import type { IndicatorOption, TimeframeOption } from './types.ts';
+import type { IndicatorOption, TimeframeOption, MarketOption } from './types.ts';
 
 export const INDICATOR_OPTIONS: IndicatorOption[] = [
     { value: 'SMA', label: 'Simple Moving Average (SMA)' },

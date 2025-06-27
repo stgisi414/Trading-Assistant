@@ -107,7 +107,7 @@ export const InputSection: React.FC<InputSectionProps> = ({
                             disabled={isLoading}
                         >
                             <option value="">Select a market</option>
-                            {marketOptions.map(option => (
+                            {marketOptions && marketOptions.map(option => (
                                 <option key={option.value} value={option.value}>{option.label}</option>
                             ))}
                         </select>
