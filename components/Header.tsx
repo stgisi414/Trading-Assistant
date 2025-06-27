@@ -8,8 +8,9 @@ interface ThemeToggleProps {
 const ThemeToggle: React.FC<ThemeToggleProps> = ({ theme, toggleTheme }) => (
     <button
         onClick={toggleTheme}
-        className="absolute top-1/2 -translate-y-1/2 right-4 p-2 rounded-full text-indigo-200 hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white transition-colors"
+        className="absolute top-4 right-4 z-20 p-3 rounded-full text-white hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white transition-colors cursor-pointer"
         aria-label="Toggle theme"
+        style={{ pointerEvents: 'auto' }}
     >
         {theme === 'light' ? (
             <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
@@ -29,8 +30,8 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme }) => {
     return (
         <header className="relative overflow-hidden mesh-gradient animate-gradient-xy text-white p-8 rounded-2xl shadow-2xl text-center card-glow sharp-corners">
             <div className="absolute inset-0 bg-black/10 dark:bg-white/5"></div>
+            <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
             <div className="relative z-10">
-                <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
                 <div className="animate-float">
                     <h1 className="text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white via-blue-100 to-purple-100 drop-shadow-lg">
                         AI-Powered Trading Assistant
