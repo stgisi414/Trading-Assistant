@@ -1,4 +1,3 @@
-
 import { GoogleGenAI, GenerateContentResponse } from "@google/genai";
 import type { AnalysisResult, HistoricalDataPoint, NewsArticle } from '../types.ts';
 import { Position } from '../types.ts';
@@ -13,17 +12,17 @@ const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 function createSearchTermsPrompt(assetSymbol: string): string {
     return `
     You are a financial research assistant. Generate 3-5 relevant search terms to find recent news articles about ${assetSymbol}.
-    
+
     The search terms should help find:
     - Recent company news and announcements
     - Financial performance and earnings
     - Market sentiment and analyst opinions
     - Industry trends affecting the company
     - Regulatory or economic factors
-    
+
     Return only the search terms, one per line, without any additional formatting or explanations.
     Focus on terms that would yield high-quality financial news results.
-    
+
     Asset Symbol: ${assetSymbol}
     `;
 }
@@ -72,7 +71,7 @@ function parseGeminiResponse(responseText: string): Omit<AnalysisResult, 'news'>
     const positionMatch = responseText.match(/Recommended Position:\s*(BUY|SELL|HOLD)/i);
     const confidenceMatch = responseText.match(/Confidence Level:\s*([\d\.]+%?)/);
     const reasoningMatch = responseText.match(/Detailed Reasoning:\s*([\s\S]*)/);
-    
+
     const reasoningText = reasoningMatch ? reasoningMatch[1].trim() : "No detailed reasoning provided.";
 
     const positionStr = positionMatch ? positionMatch[1].toUpperCase() : 'N/A';
@@ -98,7 +97,7 @@ export const generateSearchTerms = async (assetSymbol: string): Promise<string[]
         });
 
         const responseText = response.text;
-        
+
         if (!responseText) {
             console.warn("No search terms generated, using default terms");
             return [`${assetSymbol} news`, `${assetSymbol} earnings`, `${assetSymbol} stock`];
@@ -120,19 +119,33 @@ export const generateSearchTerms = async (assetSymbol: string): Promise<string[]
 
 export const getTradingPosition = async (
     assetSymbol: string,
+    historicalData: HistoricalDataPoint[],
     walletAmount: number,
     selectedIndicators: string[],
-    historicalData: HistoricalDataPoint[]
+    newsArticles: NewsArticle[],
+    openInterestAnalysis?: any
 ): Promise<AnalysisResult> => {
     try {
-        // Step 1: Generate search terms using Gemini
-        const searchTerms = await generateSearchTerms(assetSymbol);
-        
-        // Step 2: Search for news using Google Custom Search
-        const newsArticles = await searchNews(searchTerms);
-        
-        // Step 3: Analyze with enhanced prompt including news data
-        const prompt = createEnhancedGeminiPrompt(assetSymbol, walletAmount, selectedIndicators, historicalData, newsArticles);
+        const prompt = `You are a professional trading analyst. Analyze the following stock data for ${assetSymbol} and provide a trading recommendation.
+
+        Historical Data (last ${historicalData.length} data points):
+        ${JSON.stringify(historicalData.slice(-10), null, 2)}
+
+        Current wallet amount: $${walletAmount}
+        Technical indicators to analyze: ${selectedIndicators.join(', ')}
+
+        ${openInterestAnalysis ? `
+        Open Interest Analysis:
+        - Current Open Interest: ${openInterestAnalysis.currentOpenInterest?.toLocaleString()} contracts
+        - Trend: ${openInterestAnalysis.openInterestTrend}
+        - Speculative Ratio: ${openInterestAnalysis.speculativeRatio?.toFixed(2)}
+        - Market Sentiment: ${openInterestAnalysis.marketSentiment}
+        - Analysis: ${openInterestAnalysis.analysis}
+        ` : ''}
+
+        Recent news articles:
+        ${newsArticles.map((article, index) => `${index + 1}. ${article.title} - ${article.snippet || 'No snippet available'}`).join('\n')}
+        `;
 
         const response: GenerateContentResponse = await ai.models.generateContent({
             model: 'gemini-2.5-flash-preview-04-17',
@@ -143,13 +156,13 @@ export const getTradingPosition = async (
         });
 
         const responseText = response.text;
-        
+
         if (!responseText) {
             throw new Error("Received an empty response from Gemini API.");
         }
 
         const parsedResult = parseGeminiResponse(responseText);
-        
+
         return {
             ...parsedResult,
             news: newsArticles,

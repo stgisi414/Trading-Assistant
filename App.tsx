@@ -135,7 +135,7 @@ function App() {
 
         setIsLoading(true);
         setError(null);
-        
+
         const initialAnalyses: AssetAnalysis[] = selectedSymbols.map(symbol => ({
             symbol,
             isLoading: true,
@@ -149,12 +149,12 @@ function App() {
             const analysisPromises = selectedSymbols.map(async (symbol, index) => {
                 try {
                     const data = await fetchHistoricalData(symbol, selectedTimeframe, dates.startDate, dates.endDate);
-                    
+
                     setAnalyses(prev => prev.map(a => a.symbol === symbol ? { ...a, historicalData: data } : a));
 
                     const result = await getTradingPosition(symbol, parseFloat(walletAmount), selectedIndicators, data);
                     const patterns = await analyzeChartPatterns(symbol, data, selectedIndicators);
-                    
+
                     setAnalyses(prev => prev.map(a => a.symbol === symbol ? { 
                         ...a, 
                         isLoading: false, 
@@ -183,7 +183,7 @@ function App() {
             <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 via-amber-50/30 to-cyan-50/50 dark:from-blue-950/30 dark:via-amber-950/20 dark:to-cyan-950/30"></div>
             <div className="absolute top-0 left-1/4 w-96 h-96 bg-gradient-to-r from-blue-400/10 to-amber-500/10 rounded-full blur-3xl animate-pulse-slow"></div>
             <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-gradient-to-r from-cyan-400/10 to-indigo-500/10 rounded-full blur-3xl animate-pulse-slow animation-delay-2000"></div>
-            
+
             <div className="relative z-10 max-w-7xl mx-auto flex flex-col gap-8">
                 <Header theme={theme} toggleTheme={toggleTheme} />
                 <main className="flex flex-col gap-3">

@@ -10,6 +10,7 @@ if (!FMP_API_KEY) {
 const generateMockData = (symbol: string): HistoricalDataPoint[] => {
     const mockData: HistoricalDataPoint[] = [];
     let lastClose = 150 + Math.random() * 50; // Random starting point
+    let lastOpenInterest = Math.floor(Math.random() * 500000) + 100000; // Random starting open interest
     const today = new Date();
 
     for (let i = 29; i >= 0; i--) {
@@ -24,6 +25,10 @@ const generateMockData = (symbol: string): HistoricalDataPoint[] => {
         const high = Math.max(open, newClose) * (1 + Math.random() * volatility);
         const low = Math.min(open, newClose) * (1 - Math.random() * volatility);
         const volume = Math.floor(Math.random() * 10000000) + 1000000; // 1M to 11M volume
+        
+        // Generate open interest data (typically more stable than price)
+        const openInterestChange = (Math.random() - 0.5) * (lastOpenInterest * 0.1); // up to 10% change
+        const newOpenInterest = Math.max(50000, lastOpenInterest + openInterestChange);
 
         mockData.push({
             date: date.toISOString().split('T')[0],
@@ -31,10 +36,12 @@ const generateMockData = (symbol: string): HistoricalDataPoint[] => {
             high: high,
             low: low,
             close: newClose,
-            volume: volume
+            volume: volume,
+            openInterest: Math.floor(newOpenInterest)
         });
         
         lastClose = newClose;
+        lastOpenInterest = newOpenInterest;
     }
     return mockData;
 }
@@ -130,7 +137,8 @@ export const fetchHistoricalData = async (symbol: string, timeframe: string, fro
             high: d.high || d.close,
             low: d.low || d.close,
             close: d.close,
-            volume: d.volume || 0
+            volume: d.volume || 0,
+            openInterest: d.openInterest || 0
         })).reverse();
     } catch (error) {
         console.error(`Error fetching historical data for ${symbol}:`, error);

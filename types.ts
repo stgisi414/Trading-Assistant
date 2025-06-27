@@ -12,6 +12,14 @@ export interface HistoricalDataPoint {
     high?: number;
     low?: number;
     volume?: number;
+    openInterest?: number;
+}
+
+export interface OpenInterestData {
+    date: string;
+    openInterest: number;
+    change: number;
+    percentChange: number;
 }
 
 export interface NewsArticle {
@@ -28,6 +36,15 @@ export interface AnalysisResult {
     news: NewsArticle[];
     optionsAnalysis?: OptionsAnalysis;
     orderAnalysis?: OrderAnalysis;
+    openInterestAnalysis?: OpenInterestAnalysis;
+}
+
+export interface OpenInterestAnalysis {
+    currentOpenInterest: number;
+    openInterestTrend: 'INCREASING' | 'DECREASING' | 'STABLE';
+    speculativeRatio: number;
+    marketSentiment: 'BULLISH' | 'BEARISH' | 'NEUTRAL';
+    analysis: string;
 }
 
 export interface OptionsAnalysis {

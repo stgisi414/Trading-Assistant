@@ -6,6 +6,9 @@ import { NewsSection } from './NewsSection.tsx';
 import { Spinner } from './Spinner.tsx';
 import { ErrorMessage } from './ErrorMessage.tsx';
 import { PatternAnalysisSection } from './PatternAnalysisSection';
+import { OptionsAnalysisSection } from './OptionsAnalysisSection.tsx';
+import { OrderAnalysisSection } from './OrderAnalysisSection.tsx';
+import { OpenInterestSection } from './OpenInterestSection.tsx';
 
 interface AssetResultCardProps {
     analysis: AssetAnalysis;
@@ -13,14 +16,7 @@ interface AssetResultCardProps {
 }
 
 // Placeholder components for OptionsAnalysisSection and OrderAnalysisSection
-const OptionsAnalysisSection = ({ optionsAnalysis }: any) => {
-    return (
-        <div>
-            <h3>Options Analysis</h3>
-            <p>{JSON.stringify(optionsAnalysis)}</p>
-        </div>
-    );
-};
+
 
 const OrderAnalysisSection = ({ orderAnalysis }: any) => {
     return (
@@ -62,6 +58,7 @@ export const AssetResultCard: React.FC<AssetResultCardProps> = ({ analysis, them
                     {analysis.patternDetails && analysis.patternDetails.length > 0 && (
                         <PatternAnalysisSection patterns={analysis.patternDetails} theme={theme} />
                     )}
+                        <OpenInterestSection />
                 </div>
             );
         }
