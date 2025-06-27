@@ -229,8 +229,3 @@ Format the options analysis as a JSON object with this structure:
         throw new Error("An unknown error occurred while contacting the Gemini API.");
     }
 };
-```
-
-```
-Added a safety check for openInterestAnalysis before using it in the prompt string.
-```
