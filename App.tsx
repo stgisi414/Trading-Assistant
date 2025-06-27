@@ -165,7 +165,20 @@ function App() {
         try {
             const analysisPromises = selectedSymbols.map(async (symbol, index) => {
                 try {
-                    const data = await fetchHistoricalData(symbol, selectedTimeframe, dates.startDate, dates.endDate);
+                    // Fetch historical data
+                    const historicalData = await fetchHistoricalData(symbol, selectedTimeframe, dates.startDate, dates.endDate);
+
+                    if (!historicalData || historicalData.length === 0) {
+                        console.warn(`No data available for ${symbol}, skipping analysis`);
+                        setAnalyses(prev => prev.map(a => a.symbol === symbol ? { ...a, isLoading: false, error: `No data available for ${symbol}` } : a));
+                        return;
+                    }
+
+                    // Log data source for user awareness
+                    const isLikelyMockData = historicalData.length <= 50 && historicalData.every(d => d.openInterest > 50000);
+                    if (isLikelyMockData) {
+                        console.log(`Using simulated data for ${symbol} - markets may be closed or data unavailable`);
+                    }
 
                     setAnalyses(prev => prev.map(a => a.symbol === symbol ? { ...a, historicalData: data } : a));
 
