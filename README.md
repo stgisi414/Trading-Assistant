@@ -1,13 +1,14 @@
-## Running React on Replit
+# Run and deploy your AI Studio app
 
-[React](https://reactjs.org/) is a popular JavaScript library for building user interfaces.
+This contains everything you need to run your app locally.
 
-[Vite](https://vitejs.dev/) is a blazing fast frontend build tool that includes features like Hot Module Reloading (HMR), optimized builds, and TypeScript support out of the box.
+## Run Locally
 
-Using the two in conjunction is one of the fastest ways to build a web app.
+**Prerequisites:**  Node.js
 
-### Getting Started
-- Hit run
-- Edit [App.tsx](#src/App.tsx) and watch it live update!
 
-By default, Replit runs the `dev` script, but you can configure it by changing the `run` field in the [configuration file](#.replit). Here are the vite docs for [serving production websites](https://vitejs.dev/guide/build.html)
+1. Install dependencies:
+   `npm install`
+2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
+3. Run the app:
+   `npm run dev`

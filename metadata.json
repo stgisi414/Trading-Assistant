@@ -1,0 +1,6 @@
+{
+  "name": "Gemini Powered Trading Assistant",
+  "description": "An AI-powered web application that analyzes financial market indicators and real-time news to generate trading position recommendations. It uses the Gemini API for analysis and D3.js for data visualization.",
+  "requestFramePermissions": [],
+  "prompt": ""
+}
