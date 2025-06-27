@@ -34,7 +34,11 @@ function createEnhancedGeminiPrompt(
     historicalData: HistoricalDataPoint[],
     newsArticles: NewsArticle[]
 ): string {
-    const historicalDataString = historicalData.map(d => `${d.date}: ${d.close.toFixed(2)}`).join(", ");
+    // Ensure historicalData is always an array and has valid data
+    const dataArray = Array.isArray(historicalData) ? historicalData : [];
+    const historicalDataString = dataArray.length > 0 
+        ? dataArray.map(d => `${d.date}: ${d.close?.toFixed(2) || 'N/A'}`).join(", ")
+        : "No historical data available";
     const newsString = newsArticles.length > 0 
         ? newsArticles.map(article => `Title: ${article.title}\nSource: ${article.source || 'Unknown'}\nSummary: ${article.snippet || 'No summary available'}\nURL: ${article.uri}`).join("\n\n")
         : "No recent news articles found.";
@@ -129,10 +133,14 @@ export const getTradingPosition = async (
     includePutOptions?: boolean
 ): Promise<AnalysisResult> => {
     try {
+        // Ensure historicalData is always an array
+        const dataArray = Array.isArray(historicalData) ? historicalData : [];
+        const lastTenDataPoints = dataArray.length > 0 ? dataArray.slice(-10) : [];
+        
         let prompt = `You are a professional trading analyst. Analyze the following stock data for ${assetSymbol} and provide a trading recommendation.
 
-        Historical Data (last ${historicalData.length} data points):
-        ${JSON.stringify(historicalData.slice(-10), null, 2)}
+        Historical Data (last ${dataArray.length} data points):
+        ${JSON.stringify(lastTenDataPoints, null, 2)}
 
         Current wallet amount: $${walletAmount}
         Technical indicators to analyze: ${selectedIndicators.join(', ')}
