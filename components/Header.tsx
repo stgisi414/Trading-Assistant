@@ -28,7 +28,7 @@ interface HeaderProps {
 
 export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme }) => {
     return (
-        <header className="relative overflow-hidden mesh-gradient animate-gradient-xy text-white p-8 shadow-2xl text-center card-glow" style={{clipPath: 'polygon(20px 0%, 100% 0%, calc(100% - 20px) 100%, 0% 100%)'}}>
+        <header className="relative overflow-hidden mesh-gradient animate-gradient-xy text-white p-8 shadow-2xl text-center card-glow border-4 border-gray-800" style={{clipPath: 'polygon(20px 0%, 100% 0%, calc(100% - 20px) 100%, 0% 100%)'}}>
             <div className="absolute inset-0 bg-black/10 dark:bg-white/5"></div>
             <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
             <div className="relative z-10">
