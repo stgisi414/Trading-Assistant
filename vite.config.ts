@@ -1,4 +1,3 @@
-
 import path from 'path';
 import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
@@ -13,7 +12,7 @@ export default defineConfig(({ mode }) => {
         'process.env.NEWS_CUSTOM_SEARCH_CX': JSON.stringify(env.NEWS_CUSTOM_SEARCH_CX || process.env.NEWS_CUSTOM_SEARCH_CX),
         'process.env.GOOGLE_CUSTOM_SEARCH_API_KEY': JSON.stringify(env.GOOGLE_CUSTOM_SEARCH_API_KEY || process.env.GOOGLE_CUSTOM_SEARCH_API_KEY)
       },
-      
+
       resolve: {
         alias: {
           '@': path.resolve(__dirname, '.'),
@@ -27,6 +26,14 @@ export default defineConfig(({ mode }) => {
       preview: {
         host: '0.0.0.0',
         port: 5173
-      }
+      },
+  css: {
+    postcss: {
+      plugins: [
+        require('tailwindcss'),
+        require('autoprefixer'),
+      ],
+    },
+  },
     };
 });
