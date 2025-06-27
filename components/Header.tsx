@@ -33,7 +33,7 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme }) => {
             <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
             <div className="relative z-10">
                 <div className="animate-float">
-                    <h1 className="text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white via-blue-100 to-amber-100 drop-shadow-lg">
+                    <h1 className="text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white via-cyan-100 to-blue-100 drop-shadow-lg">
                         AI-Powered Trading Assistant
                     </h1>
                     <div className="flex items-center justify-center gap-2 mt-3">
@@ -42,8 +42,8 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme }) => {
                         <div className="w-2 h-2 bg-amber-400 rounded-full animate-pulse animation-delay-300"></div>
                     </div>
                 </div>
-                <div className="absolute top-4 left-4 w-16 h-16 bg-gradient-to-br from-cyan-400/20 to-amber-500/20 rounded-full blur-xl animate-pulse-slow"></div>
-                <div className="absolute bottom-4 right-4 w-12 h-12 bg-gradient-to-br from-blue-400/20 to-yellow-500/20 rounded-full blur-lg animate-pulse-slow animation-delay-1000"></div>
+                <div className="absolute top-4 left-4 w-16 h-16 bg-gradient-to-br from-cyan-400/20 to-blue-500/20 rounded-full blur-xl animate-pulse-slow"></div>
+                <div className="absolute bottom-4 right-4 w-12 h-12 bg-gradient-to-br from-blue-400/20 to-cyan-500/20 rounded-full blur-lg animate-pulse-slow animation-delay-1000"></div>
             </div>
         </header>
     );
