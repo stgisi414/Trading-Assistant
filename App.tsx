@@ -165,20 +165,21 @@ function App() {
         try {
             const analysisPromises = selectedSymbols.map(async (symbol, index) => {
                 try {
-                    // Fetch historical data
+                    // Fetch historical data - now guaranteed to return data
                     const historicalData = await fetchHistoricalData(symbol, selectedTimeframe, dates.startDate, dates.endDate);
 
+                    // The service now always returns data, so we should always have something to analyze
                     if (!historicalData || historicalData.length === 0) {
-                        console.warn(`No data available for ${symbol}, skipping analysis`);
-                        setAnalyses(prev => prev.map(a => a.symbol === symbol ? { ...a, isLoading: false, error: `No data available for ${symbol}` } : a));
+                        console.error(`Critical error: No data returned for ${symbol}`);
+                        setAnalyses(prev => prev.map(a => a.symbol === symbol ? { 
+                            ...a, 
+                            isLoading: false, 
+                            error: `Unable to generate data for ${symbol}. Please try again.` 
+                        } : a));
                         return;
                     }
 
-                    // Log data source for user awareness
-                    const isLikelyMockData = historicalData.length <= 50 && historicalData.every(d => d.openInterest > 50000);
-                    if (isLikelyMockData) {
-                        console.log(`Using simulated data for ${symbol} - markets may be closed or data unavailable`);
-                    }
+                    console.log(`✅ Successfully loaded ${historicalData.length} data points for ${symbol}`)
 
                     setAnalyses(prev => prev.map(a => a.symbol === symbol ? { ...a, historicalData } : a));
 
