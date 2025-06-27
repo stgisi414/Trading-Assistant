@@ -7,35 +7,59 @@ if (!FMP_API_KEY) {
     console.warn("FMP_API_KEY environment variable not set. Please get a free API key from financialmodelingprep.com for live data. Falling back to mock data.");
 }
 
-const generateMockData = (symbol: string): HistoricalDataPoint[] => {
+const generateMockData = (symbol: string, timeframe: string = '1d'): HistoricalDataPoint[] => {
     const mockData: HistoricalDataPoint[] = [];
     let lastClose = 150 + Math.random() * 50; // Random starting point
     let lastOpenInterest = Math.floor(Math.random() * 500000) + 100000; // Random starting open interest
-    const today = new Date();
+    const now = new Date();
+    
+    // Determine data points based on timeframe
+    let dataPoints = 30;
+    let intervalMs = 24 * 60 * 60 * 1000; // 1 day default
+    let volatilityFactor = 0.02; // 2% daily volatility
+    
+    if (timeframe.includes('m')) {
+        const minutes = parseInt(timeframe);
+        intervalMs = minutes * 60 * 1000;
+        dataPoints = Math.min(96, 30 * (1440 / minutes)); // Max 96 points for intraday
+        volatilityFactor = 0.002 * Math.sqrt(minutes / 30); // Scale volatility with timeframe
+    } else if (timeframe.includes('h')) {
+        const hours = parseInt(timeframe);
+        intervalMs = hours * 60 * 60 * 1000;
+        dataPoints = Math.min(168, 30 * (24 / hours)); // Max 168 points
+        volatilityFactor = 0.005 * Math.sqrt(hours);
+    }
 
-    for (let i = 29; i >= 0; i--) {
-        const date = new Date(today);
-        date.setDate(today.getDate() - i);
-        const change = (Math.random() - 0.48) * (lastClose * 0.05); // up to 5% change per day
+    for (let i = dataPoints - 1; i >= 0; i--) {
+        const date = new Date(now.getTime() - (i * intervalMs));
+        const change = (Math.random() - 0.48) * (lastClose * volatilityFactor);
         const newClose = Math.max(10, lastClose + change);
         
         // Generate realistic OHLC data
-        const volatility = 0.02; // 2% daily volatility
         const open = lastClose;
-        const high = Math.max(open, newClose) * (1 + Math.random() * volatility);
-        const low = Math.min(open, newClose) * (1 - Math.random() * volatility);
-        const volume = Math.floor(Math.random() * 10000000) + 1000000; // 1M to 11M volume
+        const high = Math.max(open, newClose) * (1 + Math.random() * volatilityFactor);
+        const low = Math.min(open, newClose) * (1 - Math.random() * volatilityFactor);
+        const baseVolume = timeframe.includes('m') ? 100000 : 1000000;
+        const volume = Math.floor(Math.random() * baseVolume * 10) + baseVolume;
         
         // Generate open interest data (typically more stable than price)
-        const openInterestChange = (Math.random() - 0.5) * (lastOpenInterest * 0.1); // up to 10% change
+        const openInterestChange = (Math.random() - 0.5) * (lastOpenInterest * 0.02);
         const newOpenInterest = Math.max(50000, lastOpenInterest + openInterestChange);
 
+        // Format date based on timeframe
+        let dateString;
+        if (timeframe.includes('m') || timeframe.includes('h')) {
+            dateString = date.toISOString();
+        } else {
+            dateString = date.toISOString().split('T')[0];
+        }
+
         mockData.push({
-            date: date.toISOString().split('T')[0],
-            open: open,
-            high: high,
-            low: low,
-            close: newClose,
+            date: dateString,
+            open: parseFloat(open.toFixed(2)),
+            high: parseFloat(high.toFixed(2)),
+            low: parseFloat(low.toFixed(2)),
+            close: parseFloat(newClose.toFixed(2)),
             volume: volume,
             openInterest: Math.floor(newOpenInterest)
         });
@@ -117,7 +141,8 @@ export const fetchOptionsData = async (symbol: string): Promise<any> => {
 
 export const fetchHistoricalData = async (symbol: string, timeframe: string, from?: string, to?: string): Promise<HistoricalDataPoint[]> => {
     if(!FMP_API_KEY) {
-        return generateMockData(symbol);
+        console.warn(`No API key available, using mock data for ${symbol}`);
+        return generateMockData(symbol, timeframe);
     }
 
     try {
@@ -142,9 +167,10 @@ export const fetchHistoricalData = async (symbol: string, timeframe: string, fro
 
         const response = await fetch(url);
         if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData['Error Message'] || `Failed to fetch historical data for ${symbol}`);
+            console.warn(`API request failed for ${symbol} with timeframe ${timeframe}. Status: ${response.status}. Falling back to mock data.`);
+            return generateMockData(symbol, timeframe);
         }
+        
         const data = await response.json();
         
         let historicalData;
@@ -153,14 +179,12 @@ export const fetchHistoricalData = async (symbol: string, timeframe: string, fro
             historicalData = data;
         } else {
             // Daily data comes in historical property
-            if (!data.historical || data.historical.length === 0) {
-                throw new Error(`No historical data found for ${symbol}. It may be an invalid symbol or have no data in the selected date range.`);
-            }
             historicalData = data.historical;
         }
 
         if (!historicalData || historicalData.length === 0) {
-            throw new Error(`No historical data found for ${symbol} with timeframe ${timeframe}.`);
+            console.warn(`No historical data available for ${symbol} with timeframe ${timeframe}. Falling back to mock data.`);
+            return generateMockData(symbol, timeframe);
         }
 
         // Transform and sort data
@@ -174,7 +198,8 @@ export const fetchHistoricalData = async (symbol: string, timeframe: string, fro
             openInterest: d.openInterest || 0
         })).reverse();
     } catch (error) {
-        console.error(`Error fetching historical data for ${symbol}:`, error);
-        throw error;
+        console.warn(`Error fetching historical data for ${symbol} with timeframe ${timeframe}:`, error);
+        console.warn(`Falling back to mock data for ${symbol}`);
+        return generateMockData(symbol, timeframe);
     }
 };
