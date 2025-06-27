@@ -1,8 +1,8 @@
 import React from 'react';
-import type { IndicatorOption, TimeframeOption, MarketType, MarketOption } from '../types.ts';
+import type { IndicatorOption, TimeframeOption, MarketOption } from '../types.ts';
+import { MarketType } from '../types.ts';
 import { SymbolSearchInput } from './SymbolSearchInput.tsx';
 import { Spinner } from './Spinner.tsx';
-import { MarketType as MarketTypeEnum } from '../types.ts';
 
 interface TimeframeOption {
     value: string;
@@ -29,8 +29,8 @@ interface InputSectionProps {
     timeframeOptions: TimeframeOption[];
     selectedMarketType: MarketType;
     setSelectedMarketType: (marketType: MarketType) => void;
-    selectedMarket: MarketOption | null;
-    setSelectedMarket: (market: MarketOption | null) => void;
+    selectedMarket: string;
+    setSelectedMarket: (market: string) => void;
     marketOptions: MarketOption[];
     includeOptionsAnalysis: boolean;
     setIncludeOptionsAnalysis: (include: boolean) => void;
@@ -93,10 +93,10 @@ export const InputSection: React.FC<InputSectionProps> = ({
                             className={inputClasses}
                             disabled={isLoading}
                         >
-                            <option value={MarketTypeEnum.INTERNATIONAL_MARKETS}>International Markets</option>
-                            <option value={MarketTypeEnum.COMMODITIES}>Commodities</option>
-                            <option value={MarketTypeEnum.CRYPTO}>Crypto</option>
-                            <option value={MarketTypeEnum.FOREX}>Forex</option>
+                            <option value={MarketType.STOCKS}>International Markets</option>
+                            <option value={MarketType.COMMODITIES}>Commodities</option>
+                            <option value={MarketType.CRYPTO}>Crypto</option>
+                            <option value={MarketType.FOREX}>Forex</option>
                         </select>
                     </div>
 
@@ -104,11 +104,9 @@ export const InputSection: React.FC<InputSectionProps> = ({
                         <label htmlFor="marketSelect" className={labelClasses}>Market</label>
                         <select
                             id="marketSelect"
-                            value={selectedMarket ? selectedMarket.value : ''}
+                            value={selectedMarket || ''}
                             onChange={(e) => {
-                                const selectedValue = e.target.value;
-                                const selectedOption = marketOptions.find(option => option.value === selectedValue) || null;
-                                setSelectedMarket(selectedOption);
+                                setSelectedMarket(e.target.value);
                             }}
                             className={inputClasses}
                             disabled={isLoading}
