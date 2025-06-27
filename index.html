@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -85,7 +84,7 @@
                 }
             }
         }
-        
+
         // Dark mode will be handled by React App component
     </script>
     <style>
@@ -94,27 +93,27 @@
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
-        
+
         .dark .glass-effect {
             background: rgba(0, 0, 0, 0.2);
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
-        
+
         .mesh-gradient {
             background: linear-gradient(-45deg, #4f46e5, #0ea5e9, #06b6d4, #10b981);
             background-size: 400% 400%;
         }
-        
+
         .dark .mesh-gradient {
             background: linear-gradient(-45deg, #3b82f6, #1d4ed8, #0891b2, #059669);
             background-size: 400% 400%;
         }
-        
+
         .card-glow {
             position: relative;
             overflow: hidden;
         }
-        
+
         .card-glow::before {
             content: '';
             position: absolute;
@@ -125,29 +124,29 @@
             background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
             transition: left 0.5s ease;
         }
-        
+
         .card-glow:hover::before {
             left: 100%;
         }
-        
+
         .geometric-bg {
             background-image: 
                 radial-gradient(circle at 25% 25%, rgba(99, 102, 241, 0.1) 0%, transparent 50%),
                 radial-gradient(circle at 75% 75%, rgba(139, 92, 246, 0.1) 0%, transparent 50%),
                 radial-gradient(circle at 50% 50%, rgba(59, 130, 246, 0.05) 0%, transparent 50%);
         }
-        
+
         .dark .geometric-bg {
             background-image: 
                 radial-gradient(circle at 25% 25%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
                 radial-gradient(circle at 75% 75%, rgba(139, 92, 246, 0.15) 0%, transparent 50%),
                 radial-gradient(circle at 50% 50%, rgba(59, 130, 246, 0.1) 0%, transparent 50%);
         }
-        
+
         .sharp-corners {
             clip-path: polygon(10px 0%, 100% 0%, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0% 100%, 0% 10px);
         }
-        
+
         .neural-network {
             background-image: 
                 linear-gradient(45deg, transparent 40%, rgba(99, 102, 241, 0.1) 50%, transparent 60%),
@@ -155,7 +154,17 @@
             background-size: 60px 60px;
         }
     </style>
-    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='currentColor' class='w-6 h-6'%3E%3Cpath fill-rule='evenodd' d='M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25ZM12.75 6a.75.75 0 0 0-1.5 0v6c0 .414.336.75.75.75H18a.75.75 0 0 0 0-1.5h-4.5V6Z' clip-rule='evenodd' /%3E%3C/svg%3E%0A">
+    <!-- Favicon -->
+    <link rel="icon" href="/favicon.ico" sizes="32x32">
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+
+    <!-- PWA -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#cccccc">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Signatex">
 </head>
 <body class="bg-gray-100 dark:bg-gray-900 transition-colors duration-300 font-inter geometric-bg neural-network min-h-screen">
     <div id="root"></div>
