@@ -27,11 +27,26 @@ function App() {
         }
         return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
     });
-    const [selectedSymbols, setSelectedSymbols] = useState<string[]>(['AAPL']);
-    const [walletAmount, setWalletAmount] = useState('10000');
-    const [selectedIndicators, setSelectedIndicators] = useState<string[]>(['SMA', 'RSI', 'Volume']);
-    const [selectedTimeframe, setSelectedTimeframe] = useState<string>('1M');
-    const [dates, setDates] = useState(getInitialDates());
+    const [selectedSymbols, setSelectedSymbols] = useState<string[]>(() => {
+        const saved = localStorage.getItem('tradingApp_selectedSymbols');
+        return saved ? JSON.parse(saved) : ['AAPL'];
+    });
+    const [walletAmount, setWalletAmount] = useState(() => {
+        const saved = localStorage.getItem('tradingApp_walletAmount');
+        return saved || '10000';
+    });
+    const [selectedIndicators, setSelectedIndicators] = useState<string[]>(() => {
+        const saved = localStorage.getItem('tradingApp_selectedIndicators');
+        return saved ? JSON.parse(saved) : ['SMA', 'RSI', 'Volume'];
+    });
+    const [selectedTimeframe, setSelectedTimeframe] = useState<string>(() => {
+        const saved = localStorage.getItem('tradingApp_selectedTimeframe');
+        return saved || '1M';
+    });
+    const [dates, setDates] = useState(() => {
+        const saved = localStorage.getItem('tradingApp_dates');
+        return saved ? JSON.parse(saved) : getInitialDates();
+    });
     const [analyses, setAnalyses] = useState<AssetAnalysis[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -41,6 +56,27 @@ function App() {
         root.classList.remove(theme === 'light' ? 'dark' : 'light');
         root.classList.add(theme);
     }, [theme]);
+
+    // Save input data to localStorage whenever it changes
+    useEffect(() => {
+        localStorage.setItem('tradingApp_selectedSymbols', JSON.stringify(selectedSymbols));
+    }, [selectedSymbols]);
+
+    useEffect(() => {
+        localStorage.setItem('tradingApp_walletAmount', walletAmount);
+    }, [walletAmount]);
+
+    useEffect(() => {
+        localStorage.setItem('tradingApp_selectedIndicators', JSON.stringify(selectedIndicators));
+    }, [selectedIndicators]);
+
+    useEffect(() => {
+        localStorage.setItem('tradingApp_selectedTimeframe', selectedTimeframe);
+    }, [selectedTimeframe]);
+
+    useEffect(() => {
+        localStorage.setItem('tradingApp_dates', JSON.stringify(dates));
+    }, [dates]);
 
     const toggleTheme = () => {
         setTheme(prev => {
