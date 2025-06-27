@@ -13,7 +13,8 @@ export interface HistoricalDataPoint {
 export interface NewsArticle {
     title: string;
     uri: string;
-    snippet?: string; // Snippet from grounding might not be available
+    snippet?: string;
+    source?: string;
 }
 
 export interface AnalysisResult {
