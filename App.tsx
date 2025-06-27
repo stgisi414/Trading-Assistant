@@ -5,7 +5,8 @@ import { ResultsSection } from './components/ResultsSection.tsx';
 import { getTradingPosition } from './services/geminiService.ts';
 import { fetchHistoricalData } from './services/marketDataService.ts';
 import { analyzeChartPatterns } from './services/patternAnalysisService.ts';
-import type { AnalysisResult, HistoricalDataPoint, AssetAnalysis, MarketType } from './types.ts';
+import type { AnalysisResult, HistoricalDataPoint, AssetAnalysis } from './types.ts';
+import { MarketType } from './types.ts';
 import { INDICATOR_OPTIONS, NON_TECHNICAL_INDICATOR_OPTIONS, TIMEFRAME_OPTIONS, MARKET_OPTIONS } from './constants.ts';
 import { ErrorMessage } from './components/ErrorMessage.tsx';
 
