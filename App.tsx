@@ -5,7 +5,7 @@ import { ResultsSection } from './components/ResultsSection.tsx';
 import { getTradingPosition } from './services/geminiService.ts';
 import { fetchHistoricalData } from './services/marketDataService.ts';
 import type { AnalysisResult, HistoricalDataPoint, AssetAnalysis } from './types.ts';
-import { INDICATOR_OPTIONS, TIMEFRAME_OPTIONS } from './constants.ts';
+import { INDICATOR_OPTIONS, NON_TECHNICAL_INDICATOR_OPTIONS, TIMEFRAME_OPTIONS } from './constants.ts';
 import { ErrorMessage } from './components/ErrorMessage.tsx';
 
 const getInitialDates = () => {
@@ -38,6 +38,10 @@ function App() {
     const [selectedIndicators, setSelectedIndicators] = useState<string[]>(() => {
         const saved = localStorage.getItem('tradingApp_selectedIndicators');
         return saved ? JSON.parse(saved) : ['SMA', 'RSI', 'Volume'];
+    });
+    const [selectedNonTechnicalIndicators, setSelectedNonTechnicalIndicators] = useState<string[]>(() => {
+        const saved = localStorage.getItem('tradingApp_selectedNonTechnicalIndicators');
+        return saved ? JSON.parse(saved) : [];
     });
     const [selectedTimeframe, setSelectedTimeframe] = useState<string>(() => {
         const saved = localStorage.getItem('tradingApp_selectedTimeframe');
@@ -85,6 +89,10 @@ function App() {
     useEffect(() => {
         localStorage.setItem('tradingApp_selectedIndicators', JSON.stringify(selectedIndicators));
     }, [selectedIndicators]);
+
+    useEffect(() => {
+        localStorage.setItem('tradingApp_selectedNonTechnicalIndicators', JSON.stringify(selectedNonTechnicalIndicators));
+    }, [selectedNonTechnicalIndicators]);
 
     useEffect(() => {
         localStorage.setItem('tradingApp_selectedTimeframe', selectedTimeframe);
@@ -187,6 +195,9 @@ function App() {
                                 selectedIndicators={selectedIndicators}
                                 setSelectedIndicators={setSelectedIndicators}
                                 indicatorOptions={INDICATOR_OPTIONS}
+                                selectedNonTechnicalIndicators={selectedNonTechnicalIndicators}
+                                setSelectedNonTechnicalIndicators={setSelectedNonTechnicalIndicators}
+                                nonTechnicalIndicatorOptions={NON_TECHNICAL_INDICATOR_OPTIONS}
                                 selectedTimeframe={selectedTimeframe}
                                 setSelectedTimeframe={setSelectedTimeframe}
                                 timeframeOptions={TIMEFRAME_OPTIONS}

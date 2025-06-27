@@ -12,6 +12,22 @@ export const INDICATOR_OPTIONS: IndicatorOption[] = [
     { value: 'Volatility', label: 'Volatility' },
 ];
 
+export const NON_TECHNICAL_INDICATOR_OPTIONS: IndicatorOption[] = [
+    { value: 'PE_Ratio', label: 'Price-to-Earnings Ratio (P/E)' },
+    { value: 'PEG_Ratio', label: 'Price/Earnings to Growth (PEG)' },
+    { value: 'Price_to_Book', label: 'Price-to-Book Ratio (P/B)' },
+    { value: 'Debt_to_Equity', label: 'Debt-to-Equity Ratio' },
+    { value: 'ROE', label: 'Return on Equity (ROE)' },
+    { value: 'Revenue_Growth', label: 'Revenue Growth Rate' },
+    { value: 'Earnings_Growth', label: 'Earnings Growth Rate' },
+    { value: 'Free_Cash_Flow', label: 'Free Cash Flow' },
+    { value: 'Analyst_Ratings', label: 'Analyst Ratings & Price Targets' },
+    { value: 'Insider_Trading', label: 'Insider Trading Activity' },
+    { value: 'Social_Sentiment', label: 'Social Media Sentiment' },
+    { value: 'Economic_Indicators', label: 'Economic Indicators' },
+    { value: 'Sector_Performance', label: 'Sector Relative Performance' },
+];
+
 export const TIMEFRAME_OPTIONS: TimeframeOption[] = [
     // Minutes
     { value: '5m', label: '5 Minutes', duration: 5 },

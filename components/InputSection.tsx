@@ -20,6 +20,9 @@ interface InputSectionProps {
     selectedIndicators: string[];
     setSelectedIndicators: (indicators: string[]) => void;
     indicatorOptions: IndicatorOption[];
+    selectedNonTechnicalIndicators: string[];
+    setSelectedNonTechnicalIndicators: (indicators: string[]) => void;
+    nonTechnicalIndicatorOptions: IndicatorOption[];
     selectedTimeframe: string;
     setSelectedTimeframe: (timeframe: string) => void;
     timeframeOptions: TimeframeOption[];
@@ -47,6 +50,9 @@ export const InputSection: React.FC<InputSectionProps> = ({
     selectedIndicators,
     setSelectedIndicators,
     indicatorOptions,
+    selectedNonTechnicalIndicators,
+    setSelectedNonTechnicalIndicators,
+    nonTechnicalIndicatorOptions,
     selectedTimeframe,
     setSelectedTimeframe,
     timeframeOptions,
@@ -59,11 +65,16 @@ export const InputSection: React.FC<InputSectionProps> = ({
     includeOrderAnalysis,
     setIncludeOrderAnalysis,
     onAnalyze,
-    isLoading,
+    isLoading
 }) => {
-    const handleIndicatorChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-        const options = Array.from(event.target.selectedOptions, option => option.value);
-        setSelectedIndicators(options);
+    const handleIndicatorChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const selected = Array.from(e.target.selectedOptions, option => option.value);
+        setSelectedIndicators(selected);
+    };
+
+    const handleNonTechnicalIndicatorChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const selected = Array.from(e.target.selectedOptions, option => option.value);
+        setSelectedNonTechnicalIndicators(selected);
     };
 
     const handleAddSymbol = (symbol: string) => {
@@ -115,6 +126,21 @@ export const InputSection: React.FC<InputSectionProps> = ({
                             disabled={isLoading}
                         >
                             {indicatorOptions.map(option => (
+                                <option key={option.value} value={option.value}>{option.label}</option>
+                            ))}
+                        </select>
+                    </div>
+                    <div>
+                        <label htmlFor="nonTechnicalIndicatorSelect" className={labelClasses}>Non-Technical Indicators (multi-select)</label>
+                        <select
+                            id="nonTechnicalIndicatorSelect"
+                            multiple
+                            value={selectedNonTechnicalIndicators}
+                            onChange={handleNonTechnicalIndicatorChange}
+                            className={`${inputClasses} h-40`}
+                            disabled={isLoading}
+                        >
+                            {nonTechnicalIndicatorOptions.map(option => (
                                 <option key={option.value} value={option.value}>{option.label}</option>
                             ))}
                         </select>
