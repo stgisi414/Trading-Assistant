@@ -19,7 +19,14 @@ const getInitialDates = () => {
 };
 
 function App() {
-    const [theme, setTheme] = useState<'light' | 'dark'>('light');
+    const [theme, setTheme] = useState<'light' | 'dark'>(() => {
+        // Initialize theme from localStorage or system preference
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'dark' || savedTheme === 'light') {
+            return savedTheme;
+        }
+        return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    });
     const [selectedSymbols, setSelectedSymbols] = useState<string[]>(['AAPL']);
     const [walletAmount, setWalletAmount] = useState('10000');
     const [selectedIndicators, setSelectedIndicators] = useState<string[]>(['SMA', 'RSI', 'Volume']);
@@ -34,7 +41,13 @@ function App() {
         root.classList.add(theme);
     }, [theme]);
 
-    const toggleTheme = () => setTheme(prev => prev === 'light' ? 'dark' : 'light');
+    const toggleTheme = () => {
+        setTheme(prev => {
+            const newTheme = prev === 'light' ? 'dark' : 'light';
+            localStorage.setItem('theme', newTheme);
+            return newTheme;
+        });
+    };
 
     const handleAnalyze = useCallback(async () => {
         if (selectedSymbols.length === 0 || !walletAmount || parseFloat(walletAmount) <= 0 || selectedIndicators.length === 0) {
