@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -46,7 +45,7 @@ export const SignatexChatbot: React.FC<SignatexChatbotProps> = ({
                 console.error('Failed to parse chat history:', error);
             }
         }
-        
+
         return [
             {
                 id: '1',
@@ -201,12 +200,12 @@ Run an analysis first, then ask me to explain your specific results!`;
 
             // Generate detailed analysis of current results
             let resultsSummary = `## Your Current Analysis Results 📊\n\n`;
-            
+
             context.analysisDetails.forEach(result => {
                 resultsSummary += `**${result.symbol}:**\n`;
                 resultsSummary += `- Position: **${result.position}** (${result.confidence} confidence)\n`;
                 resultsSummary += `- Analysis: ${result.reasoning}\n`;
-                
+
                 if (result.hasPatterns) {
                     resultsSummary += `- ✅ Chart patterns detected\n`;
                 }
@@ -266,7 +265,7 @@ This data helps confirm or contradict your technical analysis signals.`;
 
         if (lowerMessage.includes('wallet') || lowerMessage.includes('amount') || lowerMessage.includes('money')) {
             const currentWallet = parseFloat(currentInputs?.walletAmount || '0');
-            
+
             return `## Wallet Amount & Risk Management 💰
 
 **Your Current Wallet:** $${currentWallet.toLocaleString()}
@@ -339,7 +338,7 @@ Patterns work best when combined with other technical indicators!`;
 
         // Enhanced default response with context awareness
         let defaultResponse = `## I'm here to help! 🤝\n\n`;
-        
+
         // Add context about current state
         if (context.hasResults) {
             defaultResponse += `I see you have analysis results for ${context.results} asset(s). `;
@@ -372,7 +371,7 @@ Patterns work best when combined with other technical indicators!`;
             defaultResponse += `- "Is my wallet amount appropriate?"\n`;
             defaultResponse += `- "How should I analyze ${currentInputs?.selectedSymbols?.join(' and ') || 'these assets'}?"\n`;
         }
-        
+
         defaultResponse += `\nWhat would you like to know?`;
 
         return defaultResponse;
@@ -460,7 +459,7 @@ Patterns work best when combined with other technical indicators!`;
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                             </svg>
                         </button>
-                    
+                    </div>
                 </div>
 
                 {/* Messages */}
@@ -502,7 +501,7 @@ Patterns work best when combined with other technical indicators!`;
                             </div>
                         </div>
                     ))}
-                    
+
                     {isThinking && (
                         <div className="flex justify-start">
                             <div className="bg-gray-100 dark:bg-gray-700 rounded-2xl px-4 py-3">
@@ -544,7 +543,6 @@ Patterns work best when combined with other technical indicators!`;
                     </div>
                 </div>
             </div>
-        </div>
         </div>
     );
 };
