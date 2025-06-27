@@ -82,26 +82,33 @@ function App() {
     }, [selectedSymbols, walletAmount, selectedIndicators, dates]);
 
     return (
-        <div className="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200 min-h-screen p-4 sm:p-6 md:p-8">
-            <div className="max-w-7xl mx-auto flex flex-col gap-8">
+        <div className="text-gray-800 dark:text-gray-200 min-h-screen p-4 sm:p-6 md:p-8 relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 via-purple-50/30 to-cyan-50/50 dark:from-blue-950/30 dark:via-purple-950/20 dark:to-cyan-950/30"></div>
+            <div className="absolute top-0 left-1/4 w-96 h-96 bg-gradient-to-r from-blue-400/10 to-purple-500/10 rounded-full blur-3xl animate-pulse-slow"></div>
+            <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-gradient-to-r from-cyan-400/10 to-indigo-500/10 rounded-full blur-3xl animate-pulse-slow animation-delay-2000"></div>
+            
+            <div className="relative z-10 max-w-7xl mx-auto flex flex-col gap-8">
                 <Header theme={theme} toggleTheme={toggleTheme} />
                 <main className="flex flex-col gap-6">
-                    <div className="bg-white dark:bg-gray-800 p-6 sm:p-8 rounded-xl shadow-lg">
-                        <InputSection
-                            selectedSymbols={selectedSymbols}
-                            setSelectedSymbols={setSelectedSymbols}
-                            walletAmount={walletAmount}
-                            setWalletAmount={setWalletAmount}
-                            startDate={dates.startDate}
-                            setStartDate={(d) => setDates(prev => ({...prev, startDate: d}))}
-                            endDate={dates.endDate}
-                            setEndDate={(d) => setDates(prev => ({...prev, endDate: d}))}
-                            selectedIndicators={selectedIndicators}
-                            setSelectedIndicators={setSelectedIndicators}
-                            indicatorOptions={INDICATOR_OPTIONS}
-                            onAnalyze={handleAnalyze}
-                            isLoading={isLoading}
-                        />
+                    <div className="glass-effect p-6 sm:p-8 rounded-2xl shadow-2xl border backdrop-blur-xl card-glow sharp-corners relative overflow-hidden">
+                        <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent dark:from-white/10 dark:to-transparent"></div>
+                        <div className="relative z-10">
+                            <InputSection
+                                selectedSymbols={selectedSymbols}
+                                setSelectedSymbols={setSelectedSymbols}
+                                walletAmount={walletAmount}
+                                setWalletAmount={setWalletAmount}
+                                startDate={dates.startDate}
+                                setStartDate={(d) => setDates(prev => ({...prev, startDate: d}))}
+                                endDate={dates.endDate}
+                                setEndDate={(d) => setDates(prev => ({...prev, endDate: d}))}
+                                selectedIndicators={selectedIndicators}
+                                setSelectedIndicators={setSelectedIndicators}
+                                indicatorOptions={INDICATOR_OPTIONS}
+                                onAnalyze={handleAnalyze}
+                                isLoading={isLoading}
+                            />
+                        </div>
                     </div>
                     {error && <ErrorMessage message={error} />}
                     <ResultsSection

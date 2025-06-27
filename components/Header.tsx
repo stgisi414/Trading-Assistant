@@ -27,10 +27,23 @@ interface HeaderProps {
 
 export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme }) => {
     return (
-        <header className="relative bg-gradient-to-r from-blue-600 to-indigo-700 text-white p-6 rounded-xl shadow-lg text-center">
-             <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
-            <h1 className="text-3xl md:text-4xl font-bold">AI-Powered Trading Assistant</h1>
-            <p className="text-indigo-200 mt-2">Leveraging Gemini for Market Insights</p>
+        <header className="relative overflow-hidden mesh-gradient animate-gradient-xy text-white p-8 rounded-2xl shadow-2xl text-center card-glow sharp-corners">
+            <div className="absolute inset-0 bg-black/10 dark:bg-white/5"></div>
+            <div className="relative z-10">
+                <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
+                <div className="animate-float">
+                    <h1 className="text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white via-blue-100 to-purple-100 drop-shadow-lg">
+                        AI-Powered Trading Assistant
+                    </h1>
+                    <div className="flex items-center justify-center gap-2 mt-3">
+                        <div className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse"></div>
+                        <p className="text-blue-100 text-lg font-medium">Leveraging Gemini for Market Insights</p>
+                        <div className="w-2 h-2 bg-purple-400 rounded-full animate-pulse animation-delay-300"></div>
+                    </div>
+                </div>
+                <div className="absolute top-4 left-4 w-16 h-16 bg-gradient-to-br from-cyan-400/20 to-purple-500/20 rounded-full blur-xl animate-pulse-slow"></div>
+                <div className="absolute bottom-4 right-4 w-12 h-12 bg-gradient-to-br from-blue-400/20 to-indigo-500/20 rounded-full blur-lg animate-pulse-slow animation-delay-1000"></div>
+            </div>
         </header>
     );
 };

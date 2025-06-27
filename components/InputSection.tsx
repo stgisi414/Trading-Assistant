@@ -44,7 +44,7 @@ export const InputSection: React.FC<InputSectionProps> = ({
             setSelectedSymbols([...selectedSymbols, symbol]);
         }
     };
-    
+
     const handleRemoveSymbol = (symbolToRemove: string) => {
         setSelectedSymbols(selectedSymbols.filter(symbol => symbol !== symbolToRemove));
     };
@@ -75,7 +75,7 @@ export const InputSection: React.FC<InputSectionProps> = ({
                         />
                     </div>
                 </div>
-                
+
                 <div className="flex flex-col gap-6">
                     <div>
                         <label htmlFor="indicatorSelect" className={labelClasses}>Technical Indicators (multi-select)</label>
@@ -123,7 +123,7 @@ export const InputSection: React.FC<InputSectionProps> = ({
                 <button
                     onClick={onAnalyze}
                     disabled={isLoading || selectedSymbols.length === 0}
-                    className="w-full bg-indigo-600 text-white font-semibold py-3 px-6 rounded-lg shadow-md hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-indigo-300 dark:disabled:bg-gray-600 disabled:cursor-not-allowed transition flex items-center justify-center gap-2"
+                    className="w-full bg-gradient-to-r from-indigo-600 via-purple-600 to-blue-600 hover:from-indigo-500 hover:via-purple-500 hover:to-blue-500 disabled:from-gray-400 disabled:to-gray-500 text-white font-semibold py-4 px-6 rounded-xl shadow-2xl hover:shadow-indigo-500/25 disabled:shadow-none transition-all duration-300 flex items-center justify-center gap-2 animate-glow hover:scale-105 relative overflow-hidden group sharp-corners"
                 >
                     {isLoading ? <><Spinner className="text-white" /> Analyzing...</> : `Analyze ${selectedSymbols.length || 0} Asset(s)`}
                 </button>
