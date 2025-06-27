@@ -1,6 +1,8 @@
 import React from 'react';
 import type { AnalysisResult } from '../types.ts';
 import { Position } from '../types.ts';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 interface PositionResultProps {
     result: AnalysisResult;
@@ -58,7 +60,26 @@ export const PositionResult: React.FC<PositionResultProps> = ({ result }) => {
             </div>
             <div>
                 <h3 className={`text-lg font-semibold ${labelColor} mb-2`}>AI-Generated Reasoning</h3>
-                <p className="text-gray-700 dark:text-gray-300 whitespace-pre-wrap leading-relaxed">{reasoning}</p>
+                <div className="text-gray-700 dark:text-gray-300 leading-relaxed prose prose-sm dark:prose-invert max-w-none">
+                    <ReactMarkdown 
+                        remarkPlugins={[remarkGfm]}
+                        components={{
+                            h1: ({children}) => <h1 className="text-lg font-bold text-gray-900 dark:text-white mb-2">{children}</h1>,
+                            h2: ({children}) => <h2 className="text-md font-semibold text-gray-800 dark:text-gray-200 mb-2">{children}</h2>,
+                            h3: ({children}) => <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{children}</h3>,
+                            p: ({children}) => <p className="mb-2">{children}</p>,
+                            ul: ({children}) => <ul className="list-disc list-inside mb-2 space-y-1">{children}</ul>,
+                            ol: ({children}) => <ol className="list-decimal list-inside mb-2 space-y-1">{children}</ol>,
+                            li: ({children}) => <li className="text-sm">{children}</li>,
+                            strong: ({children}) => <strong className="font-semibold text-gray-900 dark:text-white">{children}</strong>,
+                            em: ({children}) => <em className="italic">{children}</em>,
+                            code: ({children}) => <code className="bg-gray-100 dark:bg-gray-800 px-1 py-0.5 rounded text-xs font-mono">{children}</code>,
+                            blockquote: ({children}) => <blockquote className="border-l-4 border-blue-500 pl-4 italic bg-blue-50 dark:bg-blue-900/20 py-2">{children}</blockquote>
+                        }}
+                    >
+                        {result.reasoning}
+                    </ReactMarkdown>
+                </div>
             </div>
         </div>
     );

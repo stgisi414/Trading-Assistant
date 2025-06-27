@@ -231,7 +231,18 @@ function App() {
             <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-gradient-to-r from-cyan-400/10 to-indigo-500/10 rounded-full blur-3xl animate-pulse-slow animation-delay-2000"></div>
 
             <div className="relative z-10 max-w-7xl mx-auto flex flex-col gap-8">
-                <Header theme={theme} toggleTheme={toggleTheme} />
+                <Header 
+                    theme={theme} 
+                    toggleTheme={toggleTheme}
+                    currentInputs={{
+                        selectedSymbols,
+                        walletAmount,
+                        selectedIndicators,
+                        selectedTimeframe,
+                        selectedMarketType
+                    }}
+                    analysisResults={analyses}
+                />
                 <main className="flex flex-col gap-3">
                     <div className="glass-effect p-6 sm:p-8 rounded-2xl shadow-2xl border backdrop-blur-xl card-glow sharp-corners relative overflow-hidden">
                         <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent dark:from-white/10 dark:to-transparent"></div>

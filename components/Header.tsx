@@ -1,50 +1,110 @@
-import React from 'react';
-
-interface ThemeToggleProps {
-    theme: 'light' | 'dark';
-    toggleTheme: () => void;
-}
-
-const ThemeToggle: React.FC<ThemeToggleProps> = ({ theme, toggleTheme }) => (
-    <button
-        onClick={toggleTheme}
-        className="absolute top-4 right-4 z-20 p-3 rounded-full text-white hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white transition-colors cursor-pointer"
-        aria-label="Toggle theme"
-        style={{ pointerEvents: 'auto' }}
-    >
-        {theme === 'light' ? (
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
-        ) : (
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
-        )}
-    </button>
-);
-
-
-interface HeaderProps {
-    theme: 'light' | 'dark';
-    toggleTheme: () => void;
-}
-
-export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme }) => {
-    return (
-        <header className="relative overflow-hidden mesh-gradient animate-gradient-xy text-white p-8 shadow-2xl text-center card-glow border-4 border-gray-800" style={{clipPath: 'polygon(20px 0%, 100% 0%, calc(100% - 20px) 100%, 0% 100%)'}}>
-            <div className="absolute inset-0 bg-black/10 dark:bg-white/5"></div>
-            <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
-            <div className="relative z-10">
-                <div className="animate-float">
-                    <h1 className="text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white via-cyan-100 to-blue-100 drop-shadow-lg" style={{letterSpacing: '-0.05em'}}>
-                        AI-Powered Trading Assistant
-                    </h1>
-                    <div className="flex items-center justify-center gap-2 mt-3">
-                        <div className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse"></div>
-                        <p className="text-blue-100 text-lg font-medium">Leveraging Gemini for Market Insights</p>
-                        <div className="w-2 h-2 bg-amber-400 rounded-full animate-pulse animation-delay-300"></div>
-                    </div>
-                </div>
-                <div className="absolute top-4 left-4 w-16 h-16 bg-gradient-to-br from-cyan-400/20 to-blue-500/20 rounded-full blur-xl animate-pulse-slow"></div>
-                <div className="absolute bottom-4 right-4 w-12 h-12 bg-gradient-to-br from-blue-400/20 to-cyan-500/20 rounded-full blur-lg animate-pulse-slow animation-delay-1000"></div>
-            </div>
-        </header>
-    );
-};
+")
+print("import React, { useState } from 'react';")
+print("")
+print("interface ThemeToggleProps {")
+print("    theme: 'light' | 'dark';")
+print("    toggleTheme: () => void;")
+print("}")
+print("")
+print("const ThemeToggle: React.FC<ThemeToggleProps> = ({ theme, toggleTheme }) => (")
+print("    <button")
+print("        onClick={toggleTheme}")
+print("        className=\"absolute top-4 right-4 z-20 p-3 rounded-full text-white hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white transition-colors cursor-pointer\"")
+print("        aria-label=\"Toggle theme\"")
+print("        style={{ pointerEvents: 'auto' }}")
+print("    >")
+print("        {theme === 'light' ? (")
+print("            <svg xmlns=\"http://www.w3.org/2000/svg\" className=\"h-6 w-6\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\"><path strokeLinecap=\"round\" strokeLinejoin=\"round\" strokeWidth={2} d=\"M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z\" /></svg>")
+print("        ) : (")
+print("            <svg xmlns=\"http://www.w3.org/2000/svg\" className=\"h-6 w-6\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\"><path strokeLinecap=\"round\" strokeLinejoin=\"round\" strokeWidth={2} d=\"M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z\" /></svg>")
+print("        )}")
+print("    </button>")
+print(");")
+print("")
+print("interface HeaderProps {")
+print("    theme: 'light' | 'dark';")
+print("    toggleTheme: () => void;")
+print("}")
+print("")
+print("// Placeholder for SignatexChatbot and its props, replace with actual implementation")
+print("interface SignatexChatbotProps {")
+print("    isOpen: boolean;")
+print("    onClose: () => void;")
+print("    currentInputs: any; // Replace 'any' with a more specific type if available")
+print("    analysisResults: any; // Replace 'any' with a more specific type if available")
+print("}")
+print("")
+print("const SignatexChatbot: React.FC<SignatexChatbotProps> = ({ isOpen, onClose, currentInputs, analysisResults }) => {")
+print("    if (!isOpen) return null;")
+print("")
+print("    return (")
+print("        <div className=\"fixed top-0 left-0 w-full h-full bg-black/50 z-50 flex items-center justify-center\">")
+print("            <div className=\"bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 w-full max-w-md\">")
+print("                <h2 className=\"text-lg font-semibold mb-4 text-gray-800 dark:text-white\">Signatex Assistant</h2>")
+print("                <p className=\"text-gray-700 dark:text-gray-300\">This is a placeholder for the Signatex Chatbot.</p>")
+print("                <button onClick={onClose} className=\"mt-4 px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white rounded hover:bg-gray-300 dark:hover:bg-gray-600\">Close</button>")
+print("            </div>")
+print("        </div>")
+print("    );")
+print("};")
+print("")
+print("export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme }) => {")
+print("    const [isChatbotOpen, setIsChatbotOpen] = useState(false);")
+print("    const [currentInputs, setCurrentInputs] = useState({});")
+print("    const [analysisResults, setAnalysisResults] = useState({});")
+print("")
+print("    return (")
+print("        <header className=\"relative overflow-hidden mesh-gradient animate-gradient-xy text-white p-8 shadow-2xl text-center card-glow border-4 border-gray-800\" style={{clipPath: 'polygon(20px 0%, 100% 0%, calc(100% - 20px) 100%, 0% 100%)'}}>")
+print("            <div className=\"absolute inset-0 bg-black/10 dark:bg-white/5\"></div>")
+print("            <ThemeToggle theme={theme} toggleTheme={toggleTheme} />")
+print("            <div className=\"relative z-10\">")
+print("                <div className=\"animate-float\">")
+print("                    <h1 className=\"text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white via-cyan-100 to-blue-100 drop-shadow-lg\" style={{letterSpacing: '-0.05em'}}>")
+print("                        AI-Powered Trading Assistant")
+print("                    </h1>")
+print("                    <div className=\"flex items-center justify-center gap-2 mt-3\">")
+print("                        <div className=\"w-2 h-2 bg-cyan-400 rounded-full animate-pulse\"></div>")
+print("                        <p className=\"text-blue-100 text-lg font-medium\">Leveraging Gemini for Market Insights</p>")
+print("                        <div className=\"w-2 h-2 bg-amber-400 rounded-full animate-pulse animation-delay-300\"></div>")
+print("                    </div>")
+print("                </div>")
+print("                <div className=\"absolute top-4 left-4 w-16 h-16 bg-gradient-to-br from-cyan-400/20 to-blue-500/20 rounded-full blur-xl animate-pulse-slow\"></div>")
+print("                <div className=\"absolute bottom-4 right-4 w-12 h-12 bg-gradient-to-br from-blue-400/20 to-cyan-500/20 rounded-full blur-lg animate-pulse-slow animation-delay-1000\"></div>")
+print("                 <div className=\"flex items-center gap-2 absolute top-4 right-4 z-20\">")
+print("                    <button")
+print("                        onClick={() => setIsChatbotOpen(true)}")
+print("                        className=\"p-2 rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white transition-all duration-200 shadow-lg hover:shadow-xl\"")
+print("                        title=\"Open Signatex Assistant\"")
+print("                    >")
+print("                        <svg className=\"w-5 h-5\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\">")
+print("                            <path strokeLinecap=\"round\" strokeLinejoin=\"round\" strokeWidth={2} d=\"M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z\" />")
+print("                        </svg>")
+print("                    </button>")
+print("                    <button")
+print("                        onClick={toggleTheme}")
+print("                        className=\"p-2 rounded-lg bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors\"")
+print("                        aria-label=\"Toggle theme\"")
+print("                    >")
+print("                        {theme === 'light' ? (")
+print("                            <svg className=\"w-5 h-5 text-gray-700\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\">")
+print("                                <path strokeLinecap=\"round\" strokeLinejoin=\"round\" strokeWidth={2} d=\"M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z\" />")
+print("                            </svg>")
+print("                        ) : (")
+print("                            <svg className=\"w-5 h-5 text-yellow-400\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\">")
+print("                                <path strokeLinecap=\"round\" strokeLinejoin=\"round\" strokeWidth={2} d=\"M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z\" />")
+print("                            </svg>")
+print("                        )}")
+print("                    </button>")
+print("                </div>")
+print("")
+print("                <SignatexChatbot")
+print("                    isOpen={isChatbotOpen}")
+print("                    onClose={() => setIsChatbotOpen(false)}")
+print("                    currentInputs={currentInputs}")
+print("                    analysisResults={analysisResults}")
+print("                />")
+print("            </div>")
+print("        </header>")
+print("    );")
+print("};")
+print("
