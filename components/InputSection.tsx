@@ -4,11 +4,6 @@ import { MarketType } from '../types.ts';
 import { SymbolSearchInput } from './SymbolSearchInput.tsx';
 import { Spinner } from './Spinner.tsx';
 
-interface TimeframeOption {
-    value: string;
-    label: string;
-}
-
 interface InputSectionProps {
     selectedSymbols: string[];
     setSelectedSymbols: (symbols: string[]) => void;
