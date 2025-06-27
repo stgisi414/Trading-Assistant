@@ -12,7 +12,7 @@ const generateMockData = (symbol: string, timeframe: string = '1d'): HistoricalD
         const mockData: HistoricalDataPoint[] = [];
         // Use symbol hash for consistent starting prices per symbol
         const symbolHash = symbol.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-        
+
         // Get realistic starting prices based on common symbols
         let basePrice = 100;
         const symbolUpper = symbol.toUpperCase();
@@ -26,16 +26,16 @@ const generateMockData = (symbol: string, timeframe: string = '1d'): HistoricalD
         else if (symbolUpper === 'IWM') basePrice = 220;
         else if (symbolUpper === 'NVDA') basePrice = 130;
         else basePrice = 80 + (symbolHash % 120);
-        
+
         let lastClose = basePrice + (Math.random() - 0.5) * 20;
         let lastOpenInterest = Math.floor(Math.random() * 800000) + 200000;
         const now = new Date();
-        
+
         // Determine data points based on timeframe with more realistic amounts
         let dataPoints = 50;
         let intervalMs = 24 * 60 * 60 * 1000; // 1 day default
         let volatilityFactor = 0.025; // 2.5% daily volatility
-        
+
         if (timeframe.includes('m')) {
             const minutes = parseInt(timeframe) || 5;
             intervalMs = minutes * 60 * 1000;
@@ -55,31 +55,31 @@ const generateMockData = (symbol: string, timeframe: string = '1d'): HistoricalD
 
         for (let i = dataPoints - 1; i >= 0; i--) {
             const date = new Date(now.getTime() - (i * intervalMs));
-            
+
             // More realistic price movement with trend consideration
             const trendFactor = Math.sin(i / dataPoints * Math.PI) * 0.1; // Slight upward trend
             const randomChange = (Math.random() - 0.47) * volatilityFactor; // Slight bullish bias
             const change = (randomChange + trendFactor) * lastClose;
             const newClose = Math.max(lastClose * 0.5, lastClose + change); // Prevent unrealistic drops
-            
+
             // Generate realistic OHLC data
             const open = lastClose;
             const volatility = Math.random() * volatilityFactor;
             const high = Math.max(open, newClose) * (1 + volatility);
             const low = Math.min(open, newClose) * (1 - volatility);
-            
+
             // More realistic volume based on timeframe and symbol
             let baseVolume = 1000000;
             if (timeframe.includes('m')) baseVolume = 25000 * parseInt(timeframe);
             else if (timeframe.includes('h')) baseVolume = 150000 * parseInt(timeframe);
-            
+
             // Adjust volume for popular symbols
             if (['AAPL', 'TSLA', 'SPY', 'QQQ', 'MSFT', 'NVDA'].includes(symbolUpper)) {
                 baseVolume *= 3;
             }
-            
+
             const volume = Math.floor(Math.random() * baseVolume * 2) + baseVolume;
-            
+
             // Generate more stable open interest
             const openInterestChange = (Math.random() - 0.5) * (lastOpenInterest * 0.005);
             const newOpenInterest = Math.max(100000, lastOpenInterest + openInterestChange);
@@ -101,11 +101,11 @@ const generateMockData = (symbol: string, timeframe: string = '1d'): HistoricalD
                 volume: volume,
                 openInterest: Math.floor(newOpenInterest)
             });
-            
+
             lastClose = newClose;
             lastOpenInterest = newOpenInterest;
         }
-        
+
         console.log(`✅ Successfully generated ${mockData.length} realistic mock data points for ${symbol}`);
         return mockData;
     } catch (error) {
@@ -201,48 +201,55 @@ export const fetchOptionsData = async (symbol: string): Promise<any> => {
 };
 
 export const fetchHistoricalData = async (symbol: string, timeframe: string, from?: string, to?: string): Promise<HistoricalDataPoint[]> => {
-    // Generate high-quality mock data
+    // Always generate mock data as fallback
     const mockData = generateMockData(symbol, timeframe);
-    
-    console.log(`📊 Providing realistic market data for ${symbol} (${timeframe})`);
-    console.log(`💡 This app uses simulated data for demonstration purposes - perfect for testing strategies!`);
-    
+
     if(!FMP_API_KEY) {
-        console.log(`🎯 Using demo data for ${symbol} - ideal for learning and backtesting`);
+        console.log(`No API key available, using mock data for ${symbol}`);
         return mockData;
     }
 
-    // For now, prioritize reliable mock data over potentially unreliable API calls
-    // This ensures users always get data and can test the app functionality
-    
-    // Uncomment below if you want to try API first, but mock data is more reliable for demos
-    /*
     try {
         const endpoint = getTimeframeEndpoint(timeframe);
         let url = `${FMP_BASE_URL}/${endpoint}/${symbol}`;
-        
+
         if (endpoint === 'historical-chart') {
+            // For intraday data
             const interval = getTimeframeInterval(timeframe);
             url += `/${interval}`;
             if (from && to) {
                 url += `?from=${from}&to=${to}`;
             }
         } else {
+            // For daily and longer timeframes
             if (from && to) {
                 url += `?from=${from}&to=${to}`;
             }
         }
-        
+
         url += `${url.includes('?') ? '&' : '?'}apikey=${FMP_API_KEY}`;
 
-        const response = await fetch(url);
+        // Add timeout for faster fallback
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+
+        const response = await fetch(url, { 
+            signal: controller.signal,
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            }
+        });
+
+        clearTimeout(timeoutId);
+
         if (!response.ok) {
-            console.log(`📈 API unavailable, using high-quality demo data for ${symbol}`);
+            console.log(`API request failed for ${symbol} with timeframe ${timeframe}. Status: ${response.status}. Using mock data.`);
             return mockData;
         }
-        
+
         const data = await response.json();
-        
+
         let historicalData;
         if (endpoint === 'historical-chart') {
             historicalData = data;
@@ -251,10 +258,11 @@ export const fetchHistoricalData = async (symbol: string, timeframe: string, fro
         }
 
         if (!historicalData || !Array.isArray(historicalData) || historicalData.length === 0) {
-            console.log(`📈 Using demo data for ${symbol} - great for testing strategies!`);
+            console.log(`No historical data available for ${symbol} with timeframe ${timeframe}. Using mock data.`);
             return mockData;
         }
 
+        // Transform and sort data
         const transformedData = historicalData.map((d: any) => ({
             date: d.date || new Date().toISOString().split('T')[0],
             open: Number(d.open || d.close || 0),
@@ -266,16 +274,19 @@ export const fetchHistoricalData = async (symbol: string, timeframe: string, fro
         })).filter(d => d.close > 0);
 
         if (transformedData.length === 0) {
-            console.log(`📈 Using reliable demo data for ${symbol}`);
+            console.log(`All data points were invalid for ${symbol} with timeframe ${timeframe}. Using mock data.`);
             return mockData;
         }
 
+        console.log(`Successfully fetched ${transformedData.length} real data points for ${symbol}`);
         return transformedData.reverse();
     } catch (error) {
-        console.log(`📈 Using demo data for ${symbol} - perfect for strategy testing!`);
+        if (error.name === 'AbortError') {
+            console.log(`Request timeout for ${symbol} with timeframe ${timeframe}. Using mock data.`);
+        } else {
+            console.log(`Network error for ${symbol} with timeframe ${timeframe}:`, error?.message || error);
+            console.log(`Using mock data for ${symbol} - this is normal when markets are closed or for testing`);
+        }
         return mockData;
     }
-    */
-    
-    return mockData;
 };

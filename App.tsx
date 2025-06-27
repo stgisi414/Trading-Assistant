@@ -165,24 +165,21 @@ function App() {
         try {
             const analysisPromises = selectedSymbols.map(async (symbol, index) => {
                 try {
-                    // Fetch historical data - now guaranteed to return data
+                    // Fetch historical data
                     const historicalData = await fetchHistoricalData(symbol, selectedTimeframe, dates.startDate, dates.endDate);
 
-                    // The service now always returns data, so we should always have something to analyze
-                    if (!historicalData || historicalData.length === 0) {
-                        console.error(`Critical error: No data returned for ${symbol}`);
-                        setAnalyses(prev => prev.map(a => a.symbol === symbol ? { 
-                            ...a, 
-                            isLoading: false, 
-                            error: `Unable to generate data for ${symbol}. Please try again.` 
-                        } : a));
-                        return;
-                    }
-
-                    console.log(`✅ Successfully loaded ${historicalData.length} data points for ${symbol}`)
-
+                    // Always update with historical data, even if it's mock data
                     setAnalyses(prev => prev.map(a => a.symbol === symbol ? { ...a, historicalData } : a));
 
+                    // Log data source for user awareness
+                    const isLikelyMockData = historicalData.length <= 200 && historicalData.some(d => d.openInterest > 50000);
+                    if (isLikelyMockData) {
+                        console.log(`Using simulated data for ${symbol} - markets may be closed or data unavailable`);
+                    }
+
+                    // Always proceed with analysis using available data (real or mock)
+                    console.log(`Analyzing ${symbol} with ${historicalData.length} data points`);
+                    
                     const result = await getTradingPosition(symbol, parseFloat(walletAmount), selectedIndicators, historicalData);
                     const patterns = await analyzeChartPatterns(symbol, historicalData, selectedIndicators);
 
@@ -190,12 +187,18 @@ function App() {
                         ...a, 
                         isLoading: false, 
                         analysisResult: result,
-                        patternDetails: patterns 
+                        patternDetails: patterns,
+                        error: undefined
                     } : a));
 
                 } catch(err) {
+                    console.error(`Analysis failed for ${symbol}:`, err);
                     const errorMessage = err instanceof Error ? err.message : String(err);
-                    setAnalyses(prev => prev.map(a => a.symbol === symbol ? { ...a, isLoading: false, error: errorMessage } : a));
+                    setAnalyses(prev => prev.map(a => a.symbol === symbol ? { 
+                        ...a, 
+                        isLoading: false, 
+                        error: `Analysis failed: ${errorMessage}` 
+                    } : a));
                 }
             });
 
