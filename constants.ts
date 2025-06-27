@@ -62,3 +62,41 @@ export const TIMEFRAME_OPTIONS: TimeframeOption[] = [
     { value: '2Y', label: '2 Years', duration: 1051200 }, // ~730 days
     { value: '5Y', label: '5 Years', duration: 2628000 }, // ~1825 days
 ];
+
+export const MARKET_OPTIONS: { [key: string]: MarketOption[] } = {
+    STOCKS: [
+        { value: 'US', label: 'United States (NASDAQ/NYSE)', region: 'North America', currency: 'USD' },
+        { value: 'CA', label: 'Canada (TSX)', region: 'North America', currency: 'CAD' },
+        { value: 'UK', label: 'United Kingdom (LSE)', region: 'Europe', currency: 'GBP' },
+        { value: 'DE', label: 'Germany (XETRA)', region: 'Europe', currency: 'EUR' },
+        { value: 'FR', label: 'France (Euronext Paris)', region: 'Europe', currency: 'EUR' },
+        { value: 'JP', label: 'Japan (TSE)', region: 'Asia', currency: 'JPY' },
+        { value: 'CN', label: 'China (SSE/SZSE)', region: 'Asia', currency: 'CNY' },
+        { value: 'HK', label: 'Hong Kong (HKEX)', region: 'Asia', currency: 'HKD' },
+        { value: 'AU', label: 'Australia (ASX)', region: 'Oceania', currency: 'AUD' },
+        { value: 'IN', label: 'India (NSE/BSE)', region: 'Asia', currency: 'INR' },
+        { value: 'BR', label: 'Brazil (B3)', region: 'South America', currency: 'BRL' },
+        { value: 'MX', label: 'Mexico (BMV)', region: 'North America', currency: 'MXN' }
+    ],
+    COMMODITIES: [
+        { value: 'ENERGY', label: 'Energy (WTI, Brent, Natural Gas)', region: 'Global', currency: 'USD' },
+        { value: 'METALS', label: 'Precious Metals (Gold, Silver, Platinum)', region: 'Global', currency: 'USD' },
+        { value: 'INDUSTRIAL', label: 'Industrial Metals (Copper, Aluminum)', region: 'Global', currency: 'USD' },
+        { value: 'AGRICULTURE', label: 'Agriculture (Wheat, Corn, Soybeans)', region: 'Global', currency: 'USD' },
+        { value: 'LIVESTOCK', label: 'Livestock (Cattle, Hogs)', region: 'Global', currency: 'USD' },
+        { value: 'SOFT', label: 'Soft Commodities (Coffee, Sugar, Cotton)', region: 'Global', currency: 'USD' }
+    ],
+    CRYPTO: [
+        { value: 'MAJOR', label: 'Major Cryptocurrencies (BTC, ETH, BNB)', region: 'Global', currency: 'USD' },
+        { value: 'ALTCOINS', label: 'Altcoins (ADA, SOL, DOT, MATIC)', region: 'Global', currency: 'USD' },
+        { value: 'DEFI', label: 'DeFi Tokens (UNI, AAVE, COMP)', region: 'Global', currency: 'USD' },
+        { value: 'MEME', label: 'Meme Coins (DOGE, SHIB)', region: 'Global', currency: 'USD' },
+        { value: 'STABLE', label: 'Stablecoins (USDT, USDC, DAI)', region: 'Global', currency: 'USD' }
+    ],
+    FOREX: [
+        { value: 'MAJOR', label: 'Major Pairs (EUR/USD, GBP/USD, USD/JPY)', region: 'Global', currency: 'Various' },
+        { value: 'MINOR', label: 'Minor Pairs (EUR/GBP, AUD/JPY, GBP/JPY)', region: 'Global', currency: 'Various' },
+        { value: 'EXOTIC', label: 'Exotic Pairs (USD/TRY, EUR/ZAR)', region: 'Global', currency: 'Various' },
+        { value: 'CRYPTO_PAIRS', label: 'Crypto Pairs (BTC/USD, ETH/EUR)', region: 'Global', currency: 'Various' }
+    ]
+};

@@ -5,8 +5,8 @@ import { ResultsSection } from './components/ResultsSection.tsx';
 import { getTradingPosition } from './services/geminiService.ts';
 import { fetchHistoricalData } from './services/marketDataService.ts';
 import { analyzeChartPatterns } from './services/patternAnalysisService.ts';
-import type { AnalysisResult, HistoricalDataPoint, AssetAnalysis } from './types.ts';
-import { INDICATOR_OPTIONS, NON_TECHNICAL_INDICATOR_OPTIONS, TIMEFRAME_OPTIONS } from './constants.ts';
+import type { AnalysisResult, HistoricalDataPoint, AssetAnalysis, MarketType } from './types.ts';
+import { INDICATOR_OPTIONS, NON_TECHNICAL_INDICATOR_OPTIONS, TIMEFRAME_OPTIONS, MARKET_OPTIONS } from './constants.ts';
 import { ErrorMessage } from './components/ErrorMessage.tsx';
 
 const getInitialDates = () => {
@@ -68,6 +68,14 @@ function App() {
         const saved = localStorage.getItem('tradingApp_includeOrderAnalysis');
         return saved ? JSON.parse(saved) : false;
     });
+    const [selectedMarketType, setSelectedMarketType] = useState<MarketType>(() => {
+        const saved = localStorage.getItem('tradingApp_selectedMarketType');
+        return saved ? JSON.parse(saved) : MarketType.STOCKS;
+    });
+    const [selectedMarket, setSelectedMarket] = useState<string>(() => {
+        const saved = localStorage.getItem('tradingApp_selectedMarket');
+        return saved || 'US';
+    });
     const [analyses, setAnalyses] = useState<AssetAnalysis[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -118,6 +126,14 @@ function App() {
     useEffect(() => {
         localStorage.setItem('tradingApp_includeOrderAnalysis', JSON.stringify(includeOrderAnalysis));
     }, [includeOrderAnalysis]);
+
+    useEffect(() => {
+        localStorage.setItem('tradingApp_selectedMarketType', JSON.stringify(selectedMarketType));
+    }, [selectedMarketType]);
+
+    useEffect(() => {
+        localStorage.setItem('tradingApp_selectedMarket', selectedMarket);
+    }, [selectedMarket]);
 
     const toggleTheme = () => {
         setTheme(prev => {
@@ -208,6 +224,11 @@ function App() {
                                 selectedTimeframe={selectedTimeframe}
                                 setSelectedTimeframe={setSelectedTimeframe}
                                 timeframeOptions={TIMEFRAME_OPTIONS}
+                                selectedMarketType={selectedMarketType}
+                                setSelectedMarketType={setSelectedMarketType}
+                                selectedMarket={selectedMarket}
+                                setSelectedMarket={setSelectedMarket}
+                                marketOptions={MARKET_OPTIONS}
                                 includeOptionsAnalysis={includeOptionsAnalysis}
                                 setIncludeOptionsAnalysis={setIncludeOptionsAnalysis}
                                 includeCallOptions={includeCallOptions}

@@ -1,7 +1,8 @@
 import React from 'react';
-import type { IndicatorOption } from '../types.ts';
-import { Spinner } from './Spinner.tsx';
+import type { IndicatorOption, TimeframeOption, MarketType, MarketOption } from '../types.ts';
 import { SymbolSearchInput } from './SymbolSearchInput.tsx';
+import { Spinner } from './Spinner.tsx';
+import { MarketType as MarketTypeEnum } from '../types.ts';
 
 interface TimeframeOption {
     value: string;
@@ -26,6 +27,11 @@ interface InputSectionProps {
     selectedTimeframe: string;
     setSelectedTimeframe: (timeframe: string) => void;
     timeframeOptions: TimeframeOption[];
+    selectedMarketType: MarketType;
+    setSelectedMarketType: (marketType: MarketType) => void;
+    selectedMarket: MarketOption | null;
+    setSelectedMarket: (market: MarketOption | null) => void;
+    marketOptions: MarketOption[];
     includeOptionsAnalysis: boolean;
     setIncludeOptionsAnalysis: (include: boolean) => void;
     includeCallOptions: boolean;
@@ -39,33 +45,17 @@ interface InputSectionProps {
 }
 
 export const InputSection: React.FC<InputSectionProps> = ({
-    selectedSymbols,
-    setSelectedSymbols,
-    walletAmount,
-    setWalletAmount,
-    startDate,
-    setStartDate,
-    endDate,
-    setEndDate,
-    selectedIndicators,
-    setSelectedIndicators,
-    indicatorOptions,
-    selectedNonTechnicalIndicators,
-    setSelectedNonTechnicalIndicators,
-    nonTechnicalIndicatorOptions,
-    selectedTimeframe,
-    setSelectedTimeframe,
-    timeframeOptions,
-    includeOptionsAnalysis,
-    setIncludeOptionsAnalysis,
-    includeCallOptions,
-    setIncludeCallOptions,
-    includePutOptions,
-    setIncludePutOptions,
-    includeOrderAnalysis,
-    setIncludeOrderAnalysis,
-    onAnalyze,
-    isLoading
+    selectedSymbols, setSelectedSymbols, walletAmount, setWalletAmount,
+    startDate, setStartDate, endDate, setEndDate,
+    selectedIndicators, setSelectedIndicators, indicatorOptions,
+    selectedNonTechnicalIndicators, setSelectedNonTechnicalIndicators, nonTechnicalIndicatorOptions,
+    selectedTimeframe, setSelectedTimeframe, timeframeOptions,
+    selectedMarketType, setSelectedMarketType, selectedMarket, setSelectedMarket, marketOptions,
+    includeOptionsAnalysis, setIncludeOptionsAnalysis,
+    includeCallOptions, setIncludeCallOptions,
+    includePutOptions, setIncludePutOptions,
+    includeOrderAnalysis, setIncludeOrderAnalysis,
+    onAnalyze, isLoading
 }) => {
     const handleIndicatorChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const selected = Array.from(e.target.selectedOptions, option => option.value);
@@ -94,6 +84,41 @@ export const InputSection: React.FC<InputSectionProps> = ({
         <section>
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-x-4 gap-y-6 items-start">
                 <div className="flex flex-col gap-6 lg:col-span-1">
+                    <div>
+                        <label htmlFor="marketTypeSelect" className={labelClasses}>Market Type</label>
+                        <select
+                            id="marketTypeSelect"
+                            value={selectedMarketType}
+                            onChange={(e) => setSelectedMarketType(e.target.value as MarketType)}
+                            className={inputClasses}
+                            disabled={isLoading}
+                        >
+                            <option value={MarketTypeEnum.INTERNATIONAL_MARKETS}>International Markets</option>
+                            <option value={MarketTypeEnum.COMMODITIES}>Commodities</option>
+                            <option value={MarketTypeEnum.CRYPTO}>Crypto</option>
+                            <option value={MarketTypeEnum.FOREX}>Forex</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label htmlFor="marketSelect" className={labelClasses}>Market</label>
+                        <select
+                            id="marketSelect"
+                            value={selectedMarket ? selectedMarket.value : ''}
+                            onChange={(e) => {
+                                const selectedValue = e.target.value;
+                                const selectedOption = marketOptions.find(option => option.value === selectedValue) || null;
+                                setSelectedMarket(selectedOption);
+                            }}
+                            className={inputClasses}
+                            disabled={isLoading}
+                        >
+                            <option value="">Select a market</option>
+                            {marketOptions.map(option => (
+                                <option key={option.value} value={option.value}>{option.label}</option>
+                            ))}
+                        </select>
+                    </div>
                     <SymbolSearchInput 
                         selectedSymbols={selectedSymbols} 
                         onAddSymbol={handleAddSymbol} 

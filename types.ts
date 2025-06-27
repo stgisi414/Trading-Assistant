@@ -85,6 +85,20 @@ export interface TimeframeOption {
     duration: number; // in minutes
 }
 
+export interface MarketOption {
+    value: string;
+    label: string;
+    region: string;
+    currency: string;
+}
+
+export enum MarketType {
+    STOCKS = 'STOCKS',
+    COMMODITIES = 'COMMODITIES',
+    CRYPTO = 'CRYPTO',
+    FOREX = 'FOREX'
+}
+
 export enum TimeframeType {
     MINUTES = 'MINUTES',
     HOURS = 'HOURS', 
