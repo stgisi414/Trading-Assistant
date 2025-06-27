@@ -49,7 +49,9 @@ export const AssetResultCard: React.FC<AssetResultCardProps> = ({ analysis, them
                     {analysis.patternDetails && analysis.patternDetails.length > 0 && (
                         <PatternAnalysisSection patterns={analysis.patternDetails} theme={theme} />
                     )}
-                        <OpenInterestSection />
+                    {analysisResult.openInterestAnalysis && (
+                        <OpenInterestSection openInterestAnalysis={analysisResult.openInterestAnalysis} />
+                    )}
                 </div>
             );
         }

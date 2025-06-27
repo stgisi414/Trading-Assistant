@@ -3,10 +3,14 @@ import React from 'react';
 import type { OpenInterestAnalysis } from '../types.ts';
 
 interface OpenInterestSectionProps {
-    openInterestAnalysis: OpenInterestAnalysis;
+    openInterestAnalysis: OpenInterestAnalysis | null | undefined;
 }
 
 export const OpenInterestSection: React.FC<OpenInterestSectionProps> = ({ openInterestAnalysis }) => {
+    if (!openInterestAnalysis) {
+        return null;
+    }
+
     const getTrendColor = (trend: string) => {
         switch (trend) {
             case 'INCREASING': return 'text-green-600 dark:text-green-400';
