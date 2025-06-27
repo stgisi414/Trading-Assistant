@@ -1,0 +1,63 @@
+Generating 168 mock data points for IWM with timeframe 4h
+index-CmJfneik.js:49 Successfully generated 168 mock data points for IWM
+index-CmJfneik.js:49 No historical data available for IWM with timeframe 4h. Market may be closed or data unavailable. Using mock data.
+Ux @ index-CmJfneik.js:49
+await in Ux
+(anonymous) @ index-CmJfneik.js:193
+(anonymous) @ index-CmJfneik.js:193
+bp @ index-CmJfneik.js:48
+(anonymous) @ index-CmJfneik.js:48
+Ld @ index-CmJfneik.js:48
+Ac @ index-CmJfneik.js:48
+qc @ index-CmJfneik.js:49
+sx @ index-CmJfneik.js:49Understand this warning
+index-CmJfneik.js:49 Generating 30 mock data points for IWM with timeframe 1d
+index-CmJfneik.js:49 Successfully generated 30 mock data points for IWM
+index-CmJfneik.js:49 
+            
+            
+           GET https://financialmodelingprep.com/api/v3/historical-price-full/IWM?from=2025-06-27&to=2025-06-27&apikey=ESSpovsFqL2Zosuj6m6GsP0fM2iHh7AH net::ERR_SOCKET_NOT_CONNECTED
+Ux @ index-CmJfneik.js:49
+(anonymous) @ index-CmJfneik.js:193
+(anonymous) @ index-CmJfneik.js:193
+bp @ index-CmJfneik.js:48
+(anonymous) @ index-CmJfneik.js:48
+Ld @ index-CmJfneik.js:48
+Ac @ index-CmJfneik.js:48
+qc @ index-CmJfneik.js:49
+sx @ index-CmJfneik.js:49Understand this error
+index-CmJfneik.js:49 Error fetching historical data for IWM with timeframe 1d: Failed to fetch
+Ux @ index-CmJfneik.js:49
+await in Ux
+(anonymous) @ index-CmJfneik.js:193
+(anonymous) @ index-CmJfneik.js:193
+bp @ index-CmJfneik.js:48
+(anonymous) @ index-CmJfneik.js:48
+Ld @ index-CmJfneik.js:48
+Ac @ index-CmJfneik.js:48
+qc @ index-CmJfneik.js:49
+sx @ index-CmJfneik.js:49Understand this warning
+index-CmJfneik.js:49 Using mock data for IWM - this is normal when markets are closed or for testing
+Ux @ index-CmJfneik.js:49
+await in Ux
+(anonymous) @ index-CmJfneik.js:193
+(anonymous) @ index-CmJfneik.js:193
+bp @ index-CmJfneik.js:48
+(anonymous) @ index-CmJfneik.js:48
+Ld @ index-CmJfneik.js:48
+Ac @ index-CmJfneik.js:48
+qc @ index-CmJfneik.js:49
+sx @ index-CmJfneik.js:49Understand this warning
+index-CmJfneik.js:193 Using simulated data for IWM - markets may be closed or data unavailable
+index-CmJfneik.js:49 Generating 30 mock data points for SPY with timeframe 1d
+index-CmJfneik.js:49 Successfully generated 30 mock data points for SPY
+index-CmJfneik.js:49 Generating 30 mock data points for QQQ with timeframe 1d
+index-CmJfneik.js:49 Successfully generated 30 mock data points for QQQ
+index-CmJfneik.js:193 Using simulated data for SPY - markets may be closed or data unavailable
+index-CmJfneik.js:193 Using simulated data for QQQ - markets may be closed or data unavailable
+index-CmJfneik.js:49 Generating 30 mock data points for SPY with timeframe 7d
+index-CmJfneik.js:49 Successfully generated 30 mock data points for SPY
+index-CmJfneik.js:49 Generating 30 mock data points for QQQ with timeframe 7d
+index-CmJfneik.js:49 Successfully generated 30 mock data points for QQQ
+index-CmJfneik.js:193 Using simulated data for QQQ - markets may be closed or data unavailable
+index-CmJfneik.js:193 Using simulated data for SPY - markets may be closed or data unavailable
