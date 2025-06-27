@@ -179,20 +179,30 @@ function App() {
 
                     // Always proceed with analysis using available data (real or mock)
                     console.log(`Analyzing ${symbol} with ${historicalData.length} data points`);
-                    
+
                     // Get news articles for the symbol
                     let newsArticles = [];
                     try {
                         const { generateSearchTerms } = await import('./services/geminiService.ts');
                         const { searchNews } = await import('./services/newsSearchService.ts');
+                        // Generate search terms using Gemini
                         const searchTerms = await generateSearchTerms(symbol);
-                        newsArticles = await searchNews(searchTerms);
+
+                        // Search for news articles with timeframe context
+                        const newsArticles = await searchNews(searchTerms, selectedTimeframe);
                         console.log(`Found ${newsArticles.length} news articles for ${symbol}`);
                     } catch (newsError) {
                         console.warn(`Failed to fetch news for ${symbol}:`, newsError);
                     }
-                    
-                    const result = await getTradingPosition(symbol, parseFloat(walletAmount), selectedIndicators, historicalData, newsArticles);
+
+                    const result = await getTradingPosition(
+                        symbol,
+                        parseFloat(walletAmount),
+                        selectedIndicators,
+                        historicalData,
+                        newsArticles,
+                        selectedTimeframe
+                    );
                     const patterns = await analyzeChartPatterns(symbol, historicalData, selectedIndicators);
 
                     setAnalyses(prev => prev.map(a => a.symbol === symbol ? { 

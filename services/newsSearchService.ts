@@ -27,20 +27,63 @@ const isValidNewsUrl = (url: string): boolean => {
     return !invalidPatterns.some(pattern => url.toLowerCase().includes(pattern));
 };
 
-// Helper function to check if article is recent (within last 30 days)
-const isRecentArticle = (snippet: string, title: string): boolean => {
+// Helper function to check if article is recent based on timeframe
+const isRecentArticle = (snippet: string, title: string, timeframe: string): boolean => {
     const text = (snippet + ' ' + title).toLowerCase();
+    
+    // For longer timeframes (1Y+), be more lenient with dates
+    if (timeframe.includes('Y') || timeframe === '6M') {
+        // Only filter out very old content (2020-2022)
+        const veryOldPatterns = [
+            /202[0-2]/, // Years 2020-2022
+            /\b(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)\s+\d{1,2},?\s+202[0-2]/,
+            /\d{1,2}\/\d{1,2}\/202[0-2]/,
+            /202[0-2]-\d{2}-\d{2}/
+        ];
+        return !veryOldPatterns.some(pattern => pattern.test(text));
+    }
+    
+    // For shorter timeframes, be more strict
     const oldDatePatterns = [
-        /202[0-2]/, // Years 2020-2022
-        /\b(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)\s+\d{1,2},?\s+202[0-2]/,
-        /\d{1,2}\/\d{1,2}\/202[0-2]/,
-        /202[0-2]-\d{2}-\d{2}/
+        /202[0-3]/, // Years 2020-2023 for short timeframes
+        /\b(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)\s+\d{1,2},?\s+202[0-3]/,
+        /\d{1,2}\/\d{1,2}\/202[0-3]/,
+        /202[0-3]-\d{2}-\d{2}/
     ];
     
     return !oldDatePatterns.some(pattern => pattern.test(text));
 };
 
-export const searchNews = async (searchTerms: string[]): Promise<NewsArticle[]> => {
+// Helper function to convert timeframe to appropriate date restriction
+const getDateRestrictionFromTimeframe = (timeframe: string): string => {
+    const timeframeLower = timeframe.toLowerCase();
+    
+    // For very short timeframes (minutes/hours), use recent news (last few days)
+    if (timeframeLower.includes('m') || timeframeLower.includes('h')) {
+        return 'd3'; // Last 3 days for intraday trading
+    }
+    
+    // For daily timeframes
+    if (timeframeLower === '1d') return 'd7';   // Last week
+    if (timeframeLower === '3d') return 'd14';  // Last 2 weeks
+    if (timeframeLower === '7d') return 'd30';  // Last month
+    
+    // For weekly timeframes
+    if (timeframeLower === '2w') return 'd60';  // Last 2 months
+    if (timeframeLower === '1m') return 'd90';  // Last 3 months
+    
+    // For monthly timeframes
+    if (timeframeLower === '3m') return 'd180'; // Last 6 months
+    if (timeframeLower === '6m') return 'd365'; // Last year
+    
+    // For yearly timeframes, use maximum Google allows
+    if (timeframeLower.includes('y')) return 'd365'; // Last year
+    
+    // Default fallback
+    return 'd30';
+};
+
+export const searchNews = async (searchTerms: string[], timeframe: string = '1M'): Promise<NewsArticle[]> => {
     if (!GOOGLE_CUSTOM_SEARCH_API_KEY || !NEWS_CUSTOM_SEARCH_CX) {
         console.warn("Google Custom Search API keys not configured");
         return [];
@@ -51,7 +94,7 @@ export const searchNews = async (searchTerms: string[]): Promise<NewsArticle[]> 
         return [];
     }
 
-    console.log("Searching news with terms:", searchTerms);
+    console.log("Searching news with terms:", searchTerms, "for timeframe:", timeframe);
 
     try {
         const allNews: NewsArticle[] = [];
@@ -62,11 +105,11 @@ export const searchNews = async (searchTerms: string[]): Promise<NewsArticle[]> 
             const enhancedQuery = `"${term}" (news OR earnings OR announcement OR financial OR stock OR shares) -site:news.google.com -site:finance.yahoo.com/quote`;
             const query = encodeURIComponent(enhancedQuery);
             
-            // Add date restriction to last 30 days and sort by date
-            const dateRestrict = 'd30'; // Last 30 days
+            // Add date restriction based on selected timeframe
+            const dateRestrict = getDateRestrictionFromTimeframe(timeframe);
             const url = `${GOOGLE_CUSTOM_SEARCH_URL}?key=${GOOGLE_CUSTOM_SEARCH_API_KEY}&cx=${NEWS_CUSTOM_SEARCH_CX}&q=${query}&num=8&dateRestrict=${dateRestrict}&sort=date&lr=lang_en`;
             
-            console.log(`Fetching recent news for term: "${term}"`);
+            console.log(`Fetching news for term: "${term}" with ${dateRestrict} restriction (timeframe: ${timeframe})`);
             
             const response = await fetch(url);
             
@@ -85,14 +128,14 @@ export const searchNews = async (searchTerms: string[]): Promise<NewsArticle[]> 
                     .filter((item: any) => {
                         // Filter out invalid URLs and old articles
                         const hasValidUrl = item.link && isValidNewsUrl(item.link);
-                        const isRecent = isRecentArticle(item.snippet || '', item.title || '');
+                        const isRecent = isRecentArticle(item.snippet || '', item.title || '', timeframe);
                         const hasContent = item.title && item.title.length > 10;
                         
                         if (!hasValidUrl) {
                             console.log(`Filtered out invalid URL: ${item.link}`);
                         }
                         if (!isRecent) {
-                            console.log(`Filtered out old article: ${item.title}`);
+                            console.log(`Filtered out old article for timeframe ${timeframe}: ${item.title}`);
                         }
                         
                         return hasValidUrl && isRecent && hasContent;

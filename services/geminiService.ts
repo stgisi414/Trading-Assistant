@@ -157,7 +157,8 @@ export const getTradingPosition = async (
     openInterestAnalysis?: any,
     includeOptionsAnalysis?: boolean,
     includeCallOptions?: boolean,
-    includePutOptions?: boolean
+    includePutOptions?: boolean,
+    timeframe?: string
 ): Promise<AnalysisResult> => {
     try {
         // Ensure historicalData is always an array
