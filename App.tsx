@@ -189,7 +189,7 @@ function App() {
                         const searchTerms = await generateSearchTerms(symbol);
 
                         // Search for news articles with timeframe context
-                        const newsArticles = await searchNews(searchTerms, selectedTimeframe);
+                        newsArticles = await searchNews(searchTerms, selectedTimeframe);
                         console.log(`Found ${newsArticles.length} news articles for ${symbol}`);
                     } catch (newsError) {
                         console.warn(`Failed to fetch news for ${symbol}:`, newsError);
@@ -201,6 +201,10 @@ function App() {
                         selectedIndicators,
                         historicalData,
                         newsArticles,
+                        undefined, // openInterestAnalysis
+                        false, // includeOptionsAnalysis
+                        false, // includeCallOptions
+                        false, // includePutOptions
                         selectedTimeframe
                     );
                     const patterns = await analyzeChartPatterns(symbol, historicalData, selectedIndicators);
