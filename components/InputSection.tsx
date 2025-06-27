@@ -92,8 +92,8 @@ export const InputSection: React.FC<InputSectionProps> = ({
 
     return (
         <section>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-8 items-start">
-                <div className="flex flex-col gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-x-4 gap-y-6 items-start">
+                <div className="flex flex-col gap-6 lg:col-span-1">
                     <SymbolSearchInput 
                         selectedSymbols={selectedSymbols} 
                         onAddSymbol={handleAddSymbol} 
@@ -114,7 +114,7 @@ export const InputSection: React.FC<InputSectionProps> = ({
                     </div>
                 </div>
 
-                <div className="flex flex-col gap-6">
+                <div className="flex flex-col gap-6 lg:col-span-2">
                     <div>
                         <label htmlFor="indicatorSelect" className={labelClasses}>Technical Indicators (multi-select)</label>
                         <select
