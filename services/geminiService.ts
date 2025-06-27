@@ -136,7 +136,7 @@ export const getTradingPosition = async (
         // Ensure historicalData is always an array
         const dataArray = Array.isArray(historicalData) ? historicalData : [];
         const lastTenDataPoints = dataArray.length > 0 ? dataArray.slice(-10) : [];
-        
+
         let prompt = `You are a professional trading analyst. Analyze the following stock data for ${assetSymbol} and provide a trading recommendation.
 
         Historical Data (last ${dataArray.length} data points):
@@ -145,7 +145,7 @@ export const getTradingPosition = async (
         Current wallet amount: $${walletAmount}
         Technical indicators to analyze: ${selectedIndicators.join(', ')}
 
-        ${openInterestAnalysis ? `
+        ${openInterestAnalysis && typeof openInterestAnalysis === 'object' && openInterestAnalysis.speculativeRatio !== undefined ? `
         Open Interest Analysis:
         - Current Open Interest: ${openInterestAnalysis.currentOpenInterest?.toLocaleString()} contracts
         - Trend: ${openInterestAnalysis.openInterestTrend}
@@ -229,3 +229,8 @@ Format the options analysis as a JSON object with this structure:
         throw new Error("An unknown error occurred while contacting the Gemini API.");
     }
 };
+```
+
+```
+Added a safety check for openInterestAnalysis before using it in the prompt string.
+```

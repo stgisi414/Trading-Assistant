@@ -13,9 +13,14 @@ export const analyzeOpenInterest = (historicalData: HistoricalDataPoint[]): Open
         return null;
     }
 
-    const currentOI = dataWithOI[dataWithOI.length - 1].openInterest!;
-    const previousOI = dataWithOI[dataWithOI.length - 2].openInterest!;
-    const weekAgoOI = dataWithOI.length >= 7 ? dataWithOI[dataWithOI.length - 7].openInterest! : dataWithOI[0].openInterest!;
+    const currentOI = dataWithOI[dataWithOI.length - 1].openInterest;
+    const previousOI = dataWithOI[dataWithOI.length - 2].openInterest;
+    const weekAgoOI = dataWithOI.length >= 7 ? dataWithOI[dataWithOI.length - 7].openInterest : dataWithOI[0].openInterest;
+
+    // Additional safety checks
+    if (!currentOI || !previousOI || !weekAgoOI || currentOI <= 0 || previousOI <= 0 || weekAgoOI <= 0) {
+        return null;
+    }
 
     // Calculate trend
     const shortTermChange = ((currentOI - previousOI) / previousOI) * 100;
@@ -33,7 +38,7 @@ export const analyzeOpenInterest = (historicalData: HistoricalDataPoint[]): Open
     // Calculate speculative ratio (volume to open interest ratio)
     const recentData = dataWithOI.slice(-5);
     const avgVolume = recentData.reduce((sum, d) => sum + (d.volume || 0), 0) / recentData.length;
-    const speculativeRatio = avgVolume / currentOI;
+    const speculativeRatio = avgVolume && currentOI ? avgVolume / currentOI : 0;
 
     // Determine market sentiment based on price movement and open interest changes
     const priceChange = ((dataWithOI[dataWithOI.length - 1].close - dataWithOI[0].close) / dataWithOI[0].close) * 100;
