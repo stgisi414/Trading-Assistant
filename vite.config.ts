@@ -9,8 +9,11 @@ export default defineConfig(({ mode }) => {
       plugins: [react()],
       define: {
         'process.env.API_KEY': JSON.stringify(env.API_KEY || process.env.API_KEY),
-        'process.env.FMP_API_KEY': JSON.stringify(env.FMP_API_KEY || process.env.FMP_API_KEY)
+        'process.env.FMP_API_KEY': JSON.stringify(env.FMP_API_KEY || process.env.FMP_API_KEY),
+        'process.env.NEWS_CUSTOM_SEARCH_CX': JSON.stringify(env.NEWS_CUSTOM_SEARCH_CX || process.env.NEWS_CUSTOM_SEARCH_CX),
+        'process.env.GOOGLE_CUSTOM_SEARCH_API_KEY': JSON.stringify(env.GOOGLE_CUSTOM_SEARCH_API_KEY || process.env.GOOGLE_CUSTOM_SEARCH_API_KEY)
       },
+      
       resolve: {
         alias: {
           '@': path.resolve(__dirname, '.'),
@@ -19,7 +22,7 @@ export default defineConfig(({ mode }) => {
       server: {
         host: true,
         port: 5173,
-        allowedHosts: ['632adf7a-44e5-40a0-a51a-c17993bb9a8a-00-1x1mnek33hdee.worf.replit.dev', 'signetex.co']
+        allowedHosts: ['632adf7a-44e5-40a0-a51a-c17993bb9a8a-00-1x1mnek33hdee.worf.replit.dev', 'signatex.co']
       },
       preview: {
         host: '0.0.0.0',
