@@ -1,0 +1,340 @@
+
+
+AI-Powered Trading Assistant
+Leveraging Gemini for Market Insights
+
+
+S
+Signatex Assistant
+Your AI Trading Guide
+
+
+Welcome to Signatex Assistant! 🤖
+I'm here to help you understand and optimize your trading analysis settings. I can:
+
+📊 Input Guidance:
+
+Explain technical indicators and their best use cases
+Suggest optimal timeframes for different trading strategies
+Help you choose appropriate wallet amounts for risk management
+Recommend market types and asset combinations
+📈 Output Analysis:
+
+Break down your trading recommendations
+Explain confidence levels and reasoning
+Interpret chart patterns and open interest data
+Clarify options analysis results
+💡 Ask me anything like:
+
+"What indicators work best for day trading?"
+"How should I interpret a 75% confidence BUY signal?"
+"What does high open interest mean for my position?"
+"Should I increase my wallet amount?"
+How can I assist you today?
+
+I lika smoka weed
+
+I'm here to help! 🤝
+I didn't quite understand your question, but I can help with:
+
+📊 Technical Analysis:
+
+Indicator selection and interpretation
+Timeframe optimization
+Pattern recognition
+💰 Risk Management:
+
+Position sizing
+Wallet allocation
+Stop-loss strategies
+📈 Results Interpretation:
+
+Confidence levels
+Buy/sell/hold signals
+Options analysis
+🔧 Setup Optimization:
+
+Best practices for your account size
+Market selection guidance
+Analysis customization
+Try asking something like:
+
+"What's the best timeframe for swing trading?"
+"How do I interpret RSI signals?"
+"What should my position size be?"
+"Explain my analysis results"
+What specific topic interests you most?
+
+Based on the provided data, the SPY has shown a clear upward trend over the last three trading days. The price increased from $607.12 on 2025-06-25 to $611.87 on 2025-06-26, and further to $614.69 on 2025-06-27. This consistent price appreciation indicates positive short-term momentum.
+
+I'm here to help! 🤝
+I didn't quite understand your question, but I can help with:
+
+📊 Technical Analysis:
+
+Indicator selection and interpretation
+Timeframe optimization
+Pattern recognition
+💰 Risk Management:
+
+Position sizing
+Wallet allocation
+Stop-loss strategies
+📈 Results Interpretation:
+
+Confidence levels
+Buy/sell/hold signals
+Options analysis
+🔧 Setup Optimization:
+
+Best practices for your account size
+Market selection guidance
+Analysis customization
+Try asking something like:
+
+"What's the best timeframe for swing trading?"
+"How do I interpret RSI signals?"
+"What should my position size be?"
+"Explain my analysis results"
+What specific topic interests you most?
+
+Ask me about technical indicators, risk management, or how to interpret your results...
+
+Market Type
+
+International Markets
+Market
+
+United States (NASDAQ/NYSE)
+Asset Symbols (e.g., AAPL, TSLA)
+Type to search...
+SPY×
+QQQ×
+Trading Wallet Amount ($)
+1006
+Technical Indicators (multi-select)
+Simple Moving Average (SMA)Exponential Moving Average (EMA)Relative Strength Index (RSI)Moving Average Convergence Divergence (MACD)Bollinger BandsStochastic OscillatorAverage Directional Index (ADX)VolumeVolatilityHead and Shoulders Top PatternHead and Shoulders Bottom (Inverse H&S)Double Top PatternDouble Bottom PatternOpen Interest
+Non-Technical Indicators (multi-select)
+Price-to-Earnings Ratio (P/E)Price/Earnings to Growth (PEG)Price-to-Book Ratio (P/B)Debt-to-Equity RatioReturn on Equity (ROE)Revenue Growth RateEarnings Growth RateFree Cash FlowAnalyst Ratings & Price TargetsInsider Trading ActivitySocial Media SentimentEconomic IndicatorsSector Relative Performance
+Start Date
+
+06/25/2025
+End Date
+
+06/27/2025
+Timeframe
+
+1 Day
+Analysis Options
+
+Include Options Analysis
+
+Call Options
+
+Put Options
+
+Include Stop & Limit Order Analysis
+Analyze 2 Asset(s)
+SPY
+Recommended Position
+BUY
+
+Confidence Level
+60%
+
+AI-Generated Reasoning
+Based on the provided data, the SPY has shown a clear upward trend over the last three trading days. The price increased from $607.12 on 2025-06-25 to $611.87 on 2025-06-26, and further to $614.69 on 2025-06-27. This consistent price appreciation indicates positive short-term momentum.
+
+Historical Price Chart
+Chart Type:
+
+Line
+
+Show Volume
+Technical Indicators
+
+SMA 9
+
+SMA 20
+
+SMA 50
+
+SMA 200
+
+EMA 12
+
+EMA 26
+
+VWAP
+
+Bollinger
+Jun 25
+Jun 25
+Jun 25
+Jun 25
+Jun 26
+Jun 26
+Jun 26
+Jun 26
+Jun 27
+$595.00
+$600.00
+$605.00
+$610.00
+$615.00
+$620.00
+$625.00
+Date
+Price ($)
+Relevant News (Powered by Google Custom Search)
+Google News
+Source: news.google.com
+
+22 hours ago ... ... spy chief. 21 hours ago. By Rebecca Camber & Andy Jehring. More. The Independent. New MI6 chief's grandfather was Nazi spy, documents reveal. 7 hours ago. By ...
+
+Google News
+Source: news.google.com
+
+22 hours ago ... Tailor Google News to your interests and habits so you can quickly catch up on the news. Sign in. Learn more. Top stories. Reuters ...
+
+Google Actualités
+Source: news.google.com
+
+22 hours ago ... RTL info. Donald Trump pourrait bombarder l'Iran à nouveau? Le président américain est très clair sur la question. Il y a 2 heures · 7sur7.be. Maryam perd toutes ...
+
+Google News
+Source: news.google.com
+
+22 hours ago ... ... spy chief. 20 hours ago. By Rebecca Camber & Andy Jehring. More. Ynetnews. Britain's new MI6 chief is granddaughter of Nazi sympathiser and spy. 3 hours ago.
+
+Google News
+Source: news.google.com
+
+2 days ago ... ABC News - Breaking News, Latest News and Videos. Hegseth announces ... New MI6 chief's grandfather was Nazi spy known as 'The Butcher'. 10 hours ago.
+
+SLB: Is Schlumberger a Good Oil and Gas Stock to Own in 2022?
+Source: news.google.com
+
+Jun 9, 2025 ... It seems the S&P 500 (SPY) advance has stalled and cant crack above strong resistance at 6,000. ... Past performance is not necessarily indicative of future ...
+
+GM: Nio vs. General Motors: Which Electric Vehicle Stock is a Better ...
+Source: news.google.com
+
+May 27, 2025 ... The S&P 500 (SPY) has made great advances since the lows of early April. Yet ... Past performance is not necessarily indicative of future results. No ...
+
+Review: True Detective: Night Country and Mr. & Mrs. Smith ...
+Source: news.google.com
+
+May 18, 2025 ... We use cookies to collect and analyze information on site performance and usage, and to enhance and customize content and advertisements. ... spy stuff and ...
+
+Does The New BMW 4-Series Look Any Better In M4 Or Convertible ...
+Source: news.google.com
+
+Oct 9, 2024 ... Although we insist we're sort of used to them already thanks to all the leaks and spy ... We've already taken a look at some M Performance ...
+
+Super Bowl As Stock Market Predictor? As 49ers Go Up Against ...
+Source: news.google.com
+
+Feb 10, 2024 ... Is the Super Bowl a leading indicator for stock market performance? ... SPY Logo. SPYSPDR S&P 500. $592.90-0.51%. Stock Score Locked ...
+
+QQQ
+Recommended Position
+BUY
+
+Confidence Level
+35%
+
+AI-Generated Reasoning
+Based on the limited data provided, the price of QQQ has shown a consistent upward trend over the past three days, increasing from $541.16 on 2025-06-25 to $548.09 on 2025-06-27. This indicates positive short-term momentum. Volume data shows a significant increase on the most recent day (57,011,150 on 2025-06-27) compared to the previous two days (44,804,200 and 43,811,432), which can be interpreted as increasing conviction behind the recent price rally.
+
+Historical Price Chart
+Chart Type:
+
+Line
+
+Show Volume
+Technical Indicators
+
+SMA 9
+
+SMA 20
+
+SMA 50
+
+SMA 200
+
+EMA 12
+
+EMA 26
+
+VWAP
+
+Bollinger
+Jun 25
+Jun 25
+Jun 25
+Jun 25
+Jun 26
+Jun 26
+Jun 26
+Jun 26
+Jun 27
+$530.00
+$535.00
+$540.00
+$545.00
+$550.00
+$555.00
+$560.00
+Date
+Price ($)
+Relevant News (Powered by Google Custom Search)
+Google News
+Source: news.google.com
+
+22 hours ago ... Read full articles, watch videos, browse thousands of titles and more on the 'Home page' topic with Google News.
+
+Diario El Día de La Plata - Noticias de la ciudad y la provincia de ...
+Source: news.google.com
+
+22 hours ago ... Noticias,estudiantes de la plata,ciudad de la plata,gimnasia de la plata,Buenos Aires,Provincia de Buenos Aires.
+
+Google News
+Source: news.google.com
+
+22 hours ago ... VOO Hits Record High, Joins QQQ in Full Recovery. 7 hours ago. By Sumit Roy ... ABC News - Breaking News, Latest News and Videos. Katy Perry and Orlando ...
+
+QQQ ETF Update, 2/9/2024 - TipRanks.com
+Source: news.google.com
+
+Feb 8, 2024 ... How is QQQ stock faring? The Invesco QQQ ... Working With TipRanksEnterprise SolutionsTop Online BrokersBecome an AffiliateTipRanks News Wire.
+
+First Week of December 2025 Options Trading For Invesco QQQ ...
+Source: news.google.com
+
+Feb 4, 2024 ... Investors in Invesco QQQ Trust (Symbol: QQQ) saw new options begin ... BNK Invest owns and operates a market news family of websites ...
+
+Untitled
+Source: news.google.com
+
+22 hours ago ...
+
+Invesco NASDAQ Next Gen 100 ETF (QQQJ) Price, Holdings, & News
+Source: news.google.com
+
+2 days ago ... How have QQQJ shares performed this year? Invesco NASDAQ Next Gen 100 ETF's stock was trading at $30.88 at the beginning of 2025. Since then, QQQJ stock has ...
+
+NASDAQ 100 Price Forecast – NASDAQ 100 Continues to Look ...
+Source: news.google.com
+
+Feb 11, 2024 ... The NASDAQ 100 rallied during the session on Monday, as we continue to see a lot of upward trajectory. This is a market that looks strong ...
+
+NASDAQ 100 Price Forecast – NASDAQ 100 Continues to Look For ...
+Source: news.google.com
+
+Feb 7, 2024 ... The NASDAQ 100 pulled back ever so slightly in the early hours of Thursday, but still has plenty of buyers on each dip it appears.
+
+Why Yum China Stock Popped Today | Nasdaq
+Source: news.google.com
+
+Feb 6, 2024 ... Nasdaq-100 Index · Nasdaq-100 Index Options · Market Data · European ... news, trends and education. Delivered Wednesdays. * Required ...
