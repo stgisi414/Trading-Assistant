@@ -126,7 +126,7 @@ export const getTradingPosition = async (
     historicalData: HistoricalDataPoint[],
     walletAmount: number,
     selectedIndicators: string[],
-    newsArticles: NewsArticle[],
+    newsArticles: NewsArticle[] = [],
     openInterestAnalysis?: any,
     includeOptionsAnalysis?: boolean,
     includeCallOptions?: boolean,
@@ -155,7 +155,7 @@ export const getTradingPosition = async (
         ` : ''}
 
         Recent news articles:
-        ${newsArticles.map((article, index) => `${index + 1}. ${article.title} - ${article.snippet || 'No snippet available'}`).join('\n')}
+        ${newsArticles && newsArticles.length > 0 ? newsArticles.map((article, index) => `${index + 1}. ${article.title} - ${article.snippet || 'No snippet available'}`).join('\n') : 'No news articles available'}
         `;
 
         if (includeOptionsAnalysis && (includeCallOptions || includePutOptions)) {
@@ -218,7 +218,7 @@ Format the options analysis as a JSON object with this structure:
 
         return {
             ...parsedResult,
-            news: newsArticles,
+            news: newsArticles || [],
         };
 
     } catch (error) {
