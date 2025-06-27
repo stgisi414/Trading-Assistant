@@ -186,7 +186,7 @@ function App() {
             
             <div className="relative z-10 max-w-7xl mx-auto flex flex-col gap-8">
                 <Header theme={theme} toggleTheme={toggleTheme} />
-                <main className="flex flex-col gap-6">
+                <main className="flex flex-col gap-3">
                     <div className="glass-effect p-6 sm:p-8 rounded-2xl shadow-2xl border backdrop-blur-xl card-glow sharp-corners relative overflow-hidden">
                         <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent dark:from-white/10 dark:to-transparent"></div>
                         <div className="relative z-10">
