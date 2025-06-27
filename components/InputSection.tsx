@@ -123,7 +123,7 @@ export const InputSection: React.FC<InputSectionProps> = ({
                 <button
                     onClick={onAnalyze}
                     disabled={isLoading || selectedSymbols.length === 0}
-                    className="w-full bg-gradient-to-r from-indigo-600 via-purple-600 to-blue-600 hover:from-indigo-500 hover:via-purple-500 hover:to-blue-500 disabled:from-gray-400 disabled:to-gray-500 text-white font-semibold py-4 px-6 rounded-xl shadow-2xl hover:shadow-indigo-500/25 disabled:shadow-none transition-all duration-300 flex items-center justify-center gap-2 animate-glow hover:scale-105 relative overflow-hidden group sharp-corners"
+                    className="w-full bg-gradient-to-r from-indigo-600 via-amber-600 to-blue-600 hover:from-indigo-500 hover:via-amber-500 hover:to-blue-500 disabled:from-gray-400 disabled:to-gray-500 text-white font-semibold py-4 px-6 rounded-xl shadow-2xl hover:shadow-indigo-500/25 disabled:shadow-none transition-all duration-300 flex items-center justify-center gap-2 animate-glow hover:scale-105 relative overflow-hidden group sharp-corners"
                 >
                     {isLoading ? <><Spinner className="text-white" /> Analyzing...</> : `Analyze ${selectedSymbols.length || 0} Asset(s)`}
                 </button>
