@@ -28,12 +28,12 @@ interface HeaderProps {
 
 export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme }) => {
     return (
-        <header className="relative overflow-hidden mesh-gradient animate-gradient-xy text-white p-8 rounded-2xl shadow-2xl text-center card-glow sharp-corners">
+        <header className="relative overflow-hidden mesh-gradient animate-gradient-xy text-white p-8 shadow-2xl text-center card-glow" style={{clipPath: 'polygon(20px 0%, 100% 0%, calc(100% - 20px) 100%, 0% 100%)'}}>
             <div className="absolute inset-0 bg-black/10 dark:bg-white/5"></div>
             <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
             <div className="relative z-10">
                 <div className="animate-float">
-                    <h1 className="text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white via-cyan-100 to-blue-100 drop-shadow-lg">
+                    <h1 className="text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white via-cyan-100 to-blue-100 drop-shadow-lg" style={{letterSpacing: '-0.05em'}}>
                         AI-Powered Trading Assistant
                     </h1>
                     <div className="flex items-center justify-center gap-2 mt-3">
