@@ -123,10 +123,13 @@ export const getTradingPosition = async (
     walletAmount: number,
     selectedIndicators: string[],
     newsArticles: NewsArticle[],
-    openInterestAnalysis?: any
+    openInterestAnalysis?: any,
+    includeOptionsAnalysis?: boolean,
+    includeCallOptions?: boolean,
+    includePutOptions?: boolean
 ): Promise<AnalysisResult> => {
     try {
-        const prompt = `You are a professional trading analyst. Analyze the following stock data for ${assetSymbol} and provide a trading recommendation.
+        let prompt = `You are a professional trading analyst. Analyze the following stock data for ${assetSymbol} and provide a trading recommendation.
 
         Historical Data (last ${historicalData.length} data points):
         ${JSON.stringify(historicalData.slice(-10), null, 2)}
@@ -146,6 +149,48 @@ export const getTradingPosition = async (
         Recent news articles:
         ${newsArticles.map((article, index) => `${index + 1}. ${article.title} - ${article.snippet || 'No snippet available'}`).join('\n')}
         `;
+
+        if (includeOptionsAnalysis && (includeCallOptions || includePutOptions)) {
+            prompt += `\n\nPROVIDE OPTIONS ANALYSIS:
+Based on the current price trends and analysis, recommend specific options trades using bid/ask pricing:`;
+
+            if (includeCallOptions) {
+                prompt += `
+- Call Options: Suggest strike prices, expiration dates, bid/ask prices, and spread analysis for bullish strategies`;
+            }
+
+            if (includePutOptions) {
+                prompt += `
+- Put Options: Suggest strike prices, expiration dates, bid/ask prices, and spread analysis for bearish/protective strategies`;
+            }
+
+            prompt += `
+
+Consider bid/ask spreads in your recommendations - tighter spreads indicate better liquidity.
+Format the options analysis as a JSON object with this structure:
+{
+  "optionsAnalysis": {
+    "callRecommendation": {
+      "strike": number,
+      "expiration": "YYYY-MM-DD",
+      "premium": number,
+      "bid": number,
+      "ask": number,
+      "spread": number,
+      "reasoning": "explanation including spread analysis"
+    },
+    "putRecommendation": {
+      "strike": number, 
+      "expiration": "YYYY-MM-DD",
+      "premium": number,
+      "bid": number,
+      "ask": number,
+      "spread": number,
+      "reasoning": "explanation including spread analysis"
+    }
+  }
+}`;
+        }
 
         const response: GenerateContentResponse = await ai.models.generateContent({
             model: 'gemini-2.5-flash-preview-04-17',

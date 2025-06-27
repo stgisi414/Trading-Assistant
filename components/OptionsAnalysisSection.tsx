@@ -24,6 +24,20 @@ export const OptionsAnalysisSection: React.FC<OptionsAnalysisSectionProps> = ({ 
                             <p><span className="font-medium">Strike:</span> ${optionsAnalysis.callRecommendation.strike.toFixed(2)}</p>
                             <p><span className="font-medium">Expiration:</span> {optionsAnalysis.callRecommendation.expiration}</p>
                             <p><span className="font-medium">Premium:</span> ${optionsAnalysis.callRecommendation.premium.toFixed(2)}</p>
+                            <div className="grid grid-cols-3 gap-2 mt-2 p-2 bg-green-100 dark:bg-green-800/30 rounded">
+                                <div className="text-center">
+                                    <p className="text-xs font-medium">Bid</p>
+                                    <p className="font-bold">${optionsAnalysis.callRecommendation.bid?.toFixed(2) || 'N/A'}</p>
+                                </div>
+                                <div className="text-center">
+                                    <p className="text-xs font-medium">Ask</p>
+                                    <p className="font-bold">${optionsAnalysis.callRecommendation.ask?.toFixed(2) || 'N/A'}</p>
+                                </div>
+                                <div className="text-center">
+                                    <p className="text-xs font-medium">Spread</p>
+                                    <p className="font-bold">${optionsAnalysis.callRecommendation.spread?.toFixed(2) || 'N/A'}</p>
+                                </div>
+                            </div>
                             <p className="mt-2"><span className="font-medium">Reasoning:</span> {optionsAnalysis.callRecommendation.reasoning}</p>
                         </div>
                     </div>
@@ -36,6 +50,20 @@ export const OptionsAnalysisSection: React.FC<OptionsAnalysisSectionProps> = ({ 
                             <p><span className="font-medium">Strike:</span> ${optionsAnalysis.putRecommendation.strike.toFixed(2)}</p>
                             <p><span className="font-medium">Expiration:</span> {optionsAnalysis.putRecommendation.expiration}</p>
                             <p><span className="font-medium">Premium:</span> ${optionsAnalysis.putRecommendation.premium.toFixed(2)}</p>
+                            <div className="grid grid-cols-3 gap-2 mt-2 p-2 bg-red-100 dark:bg-red-800/30 rounded">
+                                <div className="text-center">
+                                    <p className="text-xs font-medium">Bid</p>
+                                    <p className="font-bold">${optionsAnalysis.putRecommendation.bid?.toFixed(2) || 'N/A'}</p>
+                                </div>
+                                <div className="text-center">
+                                    <p className="text-xs font-medium">Ask</p>
+                                    <p className="font-bold">${optionsAnalysis.putRecommendation.ask?.toFixed(2) || 'N/A'}</p>
+                                </div>
+                                <div className="text-center">
+                                    <p className="text-xs font-medium">Spread</p>
+                                    <p className="font-bold">${optionsAnalysis.putRecommendation.spread?.toFixed(2) || 'N/A'}</p>
+                                </div>
+                            </div>
                             <p className="mt-2"><span className="font-medium">Reasoning:</span> {optionsAnalysis.putRecommendation.reasoning}</p>
                         </div>
                     </div>

@@ -82,6 +82,39 @@ const getTimeframeInterval = (timeframe: string): string => {
     return intervalMap[timeframe] || '1day';
 };
 
+export const fetchOptionsData = async (symbol: string): Promise<any> => {
+    if (!FMP_API_KEY) {
+        // Return mock options data when no API key
+        return {
+            calls: [
+                { strike: 150, expiration: '2024-02-16', bid: 2.45, ask: 2.55, lastPrice: 2.50 },
+                { strike: 155, expiration: '2024-02-16', bid: 1.85, ask: 1.95, lastPrice: 1.90 },
+                { strike: 160, expiration: '2024-02-16', bid: 1.25, ask: 1.35, lastPrice: 1.30 }
+            ],
+            puts: [
+                { strike: 150, expiration: '2024-02-16', bid: 3.15, ask: 3.25, lastPrice: 3.20 },
+                { strike: 155, expiration: '2024-02-16', bid: 4.25, ask: 4.35, lastPrice: 4.30 },
+                { strike: 160, expiration: '2024-02-16', bid: 5.45, ask: 5.55, lastPrice: 5.50 }
+            ]
+        };
+    }
+
+    try {
+        const response = await fetch(`${FMP_BASE_URL}/options/${symbol}?apikey=${FMP_API_KEY}`);
+        if (!response.ok) {
+            throw new Error(`Failed to fetch options data: ${response.statusText}`);
+        }
+        return await response.json();
+    } catch (error) {
+        console.error(`Error fetching options data for ${symbol}:`, error);
+        // Return mock data on error
+        return {
+            calls: [],
+            puts: []
+        };
+    }
+};
+
 export const fetchHistoricalData = async (symbol: string, timeframe: string, from?: string, to?: string): Promise<HistoricalDataPoint[]> => {
     if(!FMP_API_KEY) {
         return generateMockData(symbol);

@@ -56,6 +56,9 @@ export interface OptionRecommendation {
     strike: number;
     expiration: string;
     premium: number;
+    bid: number;
+    ask: number;
+    spread: number;
     reasoning: string;
 }
 
