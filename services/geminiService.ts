@@ -72,18 +72,43 @@ function createEnhancedGeminiPrompt(
 }
 
 function parseGeminiResponse(responseText: string): Omit<AnalysisResult, 'news'> {
-    const positionMatch = responseText.match(/Recommended Position:\s*(BUY|SELL|HOLD)/i);
-    const confidenceMatch = responseText.match(/Confidence Level:\s*([\d\.]+%?)/);
-    const reasoningMatch = responseText.match(/Detailed Reasoning:\s*([\s\S]*)/);
+    console.log("Raw Gemini response:", responseText);
+    
+    // Try multiple parsing approaches
+    const positionMatch = responseText.match(/Recommended Position:\s*(BUY|SELL|HOLD)/i) ||
+                         responseText.match(/Position:\s*(BUY|SELL|HOLD)/i) ||
+                         responseText.match(/(BUY|SELL|HOLD)/i);
+    
+    const confidenceMatch = responseText.match(/Confidence Level:\s*([\d\.]+%?)/i) ||
+                           responseText.match(/Confidence:\s*([\d\.]+%?)/i) ||
+                           responseText.match(/([\d\.]+)%/);
+    
+    const reasoningMatch = responseText.match(/Detailed Reasoning:\s*([\s\S]*?)(?:\n\n|$)/i) ||
+                          responseText.match(/Reasoning:\s*([\s\S]*?)(?:\n\n|$)/i) ||
+                          responseText.match(/Analysis:\s*([\s\S]*?)(?:\n\n|$)/i);
 
-    const reasoningText = reasoningMatch ? reasoningMatch[1].trim() : "No detailed reasoning provided.";
+    let reasoningText = "No detailed reasoning provided.";
+    if (reasoningMatch && reasoningMatch[1]) {
+        reasoningText = reasoningMatch[1].trim();
+        // If reasoning is too short, use the entire response
+        if (reasoningText.length < 50) {
+            reasoningText = responseText.trim();
+        }
+    } else if (responseText.length > 100) {
+        // Use entire response if no specific reasoning found but response is substantial
+        reasoningText = responseText.trim();
+    }
 
-    const positionStr = positionMatch ? positionMatch[1].toUpperCase() : 'N/A';
-    const position = Object.values(Position).includes(positionStr as Position) ? positionStr as Position : Position.NA;
+    const positionStr = positionMatch ? positionMatch[1].toUpperCase() : 'HOLD';
+    const position = Object.values(Position).includes(positionStr as Position) ? positionStr as Position : Position.HOLD;
+
+    const confidence = confidenceMatch ? confidenceMatch[1] : '50%';
+
+    console.log("Parsed result:", { position, confidence, reasoning: reasoningText.substring(0, 100) + "..." });
 
     return {
         position,
-        confidence: confidenceMatch ? confidenceMatch[1] : 'N/A',
+        confidence,
         reasoning: reasoningText,
     };
 }
@@ -123,9 +148,9 @@ export const generateSearchTerms = async (assetSymbol: string): Promise<string[]
 
 export const getTradingPosition = async (
     assetSymbol: string,
-    historicalData: HistoricalDataPoint[],
     walletAmount: number,
     selectedIndicators: string[],
+    historicalData: HistoricalDataPoint[],
     newsArticles: NewsArticle[] = [],
     openInterestAnalysis?: any,
     includeOptionsAnalysis?: boolean,
@@ -137,26 +162,38 @@ export const getTradingPosition = async (
         const dataArray = Array.isArray(historicalData) ? historicalData : [];
         const lastTenDataPoints = dataArray.length > 0 ? dataArray.slice(-10) : [];
 
-        let prompt = `You are a professional trading analyst. Analyze the following stock data for ${assetSymbol} and provide a trading recommendation.
+        const newsString = newsArticles && newsArticles.length > 0 
+            ? newsArticles.map((article, index) => `${index + 1}. ${article.title}\n   Source: ${article.source || 'Unknown'}\n   Summary: ${article.snippet || 'No summary available'}\n   URL: ${article.uri}`).join('\n\n')
+            : 'No recent news articles found.';
 
-        Historical Data (last ${dataArray.length} data points):
-        ${JSON.stringify(lastTenDataPoints, null, 2)}
+        let prompt = `You are an expert financial analyst. Provide a comprehensive trading recommendation for ${assetSymbol}.
 
-        Current wallet amount: $${walletAmount}
-        Technical indicators to analyze: ${selectedIndicators.join(', ')}
+ANALYSIS DATA:
+- Asset Symbol: ${assetSymbol}
+- Trading Wallet: $${walletAmount.toLocaleString()}
+- Technical Indicators: ${selectedIndicators.join(', ')}
+- Historical Data Points: ${dataArray.length}
 
-        ${openInterestAnalysis && typeof openInterestAnalysis === 'object' && openInterestAnalysis.speculativeRatio !== undefined ? `
-        Open Interest Analysis:
-        - Current Open Interest: ${openInterestAnalysis.currentOpenInterest?.toLocaleString()} contracts
-        - Trend: ${openInterestAnalysis.openInterestTrend}
-        - Speculative Ratio: ${openInterestAnalysis.speculativeRatio?.toFixed(2)}
-        - Market Sentiment: ${openInterestAnalysis.marketSentiment}
-        - Analysis: ${openInterestAnalysis.analysis}
-        ` : ''}
+RECENT PRICE DATA:
+${lastTenDataPoints.map(d => `${d.date}: $${d.close?.toFixed(2) || 'N/A'} (Volume: ${d.volume?.toLocaleString() || 'N/A'})`).join('\n')}
 
-        Recent news articles:
-        ${newsArticles && newsArticles.length > 0 ? newsArticles.map((article, index) => `${index + 1}. ${article.title} - ${article.snippet || 'No snippet available'}`).join('\n') : 'No news articles available'}
-        `;
+RECENT NEWS:
+${newsString}
+
+${openInterestAnalysis && typeof openInterestAnalysis === 'object' && openInterestAnalysis.speculativeRatio !== undefined ? `
+OPEN INTEREST ANALYSIS:
+- Current Open Interest: ${openInterestAnalysis.currentOpenInterest?.toLocaleString()} contracts
+- Trend: ${openInterestAnalysis.openInterestTrend}
+- Speculative Ratio: ${openInterestAnalysis.speculativeRatio?.toFixed(2)}
+- Market Sentiment: ${openInterestAnalysis.marketSentiment}
+- Analysis: ${openInterestAnalysis.analysis}
+` : ''}
+
+PROVIDE YOUR ANALYSIS IN THIS EXACT FORMAT:
+
+Recommended Position: [BUY/SELL/HOLD]
+Confidence Level: [percentage, e.g., 75%]
+Detailed Reasoning: [Your comprehensive analysis incorporating price trends, technical indicators, news sentiment, and market conditions. Explain your reasoning clearly and reference specific data points.]`;
 
         if (includeOptionsAnalysis && (includeCallOptions || includePutOptions)) {
             prompt += `\n\nPROVIDE OPTIONS ANALYSIS:

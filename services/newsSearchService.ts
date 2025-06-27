@@ -10,9 +10,17 @@ if (!GOOGLE_CUSTOM_SEARCH_API_KEY || !NEWS_CUSTOM_SEARCH_CX) {
 }
 
 export const searchNews = async (searchTerms: string[]): Promise<NewsArticle[]> => {
-    if (!GOOGLE_CUSTOM_SEARCH_API_KEY || !NEWS_CUSTOM_SEARCH_CX || searchTerms.length === 0) {
+    if (!GOOGLE_CUSTOM_SEARCH_API_KEY || !NEWS_CUSTOM_SEARCH_CX) {
+        console.warn("Google Custom Search API keys not configured");
         return [];
     }
+    
+    if (searchTerms.length === 0) {
+        console.warn("No search terms provided");
+        return [];
+    }
+
+    console.log("Searching news with terms:", searchTerms);
 
     try {
         const allNews: NewsArticle[] = [];
@@ -20,16 +28,21 @@ export const searchNews = async (searchTerms: string[]): Promise<NewsArticle[]> 
         // Search for each term (limit to avoid API quota issues)
         for (const term of searchTerms.slice(0, 3)) {
             const query = encodeURIComponent(term);
-            const url = `${GOOGLE_CUSTOM_SEARCH_URL}?key=${GOOGLE_CUSTOM_SEARCH_API_KEY}&cx=${NEWS_CUSTOM_SEARCH_CX}&q=${query}&num=5`;
+            const url = `${GOOGLE_CUSTOM_SEARCH_URL}?key=${GOOGLE_CUSTOM_SEARCH_API_KEY}&cx=${NEWS_CUSTOM_SEARCH_CX}&q=${query}&num=5&sort=date`;
+            
+            console.log(`Fetching news for term: "${term}"`);
             
             const response = await fetch(url);
             
             if (!response.ok) {
-                console.error(`Failed to search news for "${term}": ${response.statusText}`);
+                console.error(`Failed to search news for "${term}": ${response.status} ${response.statusText}`);
+                const errorText = await response.text();
+                console.error("Error response:", errorText);
                 continue;
             }
             
             const data = await response.json();
+            console.log(`Google API response for "${term}":`, data);
             
             if (data.items && Array.isArray(data.items)) {
                 const newsItems: NewsArticle[] = data.items.map((item: any) => ({
@@ -40,6 +53,9 @@ export const searchNews = async (searchTerms: string[]): Promise<NewsArticle[]> 
                 }));
                 
                 allNews.push(...newsItems);
+                console.log(`Added ${newsItems.length} articles for "${term}"`);
+            } else {
+                console.warn(`No news items found for "${term}"`);
             }
         }
         
@@ -48,6 +64,7 @@ export const searchNews = async (searchTerms: string[]): Promise<NewsArticle[]> 
             index === self.findIndex(a => a.uri === article.uri)
         );
         
+        console.log(`Found ${uniqueNews.length} unique news articles total`);
         return uniqueNews.slice(0, 10); // Limit to 10 articles total
         
     } catch (error) {
