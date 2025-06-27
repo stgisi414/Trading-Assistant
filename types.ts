@@ -22,6 +22,32 @@ export interface AnalysisResult {
     confidence: string;
     reasoning: string;
     news: NewsArticle[];
+    optionsAnalysis?: OptionsAnalysis;
+    orderAnalysis?: OrderAnalysis;
+}
+
+export interface OptionsAnalysis {
+    callRecommendation?: OptionRecommendation;
+    putRecommendation?: OptionRecommendation;
+}
+
+export interface OptionRecommendation {
+    strike: number;
+    expiration: string;
+    premium: number;
+    reasoning: string;
+}
+
+export interface OrderAnalysis {
+    stopLoss?: number;
+    takeProfit?: number;
+    limitOrders?: LimitOrder[];
+}
+
+export interface LimitOrder {
+    type: 'BUY' | 'SELL';
+    price: number;
+    reasoning: string;
 }
 
 export interface IndicatorOption {

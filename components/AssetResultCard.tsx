@@ -11,6 +11,25 @@ interface AssetResultCardProps {
     theme: 'light' | 'dark';
 }
 
+// Placeholder components for OptionsAnalysisSection and OrderAnalysisSection
+const OptionsAnalysisSection = ({ optionsAnalysis }: any) => {
+    return (
+        <div>
+            <h3>Options Analysis</h3>
+            <p>{JSON.stringify(optionsAnalysis)}</p>
+        </div>
+    );
+};
+
+const OrderAnalysisSection = ({ orderAnalysis }: any) => {
+    return (
+        <div>
+            <h3>Order Analysis</h3>
+            <p>{JSON.stringify(orderAnalysis)}</p>
+        </div>
+    );
+};
+
 export const AssetResultCard: React.FC<AssetResultCardProps> = ({ analysis, theme }) => {
     const { symbol, isLoading, error, analysisResult, historicalData } = analysis;
 
@@ -28,7 +47,13 @@ export const AssetResultCard: React.FC<AssetResultCardProps> = ({ analysis, them
             return (
                 <div className="flex flex-col gap-6">
                     <PositionResult result={analysisResult} />
-                    {historicalData.length > 0 && <PriceChart data={historicalData} theme={theme} />}
+                    <PriceChart data={historicalData} theme={theme} />
+                    {analysisResult.optionsAnalysis && (
+                        <OptionsAnalysisSection optionsAnalysis={analysisResult.optionsAnalysis} />
+                    )}
+                    {analysisResult.orderAnalysis && (
+                        <OrderAnalysisSection orderAnalysis={analysisResult.orderAnalysis} />
+                    )}
                     <NewsSection news={analysisResult.news} />
                 </div>
             );

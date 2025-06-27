@@ -23,6 +23,14 @@ interface InputSectionProps {
     selectedTimeframe: string;
     setSelectedTimeframe: (timeframe: string) => void;
     timeframeOptions: TimeframeOption[];
+    includeOptionsAnalysis: boolean;
+    setIncludeOptionsAnalysis: (include: boolean) => void;
+    includeCallOptions: boolean;
+    setIncludeCallOptions: (include: boolean) => void;
+    includePutOptions: boolean;
+    setIncludePutOptions: (include: boolean) => void;
+    includeOrderAnalysis: boolean;
+    setIncludeOrderAnalysis: (include: boolean) => void;
     onAnalyze: () => void;
     isLoading: boolean;
 }
@@ -42,6 +50,14 @@ export const InputSection: React.FC<InputSectionProps> = ({
     selectedTimeframe,
     setSelectedTimeframe,
     timeframeOptions,
+    includeOptionsAnalysis,
+    setIncludeOptionsAnalysis,
+    includeCallOptions,
+    setIncludeCallOptions,
+    includePutOptions,
+    setIncludePutOptions,
+    includeOrderAnalysis,
+    setIncludeOrderAnalysis,
     onAnalyze,
     isLoading,
 }) => {
@@ -140,6 +156,72 @@ export const InputSection: React.FC<InputSectionProps> = ({
                                 <option key={option.value} value={option.value}>{option.label}</option>
                             ))}
                         </select>
+                    </div>
+                </div>
+
+                <div className="mt-6 p-6 bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-200 dark:border-gray-600">
+                    <h3 className="text-lg font-medium text-gray-800 dark:text-gray-200 mb-4">Analysis Options</h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div className="space-y-3">
+                            <div className="flex items-center">
+                                <input
+                                    type="checkbox"
+                                    id="includeOptionsAnalysis"
+                                    checked={includeOptionsAnalysis}
+                                    onChange={(e) => setIncludeOptionsAnalysis(e.target.checked)}
+                                    className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                                    disabled={isLoading}
+                                />
+                                <label htmlFor="includeOptionsAnalysis" className="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    Include Options Analysis
+                                </label>
+                            </div>
+                            {includeOptionsAnalysis && (
+                                <div className="ml-6 space-y-2">
+                                    <div className="flex items-center">
+                                        <input
+                                            type="checkbox"
+                                            id="includeCallOptions"
+                                            checked={includeCallOptions}
+                                            onChange={(e) => setIncludeCallOptions(e.target.checked)}
+                                            className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                                            disabled={isLoading}
+                                        />
+                                        <label htmlFor="includeCallOptions" className="ml-2 text-sm text-gray-600 dark:text-gray-400">
+                                            Call Options
+                                        </label>
+                                    </div>
+                                    <div className="flex items-center">
+                                        <input
+                                            type="checkbox"
+                                            id="includePutOptions"
+                                            checked={includePutOptions}
+                                            onChange={(e) => setIncludePutOptions(e.target.checked)}
+                                            className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                                            disabled={isLoading}
+                                        />
+                                        <label htmlFor="includePutOptions" className="ml-2 text-sm text-gray-600 dark:text-gray-400">
+                                            Put Options
+                                        </label>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                        <div>
+                            <div className="flex items-center">
+                                <input
+                                    type="checkbox"
+                                    id="includeOrderAnalysis"
+                                    checked={includeOrderAnalysis}
+                                    onChange={(e) => setIncludeOrderAnalysis(e.target.checked)}
+                                    className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                                    disabled={isLoading}
+                                />
+                                <label htmlFor="includeOrderAnalysis" className="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    Include Stop & Limit Order Analysis
+                                </label>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

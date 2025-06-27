@@ -47,6 +47,22 @@ function App() {
         const saved = localStorage.getItem('tradingApp_dates');
         return saved ? JSON.parse(saved) : getInitialDates();
     });
+    const [includeOptionsAnalysis, setIncludeOptionsAnalysis] = useState(() => {
+        const saved = localStorage.getItem('tradingApp_includeOptionsAnalysis');
+        return saved ? JSON.parse(saved) : false;
+    });
+    const [includeCallOptions, setIncludeCallOptions] = useState(() => {
+        const saved = localStorage.getItem('tradingApp_includeCallOptions');
+        return saved ? JSON.parse(saved) : true;
+    });
+    const [includePutOptions, setIncludePutOptions] = useState(() => {
+        const saved = localStorage.getItem('tradingApp_includePutOptions');
+        return saved ? JSON.parse(saved) : true;
+    });
+    const [includeOrderAnalysis, setIncludeOrderAnalysis] = useState(() => {
+        const saved = localStorage.getItem('tradingApp_includeOrderAnalysis');
+        return saved ? JSON.parse(saved) : false;
+    });
     const [analyses, setAnalyses] = useState<AssetAnalysis[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -77,6 +93,22 @@ function App() {
     useEffect(() => {
         localStorage.setItem('tradingApp_dates', JSON.stringify(dates));
     }, [dates]);
+
+    useEffect(() => {
+        localStorage.setItem('tradingApp_includeOptionsAnalysis', JSON.stringify(includeOptionsAnalysis));
+    }, [includeOptionsAnalysis]);
+
+    useEffect(() => {
+        localStorage.setItem('tradingApp_includeCallOptions', JSON.stringify(includeCallOptions));
+    }, [includeCallOptions]);
+
+    useEffect(() => {
+        localStorage.setItem('tradingApp_includePutOptions', JSON.stringify(includePutOptions));
+    }, [includePutOptions]);
+
+    useEffect(() => {
+        localStorage.setItem('tradingApp_includeOrderAnalysis', JSON.stringify(includeOrderAnalysis));
+    }, [includeOrderAnalysis]);
 
     const toggleTheme = () => {
         setTheme(prev => {
@@ -158,6 +190,14 @@ function App() {
                                 selectedTimeframe={selectedTimeframe}
                                 setSelectedTimeframe={setSelectedTimeframe}
                                 timeframeOptions={TIMEFRAME_OPTIONS}
+                                includeOptionsAnalysis={includeOptionsAnalysis}
+                                setIncludeOptionsAnalysis={setIncludeOptionsAnalysis}
+                                includeCallOptions={includeCallOptions}
+                                setIncludeCallOptions={setIncludeCallOptions}
+                                includePutOptions={includePutOptions}
+                                setIncludePutOptions={setIncludePutOptions}
+                                includeOrderAnalysis={includeOrderAnalysis}
+                                setIncludeOrderAnalysis={setIncludeOrderAnalysis}
                                 onAnalyze={handleAnalyze}
                                 isLoading={isLoading}
                             />
