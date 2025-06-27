@@ -1,0 +1,65 @@
+Hello! I need to refactor the entire application's styling to create a consistent and professional UI with both a dark and a light theme. The goal is to make the dark theme cohesive and then create a matching light theme.
+
+Please perform the following steps:
+
+1. Define Theme Colors in tailwind.config.js:
+First, open tailwind.config.js and define a palette for both light and dark modes. We will use CSS variables so we can easily toggle them.
+
+Primary Accent Color: A brand color for buttons and highlights.
+
+Background: The main background color for the app.
+
+Foreground: The main text color.
+
+Card/Container: The background color for cards, input fields, and containers.
+
+Borders: The color for borders and dividers.
+
+It should look something like this inside the theme.extend.colors section:
+
+JavaScript
+
+colors: {
+  primary: 'var(--color-primary)',
+  background: 'var(--color-background)',
+  foreground: 'var(--color-foreground)',
+  card: 'var(--color-card)',
+  border: 'var(--color-border)',
+}
+2. Declare CSS Color Variables:
+In my main global CSS file (likely src/index.css or src/App.css), define the actual color values using CSS variables. Use the current dark UI as the inspiration for the :root (light mode) and .dark selectors.
+
+CSS
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root { /* Light Mode Palette */
+  --color-primary: #3B82F6; /* Blue-500 */
+  --color-background: #FFFFFF; /* White */
+  --color-foreground: #111827; /* Gray-900 */
+  --color-card: #F9FAFB;       /* Gray-50 */
+  --color-border: #E5E7EB;     /* Gray-200 */
+}
+
+.dark { /* Dark Mode Palette */
+  --color-primary: #60A5FA; /* Blue-400 */
+  --color-background: #111827; /* Gray-900 */
+  --color-foreground: #F9FAFB;   /* Gray-50 */
+  --color-card: #1F2937;       /* Gray-800 */
+  --color-border: #374151;     /* Gray-700 */
+}
+3. Apply Theme Colors to Components:
+Go through all the component files (.tsx files in /components) and update them to use the new Tailwind color names (e.g., bg-background, text-foreground, border-border, bg-primary).
+
+Replace specific color utilities like bg-gray-900 or text-white with their thematic counterparts.
+
+Ensure all interactive elements like buttons use bg-primary and text-white (or a suitable foreground for the primary color).
+
+Update all container elements, cards, and input sections to use bg-card and border-border.
+
+4. Verify Theme Toggle Functionality:
+Finally, ensure the theme toggling logic correctly adds or removes the .dark class to the root <html> element of the application so the CSS variables switch properly.
+
+Please apply these changes across the entire project.
