@@ -263,7 +263,7 @@ Run an analysis first, then ask me to explain your specific results!`;
 This data helps confirm or contradict your technical analysis signals.`;
         }
 
-        iflowerMessage.includes('wallet') || lowerMessage.includes('amount') || lowerMessage.includes('money')) {
+        if (lowerMessage.includes('wallet') || lowerMessage.includes('amount') || lowerMessage.includes('money')) {
             const currentWallet = parseFloat(currentInputs?.walletAmount || '0');
 
             return `## Wallet Amount & Risk Management 💰
