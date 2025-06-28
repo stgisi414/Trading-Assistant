@@ -240,9 +240,27 @@ function App() {
 
     return (
         <div className="bg-background text-foreground min-h-screen p-4 sm:p-6 md:p-8 relative overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 via-amber-50/30 to-cyan-50/50 dark:from-blue-950/30 dark:via-amber-950/20 dark:to-cyan-950/30"></div>
-            <div className="absolute top-0 left-1/4 w-96 h-96 bg-gradient-to-r from-blue-400/10 to-amber-500/10 rounded-full blur-3xl animate-pulse-slow"></div>
-            <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-gradient-to-r from-cyan-400/10 to-indigo-500/10 rounded-full blur-3xl animate-pulse-slow animation-delay-2000"></div>
+            {/* Animated shooting streaks background */}
+            <div className="shooting-streaks">
+                <div className="streak streak-blue streak-1"></div>
+                <div className="streak streak-purple streak-2"></div>
+                <div className="streak streak-blue streak-3"></div>
+                <div className="streak streak-purple streak-4"></div>
+                <div className="streak streak-blue streak-5"></div>
+                <div className="streak streak-purple streak-6"></div>
+                <div className="streak streak-blue streak-7"></div>
+                <div className="streak streak-purple streak-8"></div>
+                <div className="streak streak-blue streak-9"></div>
+                <div className="streak streak-purple streak-10"></div>
+                <div className="streak streak-blue streak-11"></div>
+                <div className="streak streak-purple streak-12"></div>
+                <div className="streak streak-blue streak-13"></div>
+                <div className="streak streak-purple streak-14"></div>
+                <div className="streak streak-purple streak-15"></div>
+            </div>
+            
+            {/* Subtle gradient overlay */}
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-50/20 via-purple-50/10 to-cyan-50/20 dark:from-blue-950/20 dark:via-purple-950/10 dark:to-cyan-950/20"></div></div>
 
             <div className="relative z-10 max-w-7xl mx-auto flex flex-col gap-8">
                 <Header 
