@@ -422,11 +422,11 @@ Patterns work best when combined with other technical indicators!`;
                 <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
                     <div className="flex items-center gap-3">
                         <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
-                            <span className="text-white font-bold text-lg">S</span>
+                            <span className="text-white font-bold text-lg drop-shadow-lg" style={{textShadow: '0 1px 2px rgba(0,0,0,0.5)'}}>S</span>
                         </div>
                         <div>
                             <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-                                Signatex Assistant
+                                <span className="signatex-embossed">S</span>ignatex Assistant
                             </h2>
                             <p className="text-sm text-gray-500 dark:text-gray-400">
                                 Your AI Trading Guide
@@ -510,7 +510,7 @@ Patterns work best when combined with other technical indicators!`;
                                         <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></div>
                                         <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
                                     </div>
-                                    <span className="text-sm text-gray-500">Signatex is thinking...</span>
+                                    <span className="text-sm text-gray-500"><span className="signatex-embossed text-sm">S</span>ignatex is thinking...</span>
                                 </div>
                             </div>
                         </div>
