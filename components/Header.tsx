@@ -56,7 +56,7 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme, currentInput
                             <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 bg-clip-text text-transparent mb-2">
                                 AI-Powered Trading Assistant
                             </h1>
-                            <p className="text-lg text-muted mb-4">
+                            <p className="text-lg text-muted dark:text-gray-300 mb-4">
                                 Leveraging Gemini for Market Insights
                             </p>
                         </div>
@@ -69,7 +69,7 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme, currentInput
                             {theme === 'light' ? (
                                 <Moon className="w-5 h-5" />
                             ) : (
-                                <Sun className="w-5 h-5" />
+                                <Sun className="w-5 h-5 text-gray-300" />
                             )}
                         </button>
                     </div>
