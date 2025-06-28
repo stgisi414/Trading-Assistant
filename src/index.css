@@ -65,21 +65,21 @@
 
 .streak {
     position: absolute;
-    width: 2px;
-    height: 100px;
-    border-radius: 1px;
+    width: 3px;
+    height: 150px;
+    border-radius: 2px;
     animation-timing-function: linear;
     animation-iteration-count: infinite;
 }
 
 .streak-blue {
-    background: linear-gradient(to bottom, transparent, #3b82f6, transparent);
-    box-shadow: 0 0 10px #3b82f6;
+    background: linear-gradient(to bottom, transparent, #3b82f6, #60a5fa, transparent);
+    box-shadow: 0 0 15px #3b82f6, 0 0 30px #3b82f6;
 }
 
 .streak-purple {
-    background: linear-gradient(to bottom, transparent, #8b5cf6, transparent);
-    box-shadow: 0 0 10px #8b5cf6;
+    background: linear-gradient(to bottom, transparent, #8b5cf6, #a78bfa, transparent);
+    box-shadow: 0 0 15px #8b5cf6, 0 0 30px #8b5cf6;
 }
 
 .streak-1 { left: 10%; animation: streak 3s infinite; animation-delay: 0s; }

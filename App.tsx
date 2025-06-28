@@ -258,9 +258,6 @@ function App() {
                 <div className="streak streak-purple streak-14"></div>
                 <div className="streak streak-purple streak-15"></div>
             </div>
-            
-            {/* Subtle gradient overlay */}
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-50/20 via-purple-50/10 to-cyan-50/20 dark:from-blue-950/20 dark:via-purple-950/10 dark:to-cyan-950/20"></div>
 
             <div className="relative z-10 max-w-7xl mx-auto flex flex-col gap-8">
                 <Header 
