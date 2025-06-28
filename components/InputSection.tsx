@@ -275,7 +275,7 @@ export const InputSection: React.FC<InputSectionProps> = ({
                 <button
                     onClick={onAnalyze}
                     disabled={isLoading || selectedSymbols.length === 0}
-                    className="w-full bg-primary hover:bg-primary/90 disabled:bg-muted text-white font-semibold py-4 px-8 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-[1.02] disabled:transform-none flex items-center justify-center gap-3 text-lg"
+                    className="w-full bg-primary hover:bg-primary/90 disabled:bg-muted text-white dark:text-white font-semibold py-4 px-8 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-[1.02] disabled:transform-none flex items-center justify-center gap-3 text-lg"
                 >
                     {isLoading ? <><Spinner className="text-white" /> Analyzing...</> : `Analyze ${selectedSymbols.length || 0} Asset(s)`}
                 </button>
