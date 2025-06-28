@@ -76,7 +76,7 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme, currentInput
                     <div className="flex justify-center">
                         <button
                             onClick={() => setShowChatbot(true)}
-                            className="flex items-center gap-2 px-4 py-3 rounded-xl bg-primary text-white font-medium hover:bg-primary/90 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
+                            className="flex items-center gap-2 px-4 py-3 rounded-xl bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 font-medium transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
                             title="Open Signatex Assistant"
                         >
                             <MessageCircle className="w-5 h-5" />
