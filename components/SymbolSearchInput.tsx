@@ -5,8 +5,8 @@ import { Spinner } from './Spinner.tsx';
 import { MARKET_OPTIONS } from '../constants';
 
 interface SymbolSearchInputProps {
-    selectedSymbols: string[];
-    onAddSymbol: (symbol: string) => void;
+    selectedSymbols: FmpSearchResult[];
+    onAddSymbol: (symbol: FmpSearchResult) => void;
     onRemoveSymbol: (symbol: string) => void;
     isDisabled: boolean;
     marketType?: string;
@@ -68,9 +68,9 @@ export const SymbolSearchInput: React.FC<SymbolSearchInputProps> = ({ selectedSy
         return () => clearTimeout(debounce);
     }, [query, fetchResults]);
 
-    const handleAdd = (symbol: string) => {
-        if (!selectedSymbols.includes(symbol)) {
-            onAddSymbol(symbol);
+    const handleAdd = (result: FmpSearchResult) => {
+        if (!selectedSymbols.find(s => s.symbol === result.symbol)) {
+            onAddSymbol(result);
         }
         setQuery('');
         setResults([]);
@@ -105,7 +105,7 @@ export const SymbolSearchInput: React.FC<SymbolSearchInputProps> = ({ selectedSy
                                 <ul>
                                     {results.map(res => (
                                         <li key={res.symbol}
-                                            onClick={() => handleAdd(res.symbol)}
+                                            onClick={() => handleAdd(res)}
                                             className="px-4 py-2 cursor-pointer hover:bg-indigo-100 dark:hover:bg-indigo-900/50 text-gray-800 dark:text-gray-200">
                                             <span className="font-bold">{res.symbol}</span> - <span className="text-gray-600 dark:text-gray-400">{res.name}</span>
                                         </li>
@@ -119,14 +119,14 @@ export const SymbolSearchInput: React.FC<SymbolSearchInputProps> = ({ selectedSy
                 </div>
             </div>
             <div className="flex flex-wrap gap-2 min-h-[30px]">
-                {selectedSymbols.map(symbol => (
-                    <div key={symbol} className="flex items-center gap-2 bg-indigo-100 dark:bg-indigo-500/30 text-indigo-800 dark:text-indigo-200 text-sm font-medium pl-3 pr-2 py-1 rounded-full animate-in fade-in">
-                        {symbol}
+                {selectedSymbols.map(symbolObj => (
+                    <div key={symbolObj.symbol} className="flex items-center gap-2 bg-indigo-100 dark:bg-indigo-500/30 text-indigo-800 dark:text-indigo-200 text-sm font-medium pl-3 pr-2 py-1 rounded-full animate-in fade-in">
+                        <span>{symbolObj.symbol}</span>
                         <button
-                            onClick={() => onRemoveSymbol(symbol)}
+                            onClick={() => onRemoveSymbol(symbolObj.symbol)}
                             disabled={isDisabled}
                             className="text-indigo-600 dark:text-indigo-300 hover:text-indigo-800 dark:hover:text-indigo-100 disabled:opacity-50 text-lg leading-none"
-                            aria-label={`Remove ${symbol}`}
+                            aria-label={`Remove ${symbolObj.symbol}`}
                         >
                             &times;
                         </button>

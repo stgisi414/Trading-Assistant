@@ -2,6 +2,8 @@ import React, { useState, useCallback, useEffect, useMemo } from "react";
 import { Header } from "./components/Header.tsx";
 import { InputSection } from "./components/InputSection.tsx";
 import { ResultsSection } from "./components/ResultsSection.tsx";
+import { ProfitMaxModal } from "./components/ProfitMaxModal.tsx";
+import { ProfitMaxResultsModal } from "./components/ProfitMaxResultsModal.tsx";
 import { getTradingPosition } from "./services/geminiService.ts";
 import { fetchHistoricalData } from "./services/marketDataService.ts";
 import { analyzeChartPatterns } from "./services/patternAnalysisService.ts";
@@ -13,6 +15,7 @@ import type {
     AssetAnalysis,
 } from "./types.ts";
 import { MarketType } from "./types.ts";
+import type { OptimizationResult } from "./services/profitMaxService.ts";
 import {
     INDICATOR_OPTIONS,
     NON_TECHNICAL_INDICATOR_OPTIONS,
@@ -99,6 +102,11 @@ function App() {
     const [analyses, setAnalyses] = useState<AssetAnalysis[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    
+    // ProfitMax state
+    const [isProfitMaxModalOpen, setIsProfitMaxModalOpen] = useState(false);
+    const [isProfitMaxResultsModalOpen, setIsProfitMaxResultsModalOpen] = useState(false);
+    const [profitMaxResult, setProfitMaxResult] = useState<OptimizationResult | null>(null);
 
     useEffect(() => {
         const root = window.document.documentElement;
@@ -209,6 +217,22 @@ function App() {
     const handleMarketChange = (newMarket: string) => {
         setSelectedMarket(newMarket); // Use your original setter
         setSelectedSymbols([]); 
+    };
+
+    const handleProfitMaxOptimization = (result: OptimizationResult) => {
+        setProfitMaxResult(result);
+        setIsProfitMaxResultsModalOpen(true);
+    };
+
+    const handleApplyProfitMaxResults = () => {
+        if (profitMaxResult) {
+            // Apply optimized settings
+            setSelectedSymbols(profitMaxResult.bestSymbols);
+            setWalletAmount(profitMaxResult.bestWalletAmount.toString());
+            setSelectedIndicators(profitMaxResult.bestIndicators);
+            setSelectedTimeframe(profitMaxResult.bestTimeframe);
+            setAnalyses(profitMaxResult.analyses);
+        }
     };
 
     const currentMarketSymbols = useMemo(() => {
@@ -492,6 +516,7 @@ function App() {
                                 }
                                 onAnalyze={handleAnalyze}
                                 isLoading={isLoading}
+                                onProfitMaxClick={() => setIsProfitMaxModalOpen(true)}
                             />
                         </div>
                     </div>
@@ -503,6 +528,24 @@ function App() {
                     />
                 </main>
             </div>
+
+            {/* ProfitMax Modals */}
+            <ProfitMaxModal
+                isOpen={isProfitMaxModalOpen}
+                onClose={() => setIsProfitMaxModalOpen(false)}
+                onOptimizationComplete={handleProfitMaxOptimization}
+                currentMarketType={selectedMarketType}
+                currentMarket={selectedMarket}
+                currentIndicators={selectedIndicators}
+                currentWalletAmount={walletAmount}
+            />
+
+            <ProfitMaxResultsModal
+                isOpen={isProfitMaxResultsModalOpen}
+                onClose={() => setIsProfitMaxResultsModalOpen(false)}
+                onApplyResults={handleApplyProfitMaxResults}
+                result={profitMaxResult}
+            />
         </div>
     );
 }

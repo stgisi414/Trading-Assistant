@@ -37,6 +37,7 @@ interface InputSectionProps {
     setIncludeOrderAnalysis: (include: boolean) => void;
     onAnalyze: () => void;
     isLoading: boolean;
+    onProfitMaxClick: () => void;
 }
 
 export const InputSection: React.FC<InputSectionProps> = ({
@@ -50,7 +51,7 @@ export const InputSection: React.FC<InputSectionProps> = ({
     includeCallOptions, setIncludeCallOptions,
     includePutOptions, setIncludePutOptions,
     includeOrderAnalysis, setIncludeOrderAnalysis,
-    onAnalyze, isLoading
+    onAnalyze, isLoading, onProfitMaxClick
 }) => {
     const handleIndicatorChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const selected = Array.from(e.target.selectedOptions, option => option.value);
@@ -272,13 +273,22 @@ export const InputSection: React.FC<InputSectionProps> = ({
             </div>
 
             <div className="mt-8">
-                <button
-                    onClick={onAnalyze}
-                    disabled={isLoading || selectedSymbols.length === 0}
-                    className="w-full bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 disabled:bg-gray-400 disabled:text-gray-200 text-white font-semibold py-4 px-8 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-[1.02] disabled:transform-none flex items-center justify-center gap-3 text-lg"
-                >
-                    {isLoading ? <><Spinner className="text-white" /> Analyzing...</> : `Analyze ${selectedSymbols.length || 0} Asset(s)`}
-                </button>
+                <div className="flex gap-3">
+                    <button
+                        onClick={onProfitMaxClick}
+                        disabled={isLoading}
+                        className="w-full bg-green-600 hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600 disabled:bg-gray-400 disabled:text-gray-200 text-white font-semibold py-4 px-8 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-[1.02] disabled:transform-none flex items-center justify-center gap-3 text-lg"
+                    >
+                        {isLoading ? <><Spinner className="text-white" /> Optimizing...</> : `Signatex ProfitMax`}
+                    </button>
+                    <button
+                        onClick={onAnalyze}
+                        disabled={isLoading || selectedSymbols.length === 0}
+                        className="w-full bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 disabled:bg-gray-400 disabled:text-gray-200 text-white font-semibold py-4 px-8 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-[1.02] disabled:transform-none flex items-center justify-center gap-3 text-lg"
+                    >
+                        {isLoading ? <><Spinner className="text-white" /> Analyzing...</> : `Analyze ${selectedSymbols.length || 0} Asset(s)`}
+                    </button>
+                </div>
             </div>
         </section>
     );
