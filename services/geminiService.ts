@@ -120,7 +120,7 @@ export const generateSearchTerms = async (assetSymbol: string): Promise<string[]
 
     try {
         const response: GenerateContentResponse = await ai.models.generateContent({
-            model: 'gemini-2.5-flash-preview-04-17',
+            model: 'gemini-1.5-flash',
             contents: prompt,
             config: {
                 temperature: 0.3,
@@ -241,7 +241,7 @@ Format the options analysis as a JSON object with this structure:
         }
 
         const response: GenerateContentResponse = await ai.models.generateContent({
-            model: 'gemini-2.5-flash-preview-04-17',
+            model: 'gemini-1.5-flash',
             contents: prompt,
             config: {
                 temperature: 0.3,
