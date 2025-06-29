@@ -226,41 +226,29 @@ function App() {
         let daysToSubtract = 30; // default
         
         // Minutes/Hours - same day
-        if (timeframeLower.includes('m') || timeframeLower.includes('h')) {
-            daysToSubtract = 1; // Same day for intraday
+        if (timeframeLower.includes('m') && !timeframeLower.includes('m')) {
+            // Handle minutes (5m, 15m, 30m) and hours (1h, 4h, 12h)
+            if (timeframeLower.endsWith('m') || timeframeLower.endsWith('h')) {
+                daysToSubtract = 1; // Same day for intraday
+            }
         }
         // Daily timeframes
         else if (timeframeLower === '1d') {
             daysToSubtract = 1; // Same day for 1-day timeframe
         }
-        else if (timeframeLower === '2d') {
-            daysToSubtract = 2; // 2 days for 2-day timeframe
-        }
         else if (timeframeLower === '3d') {
             daysToSubtract = 3; // 3 days for 3-day timeframe
         }
-        else if (timeframeLower === '4d') {
-            daysToSubtract = 4; // 4 days for 4-day timeframe
-        }
-        else if (timeframeLower === '5d') {
-            daysToSubtract = 5; // 5 days for 5-day timeframe
-        }
-        else if (timeframeLower === '7d' || timeframeLower === '1w') {
+        else if (timeframeLower === '7d') {
             daysToSubtract = 7; // 1 week
         }
         // Weekly timeframes
         else if (timeframeLower === '2w') {
             daysToSubtract = 14; // 2 weeks
         }
-        else if (timeframeLower === '3w') {
-            daysToSubtract = 21; // 3 weeks
-        }
+        // Monthly timeframes (handling both lowercase and uppercase)
         else if (timeframeLower === '1m') {
             daysToSubtract = 30; // 1 month
-        }
-        // Monthly timeframes
-        else if (timeframeLower === '2m') {
-            daysToSubtract = 60; // 2 months
         }
         else if (timeframeLower === '3m') {
             daysToSubtract = 90; // 3 months
@@ -277,6 +265,11 @@ function App() {
         }
         else if (timeframeLower === '5y') {
             daysToSubtract = 1825; // 5 years
+        }
+        // Handle minute/hour timeframes specifically
+        else if (timeframeLower === '5m' || timeframeLower === '15m' || timeframeLower === '30m' || 
+                 timeframeLower === '1h' || timeframeLower === '4h' || timeframeLower === '12h') {
+            daysToSubtract = 1; // Same day for intraday timeframes
         }
         
         const startDate = new Date(end.getTime() - daysToSubtract * 24 * 60 * 60 * 1000);
