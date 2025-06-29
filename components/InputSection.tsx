@@ -117,6 +117,8 @@ export const InputSection: React.FC<InputSectionProps> = ({
                         onAddSymbol={handleAddSymbol} 
                         onRemoveSymbol={handleRemoveSymbol}
                         isDisabled={isLoading}
+                        marketType={selectedMarketType}
+                        market={selectedMarket}
                     />
                     <div>
                         <label htmlFor="walletAmount" className={labelClasses}>Trading Wallet Amount ($)</label>
