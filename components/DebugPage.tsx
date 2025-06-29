@@ -2,22 +2,14 @@
 import React, { useState } from 'react';
 import { searchNews } from '../services/newsSearchService.ts';
 import { searchSymbolLogo, searchReasoningIllustration, searchFinancialImages } from '../services/imageSearchService.ts';
-import { SymbolSearchInput } from './SymbolSearchInput.tsx';
 import { Spinner } from './Spinner.tsx';
-import type { NewsArticle, FmpSearchResult } from '../types.ts';
+import type { NewsArticle } from '../types.ts';
 import type { ImageResult } from '../services/imageSearchService.ts';
-import { MarketType } from '../types.ts';
-import { MARKET_OPTIONS } from '../constants.ts';
 
 export const DebugPage: React.FC = () => {
     const [newsQuery, setNewsQuery] = useState('AAPL Apple');
     const [imageQuery, setImageQuery] = useState('AAPL');
     const [timeframe, setTimeframe] = useState('1M');
-    
-    // Market and symbol selection
-    const [selectedMarketType, setSelectedMarketType] = useState<MarketType>(MarketType.STOCKS);
-    const [selectedMarket, setSelectedMarket] = useState<string>('US');
-    const [selectedSymbols, setSelectedSymbols] = useState<FmpSearchResult[]>([]);
     
     const [newsResults, setNewsResults] = useState<NewsArticle[]>([]);
     const [logoResults, setLogoResults] = useState<ImageResult[]>([]);
@@ -97,31 +89,6 @@ export const DebugPage: React.FC = () => {
         }
     };
 
-    const handleMarketTypeChange = (newMarketType: string) => {
-        setSelectedMarketType(newMarketType as MarketType);
-        const newMarket = MARKET_OPTIONS[newMarketType]?.[0]?.value || "";
-        setSelectedMarket(newMarket);
-        setSelectedSymbols([]);
-    };
-
-    const handleMarketChange = (newMarket: string) => {
-        setSelectedMarket(newMarket);
-        setSelectedSymbols([]);
-    };
-
-    const onAddSymbol = (symbol: FmpSearchResult) => {
-        if (!selectedSymbols.find(s => s.symbol === symbol.symbol)) {
-            setSelectedSymbols(prev => [...prev, symbol]);
-            // Auto-update queries when symbol is selected
-            setNewsQuery(`${symbol.symbol} ${symbol.name || ''}`);
-            setImageQuery(symbol.symbol);
-        }
-    };
-
-    const onRemoveSymbol = (symbol: string) => {
-        setSelectedSymbols(prev => prev.filter(s => s.symbol !== symbol));
-    };
-
     const checkEnvironmentVariables = () => {
         const envVars = {
             'GOOGLE_CUSTOM_SEARCH_API_KEY': !!process.env.GOOGLE_CUSTOM_SEARCH_API_KEY,
@@ -158,55 +125,6 @@ export const DebugPage: React.FC = () => {
                     </div>
                 </div>
 
-                {/* Market and Symbol Selection */}
-                <div className="mb-8">
-                    <h2 className="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-4">
-                        🎯 Symbol Selection
-                    </h2>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                Market Type
-                            </label>
-                            <select
-                                value={selectedMarketType}
-                                onChange={(e) => handleMarketTypeChange(e.target.value)}
-                                className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200"
-                            >
-                                {Object.keys(MARKET_OPTIONS).map(marketType => (
-                                    <option key={marketType} value={marketType}>{marketType}</option>
-                                ))}
-                            </select>
-                        </div>
-                        
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                Market
-                            </label>
-                            <select
-                                value={selectedMarket}
-                                onChange={(e) => handleMarketChange(e.target.value)}
-                                className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200"
-                            >
-                                <option value="">Select a market</option>
-                                {MARKET_OPTIONS[selectedMarketType]?.map(option => (
-                                    <option key={option.value} value={option.value}>{option.label}</option>
-                                ))}
-                            </select>
-                        </div>
-                    </div>
-                    
-                    <SymbolSearchInput 
-                        selectedSymbols={selectedSymbols} 
-                        onAddSymbol={onAddSymbol} 
-                        onRemoveSymbol={onRemoveSymbol}
-                        isDisabled={false}
-                        marketType={selectedMarketType}
-                        market={selectedMarket}
-                    />
-                </div>
-
                 {/* News Testing Section */}
                 <div className="mb-8">
                     <h2 className="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-4">
@@ -218,7 +136,7 @@ export const DebugPage: React.FC = () => {
                             type="text"
                             value={newsQuery}
                             onChange={(e) => setNewsQuery(e.target.value)}
-                            placeholder="Enter search terms (auto-filled from selected symbols)"
+                            placeholder="Enter search terms (e.g., AAPL Apple earnings)"
                             className="flex-1 p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200"
                         />
                         <select
@@ -292,7 +210,7 @@ export const DebugPage: React.FC = () => {
                             type="text"
                             value={imageQuery}
                             onChange={(e) => setImageQuery(e.target.value)}
-                            placeholder="Enter symbol or company (auto-filled from selected symbols)"
+                            placeholder="Enter symbol or company (e.g., AAPL, Apple)"
                             className="flex-1 p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200"
                         />
                         <div className="flex gap-2">
@@ -408,36 +326,12 @@ export const DebugPage: React.FC = () => {
                     )}
                 </div>
 
-                {/* Quick Actions for Selected Symbols */}
-                    {selectedSymbols.length > 0 && (
-                        <div className="mb-6 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
-                            <h3 className="font-medium text-green-800 dark:text-green-200 mb-3">
-                                🚀 Quick Test Selected Symbols
-                            </h3>
-                            <div className="flex flex-wrap gap-2">
-                                {selectedSymbols.map(symbol => (
-                                    <button
-                                        key={symbol.symbol}
-                                        onClick={() => {
-                                            setNewsQuery(`${symbol.symbol} ${symbol.name || ''}`);
-                                            setImageQuery(symbol.symbol);
-                                        }}
-                                        className="px-3 py-1 bg-green-600 text-white rounded-lg hover:bg-green-700 text-sm"
-                                    >
-                                        Test {symbol.symbol}
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Console Log Instructions */}
+                {/* Console Log Instructions */}
                 <div className="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
                     <h3 className="font-medium text-blue-800 dark:text-blue-200 mb-2">
                         📝 Debugging Tips
                     </h3>
                     <ul className="text-sm text-blue-700 dark:text-blue-300 space-y-1">
-                        <li>• Select symbols above to auto-fill search queries</li>
                         <li>• Open browser console (F12) to see detailed API calls and responses</li>
                         <li>• Check if environment variables are properly set in Secrets</li>
                         <li>• Test with different search terms and timeframes</li>
