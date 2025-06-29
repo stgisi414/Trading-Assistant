@@ -117,6 +117,10 @@ function App() {
 
     // ProFlow state
     const [proFlowToasts, setProFlowToasts] = useState<ProFlowToast[]>([]);
+    const [proFlowStatus, setProFlowStatus] = useState(() => {
+        const { proFlowService } = require('./services/proFlowService.ts');
+        return proFlowService.getStatus();
+    });
 
     useEffect(() => {
         const root = window.document.documentElement;
@@ -322,6 +326,16 @@ function App() {
     const handleRemoveToast = (id: string) => {
         setProFlowToasts(prev => prev.filter(toast => toast.id !== id));
     };
+
+    // Update ProFlow status periodically
+    useEffect(() => {
+        const { proFlowService } = require('./services/proFlowService.ts');
+        const interval = setInterval(() => {
+            setProFlowStatus(proFlowService.getStatus());
+        }, 500);
+
+        return () => clearInterval(interval);
+    }, []);
 
     const currentMarketSymbols = useMemo(() => {
         // Depend on your original state variables
