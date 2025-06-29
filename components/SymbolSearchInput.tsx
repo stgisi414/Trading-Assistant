@@ -96,11 +96,12 @@ export const SymbolSearchInput: React.FC<SymbolSearchInputProps> = ({ selectedSy
                         This market selection doesn't have predefined symbols. Please select a different market.
                     </p>
                 )}
-                {marketType === 'STOCKS' && market === 'US' && (
+                {marketType === 'STOCKS' && market && getSymbolsForMarket().length === 0 && (
                     <p className="text-sm text-green-600 dark:text-green-400 mb-2">
                         Search any US stock symbol (NASDAQ/NYSE).
                     </p>
                 )}
+                
                 <div ref={containerRef} className="relative">
                     <input
                         type="text"
