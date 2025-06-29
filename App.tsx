@@ -351,7 +351,7 @@ function App() {
                     try {
                         // Fetch historical data
                         const historicalData = await fetchHistoricalData(
-                            symbol,
+                            symbol.symbol,
                             selectedTimeframe,
                             dates.startDate,
                             dates.endDate,
@@ -372,13 +372,13 @@ function App() {
                             historicalData.some((d) => d.openInterest > 50000);
                         if (isLikelyMockData) {
                             console.log(
-                                `Using simulated data for ${symbol} - markets may be closed or data unavailable`,
+                                `Using simulated data for ${symbol.symbol} - markets may be closed or data unavailable`,
                             );
                         }
 
                         // Always proceed with analysis using available data (real or mock)
                         console.log(
-                            `Analyzing ${symbol} with ${historicalData.length} data points`,
+                            `Analyzing ${symbol.symbol} with ${historicalData.length} data points`,
                         );
 
                         // Get news articles for the symbol
@@ -392,7 +392,7 @@ function App() {
                             );
                             // Generate search terms using Gemini
                             const searchTerms =
-                                await generateSearchTerms(symbol);
+                                await generateSearchTerms(symbol.symbol);
 
                             // Search for news articles with timeframe context
                             newsArticles = await searchNews(
@@ -400,7 +400,7 @@ function App() {
                                 selectedTimeframe,
                             );
                             console.log(
-                                `Found ${newsArticles.length} news articles for ${symbol}`,
+                                `Found ${newsArticles.length} news articles for ${symbol.symbol}`,
                             );
                         } catch (newsError) {
                             console.warn(
@@ -410,7 +410,7 @@ function App() {
                         }
 
                         const result = await getTradingPosition(
-                            symbol,
+                            symbol.symbol,
                             parseFloat(walletAmount),
                             selectedIndicators,
                             historicalData,
@@ -422,7 +422,7 @@ function App() {
                             selectedTimeframe,
                         );
                         const patterns = await analyzeChartPatterns(
-                            symbol,
+                            symbol.symbol,
                             historicalData,
                             selectedIndicators,
                         );
@@ -441,7 +441,7 @@ function App() {
                             ),
                         );
                     } catch (err) {
-                        console.error(`Analysis failed for ${symbol}:`, err);
+                        console.error(`Analysis failed for ${symbol.symbol}:`, err);
                         const errorMessage =
                             err instanceof Error ? err.message : String(err);
                         setAnalyses((prev) =>
