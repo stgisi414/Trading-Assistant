@@ -5,6 +5,9 @@ import { ResultsSection } from "./components/ResultsSection.tsx";
 import { ProfitMaxModal } from "./components/ProfitMaxModal.tsx";
 import { ProfitMaxResultsModal } from "./components/ProfitMaxResultsModal.tsx";
 import { DebugPage } from './components/DebugPage.tsx';
+import { ProFlowControls } from './components/ProFlowControls.tsx';
+import { ProFlowToastContainer } from './components/ProFlowToast.tsx';
+import type { ProFlowToast } from './services/proFlowService.ts';
 import { getTradingPosition } from "./services/geminiService.ts";
 import { fetchHistoricalData } from "./services/marketDataService.ts";
 import { analyzeChartPatterns } from "./services/patternAnalysisService.ts";
@@ -111,6 +114,9 @@ function App() {
     const [showProfitMaxResults, setShowProfitMaxResults] = useState(false);
     const [profitMaxResults, setProfitMaxResults] = useState<any>(null);
     const [showDebugPage, setShowDebugPage] = useState(false);
+
+    // ProFlow state
+    const [proFlowToasts, setProFlowToasts] = useState<ProFlowToast[]>([]);
 
     useEffect(() => {
         const root = window.document.documentElement;
@@ -306,6 +312,26 @@ function App() {
             setSelectedTimeframe(profitMaxResult.bestTimeframe);
             setAnalyses(profitMaxResult.analyses);
         }
+    };
+
+    // ProFlow helper functions
+    const handleShowToast = (toast: ProFlowToast) => {
+        setProFlowToasts(prev => [...prev, toast]);
+    };
+
+    const handleRemoveToast = (id: string) => {
+        setProFlowToasts(prev => prev.filter(toast => toast.id !== id));
+    };
+
+    // ProFlow app callbacks
+    const proFlowCallbacks = {
+        setSelectedSymbols,
+        setWalletAmount,
+        setSelectedIndicators,
+        setSelectedTimeframe: handleTimeframeChange,
+        setSelectedMarketType: handleMarketTypeChange,
+        setSelectedMarket: handleMarketChange,
+        handleAnalyze
     };
 
     const currentMarketSymbols = useMemo(() => {
@@ -505,6 +531,12 @@ function App() {
             <div className="relative z-10 max-w-7xl mx-auto flex flex-col gap-8">
                  <Header theme={theme} onToggleTheme={() => setTheme(theme === 'light' ? 'dark' : 'light')} />
 
+                {/* ProFlow Controls */}
+                <ProFlowControls
+                    onShowToast={handleShowToast}
+                    appCallbacks={proFlowCallbacks}
+                />
+
                 {/* Debug Toggle Button */}
                 <div className="flex justify-end mb-4">
                     <button
@@ -615,6 +647,12 @@ function App() {
                 onClose={() => setIsProfitMaxResultsModalOpen(false)}
                 onApplyResults={handleApplyProfitMaxResults}
                 result={profitMaxResult}
+            />
+
+            {/* ProFlow Toast Notifications */}
+            <ProFlowToastContainer
+                toasts={proFlowToasts}
+                onRemoveToast={handleRemoveToast}
             />
         </div>
     );
