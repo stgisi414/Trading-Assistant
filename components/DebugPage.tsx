@@ -155,15 +155,15 @@ export const DebugPage: React.FC = () => {
                     <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-3">
                         Environment Variables Status
                     </h3>
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                         {Object.entries(envVars).map(([key, isSet]) => (
-                            <div key={key} className="flex items-center space-x-2">
-                                <span className={`w-3 h-3 rounded-full ${isSet ? 'bg-green-500' : 'bg-red-500'}`}></span>
-                                <span className="text-sm text-gray-600 dark:text-gray-400">{key}</span>
+                            <div key={key} className="flex items-center gap-3 p-2 bg-white dark:bg-gray-800 rounded border">
+                                <span className={`w-3 h-3 rounded-full flex-shrink-0 ${isSet ? 'bg-green-500' : 'bg-red-500'}`}></span>
+                                <span className="text-sm text-gray-600 dark:text-gray-400 truncate font-mono">{key}</span>
                             </div>
                         ))}
                     </div>
-                </div>
+                </div>iv>
 
                 {/* Symbol Selection */}
                 <div className="mb-8">
