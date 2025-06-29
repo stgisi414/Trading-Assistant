@@ -49,9 +49,10 @@ interface HeaderProps {
         mode: string;
         isPaused: boolean;
     };
+    onUpdateInputs?: (updates: any) => void;
 }
 
-export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme, currentInputs, analysisResults, profitMaxResult, proFlowStatus }) => {
+export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme, currentInputs, analysisResults, profitMaxResult, proFlowStatus, onUpdateInputs }) => {
     const [isChatbotOpen, setIsChatbotOpen] = useState(false);
 
     return (
@@ -115,6 +116,9 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme, currentInput
                 onClose={() => setIsChatbotOpen(false)}
                 currentInputs={currentInputs}
                 analysisResults={analysisResults}
+                profitMaxResult={profitMaxResult}
+                proFlowStatus={proFlowStatus}
+                onUpdateInputs={onUpdateInputs}
             />
         </>
     );

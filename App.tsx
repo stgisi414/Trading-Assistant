@@ -529,7 +529,34 @@ function App() {
             </div>
 
             <div className="relative z-10 max-w-7xl mx-auto flex flex-col gap-8">
-                 <Header theme={theme} onToggleTheme={() => setTheme(theme === 'light' ? 'dark' : 'light')} />
+                 <Header 
+                    theme={theme} 
+                    onToggleTheme={() => setTheme(theme === 'light' ? 'dark' : 'light')}
+                    currentInputs={{
+                        selectedSymbols: selectedSymbols.map(s => s.symbol),
+                        walletAmount,
+                        selectedIndicators,
+                        selectedNonTechnicalIndicators,
+                        selectedTimeframe,
+                        selectedMarketType,
+                        includeOptionsAnalysis,
+                        includeCallOptions,
+                        includePutOptions,
+                        includeOrderAnalysis,
+                        startDate: dates.startDate,
+                        endDate: dates.endDate
+                    }}
+                    analysisResults={analyses}
+                    profitMaxResult={profitMaxResult}
+                    proFlowStatus={proFlowStatus}
+                    onUpdateInputs={(updates) => {
+                        if (updates.walletAmount) setWalletAmount(updates.walletAmount);
+                        if (updates.selectedIndicators) setSelectedIndicators(updates.selectedIndicators);
+                        if (updates.selectedTimeframe) handleTimeframeChange(updates.selectedTimeframe);
+                        if (updates.selectedMarketType) handleMarketTypeChange(updates.selectedMarketType);
+                        if (updates.selectedMarket) handleMarketChange(updates.selectedMarket);
+                    }}
+                />
 
                 {/* ProFlow Controls */}
                 <ProFlowControls
