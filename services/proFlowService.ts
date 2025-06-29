@@ -17,11 +17,16 @@ export interface ProFlowToast {
     duration?: number;
 }
 
+export type ProFlowMode = 'auto' | 'manual';
+
 export class ProFlowService {
     private isRunning = false;
     private currentStep = 0;
     private steps: ProFlowStep[] = [];
+    private mode: ProFlowMode = 'auto';
+    private isPaused = false;
     private toastCallback?: (toast: ProFlowToast) => void;
+    private confirmationCallback?: () => void;
     private appCallbacks: {
         setSelectedSymbols?: (symbols: FmpSearchResult[]) => void;
         setWalletAmount?: (amount: string) => void;
@@ -42,6 +47,25 @@ export class ProFlowService {
 
     setAppCallbacks(callbacks: typeof this.appCallbacks) {
         this.appCallbacks = callbacks;
+    }
+
+    setMode(mode: ProFlowMode) {
+        this.mode = mode;
+    }
+
+    getMode(): ProFlowMode {
+        return this.mode;
+    }
+
+    setConfirmationCallback(callback: () => void) {
+        this.confirmationCallback = callback;
+    }
+
+    continueFromManualPause() {
+        if (this.isPaused && this.confirmationCallback) {
+            this.isPaused = false;
+            this.confirmationCallback();
+        }
     }
 
     private showToast(message: string, type: ProFlowToast['type'] = 'info', duration = 3000) {
@@ -163,8 +187,10 @@ export class ProFlowService {
 
         this.isRunning = true;
         this.currentStep = 0;
+        this.isPaused = false;
 
-        this.showToast('🎯 ProFlow initialized! Starting intelligent automation sequence...', 'info', 3000);
+        const modeText = this.mode === 'auto' ? 'Auto' : 'Manual';
+        this.showToast(`🎯 ProFlow ${modeText} mode initialized! Starting intelligent automation sequence...`, 'info', 3000);
 
         for (let i = 0; i < this.steps.length; i++) {
             if (!this.isRunning) break;
@@ -174,7 +200,20 @@ export class ProFlowService {
 
             try {
                 await step.action();
-                if (step.delay && i < this.steps.length - 1) {
+
+                // In manual mode, pause after each step (except the last one)
+                if (this.mode === 'manual' && i < this.steps.length - 1) {
+                    this.isPaused = true;
+                    this.showToast(`⏸️ Step "${step.name}" complete. Click Continue to proceed to next step.`, 'info', 6000);
+                    
+                    // Wait for user confirmation
+                    await new Promise<void>(resolve => {
+                        this.confirmationCallback = resolve;
+                    });
+                }
+
+                // In auto mode, use the original delay
+                if (this.mode === 'auto' && step.delay && i < this.steps.length - 1) {
                     await new Promise(resolve => setTimeout(resolve, step.delay));
                 }
             } catch (error) {
@@ -185,6 +224,7 @@ export class ProFlowService {
 
         this.isRunning = false;
         this.currentStep = 0;
+        this.isPaused = false;
     }
 
     stopProFlow() {
@@ -194,6 +234,7 @@ export class ProFlowService {
         }
 
         this.isRunning = false;
+        this.isPaused = false;
         this.showToast('🛑 ProFlow automation stopped by user.', 'info');
     }
 
@@ -202,7 +243,9 @@ export class ProFlowService {
             isRunning: this.isRunning,
             currentStep: this.currentStep,
             totalSteps: this.steps.length,
-            currentStepName: this.steps[this.currentStep]?.name || 'Idle'
+            currentStepName: this.steps[this.currentStep]?.name || 'Idle',
+            mode: this.mode,
+            isPaused: this.isPaused
         };
     }
 
