@@ -26,7 +26,7 @@ export const AssetResultCard: React.FC<AssetResultCardProps> = ({ analysis, them
             return (
                  <div className="flex flex-col items-center justify-center gap-4 p-8 text-gray-600 dark:text-gray-400 min-h-[300px]">
                     <Spinner className="h-8 w-8 text-indigo-500" />
-                    <p className="text-lg font-medium animate-pulse">Analyzing {symbol}...</p>
+                    <p className="text-lg font-medium animate-pulse">Analyzing {symbol.symbol}...</p>
                 </div>
             );
         }
