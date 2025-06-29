@@ -1,0 +1,142 @@
+Generating 100 realistic mock data points for MSFT with timeframe 7d
+marketDataService.ts:109 ✅ Successfully generated 100 realistic mock data points for MSFT
+marketDataService.ts:54 Generating 100 realistic mock data points for GOOG with timeframe 7d
+marketDataService.ts:109 ✅ Successfully generated 100 realistic mock data points for GOOG
+ResultsSection.tsx:38 Encountered two children with the same key, `[object Object]`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.
+(anonymous) @ react-dom_client.js?v=c7e49b44:5749
+runWithFiberInDEV @ react-dom_client.js?v=c7e49b44:1485
+warnOnInvalidKey @ react-dom_client.js?v=c7e49b44:5748
+reconcileChildrenArray @ react-dom_client.js?v=c7e49b44:5789
+reconcileChildFibersImpl @ react-dom_client.js?v=c7e49b44:5995
+(anonymous) @ react-dom_client.js?v=c7e49b44:6061
+reconcileChildren @ react-dom_client.js?v=c7e49b44:6444
+beginWork @ react-dom_client.js?v=c7e49b44:7830
+runWithFiberInDEV @ react-dom_client.js?v=c7e49b44:1485
+performUnitOfWork @ react-dom_client.js?v=c7e49b44:10868
+workLoopSync @ react-dom_client.js?v=c7e49b44:10728
+renderRootSync @ react-dom_client.js?v=c7e49b44:10711
+performWorkOnRoot @ react-dom_client.js?v=c7e49b44:10330
+performSyncWorkOnRoot @ react-dom_client.js?v=c7e49b44:11635
+flushSyncWorkAcrossRoots_impl @ react-dom_client.js?v=c7e49b44:11536
+processRootScheduleInMicrotask @ react-dom_client.js?v=c7e49b44:11558
+(anonymous) @ react-dom_client.js?v=c7e49b44:11649
+<AssetResultCard>
+exports.jsxDEV @ react_jsx-dev-runtime.js?v=c7e49b44:250
+(anonymous) @ ResultsSection.tsx:38
+ResultsSection @ ResultsSection.tsx:37
+react-stack-bottom-frame @ react-dom_client.js?v=c7e49b44:17424
+renderWithHooksAgain @ react-dom_client.js?v=c7e49b44:4281
+renderWithHooks @ react-dom_client.js?v=c7e49b44:4217
+updateFunctionComponent @ react-dom_client.js?v=c7e49b44:6619
+beginWork @ react-dom_client.js?v=c7e49b44:7654
+runWithFiberInDEV @ react-dom_client.js?v=c7e49b44:1485
+performUnitOfWork @ react-dom_client.js?v=c7e49b44:10868
+workLoopSync @ react-dom_client.js?v=c7e49b44:10728
+renderRootSync @ react-dom_client.js?v=c7e49b44:10711
+performWorkOnRoot @ react-dom_client.js?v=c7e49b44:10330
+performSyncWorkOnRoot @ react-dom_client.js?v=c7e49b44:11635
+flushSyncWorkAcrossRoots_impl @ react-dom_client.js?v=c7e49b44:11536
+processRootScheduleInMicrotask @ react-dom_client.js?v=c7e49b44:11558
+(anonymous) @ react-dom_client.js?v=c7e49b44:11649Understand this error
+ResultsSection.tsx:38 Encountered two children with the same key, `[object Object]`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.
+(anonymous) @ react-dom_client.js?v=c7e49b44:5749
+runWithFiberInDEV @ react-dom_client.js?v=c7e49b44:1485
+warnOnInvalidKey @ react-dom_client.js?v=c7e49b44:5748
+reconcileChildrenArray @ react-dom_client.js?v=c7e49b44:5789
+reconcileChildFibersImpl @ react-dom_client.js?v=c7e49b44:5995
+(anonymous) @ react-dom_client.js?v=c7e49b44:6061
+reconcileChildren @ react-dom_client.js?v=c7e49b44:6444
+beginWork @ react-dom_client.js?v=c7e49b44:7830
+runWithFiberInDEV @ react-dom_client.js?v=c7e49b44:1485
+performUnitOfWork @ react-dom_client.js?v=c7e49b44:10868
+workLoopSync @ react-dom_client.js?v=c7e49b44:10728
+renderRootSync @ react-dom_client.js?v=c7e49b44:10711
+performWorkOnRoot @ react-dom_client.js?v=c7e49b44:10359
+performSyncWorkOnRoot @ react-dom_client.js?v=c7e49b44:11635
+flushSyncWorkAcrossRoots_impl @ react-dom_client.js?v=c7e49b44:11536
+processRootScheduleInMicrotask @ react-dom_client.js?v=c7e49b44:11558
+(anonymous) @ react-dom_client.js?v=c7e49b44:11649
+<AssetResultCard>
+exports.jsxDEV @ react_jsx-dev-runtime.js?v=c7e49b44:250
+(anonymous) @ ResultsSection.tsx:38
+ResultsSection @ ResultsSection.tsx:37
+react-stack-bottom-frame @ react-dom_client.js?v=c7e49b44:17424
+renderWithHooksAgain @ react-dom_client.js?v=c7e49b44:4281
+renderWithHooks @ react-dom_client.js?v=c7e49b44:4217
+updateFunctionComponent @ react-dom_client.js?v=c7e49b44:6619
+beginWork @ react-dom_client.js?v=c7e49b44:7654
+runWithFiberInDEV @ react-dom_client.js?v=c7e49b44:1485
+performUnitOfWork @ react-dom_client.js?v=c7e49b44:10868
+workLoopSync @ react-dom_client.js?v=c7e49b44:10728
+renderRootSync @ react-dom_client.js?v=c7e49b44:10711
+performWorkOnRoot @ react-dom_client.js?v=c7e49b44:10359
+performSyncWorkOnRoot @ react-dom_client.js?v=c7e49b44:11635
+flushSyncWorkAcrossRoots_impl @ react-dom_client.js?v=c7e49b44:11536
+processRootScheduleInMicrotask @ react-dom_client.js?v=c7e49b44:11558
+(anonymous) @ react-dom_client.js?v=c7e49b44:11649Understand this error
+react-dom_client.js?v=c7e49b44:5440 Uncaught Error: Objects are not valid as a React child (found: object with keys {symbol, name, currency, stockExchange, exchangeShortName}). If you meant to render a collection of children, use an array instead.
+    at throwOnInvalidObjectType (react-dom_client.js?v=c7e49b44:5440:15)
+    at createChild (react-dom_client.js?v=c7e49b44:5608:13)
+    at reconcileChildrenArray (react-dom_client.js?v=c7e49b44:5789:26)
+    at reconcileChildFibersImpl (react-dom_client.js?v=c7e49b44:5995:88)
+    at react-dom_client.js?v=c7e49b44:6061:35
+    at reconcileChildren (react-dom_client.js?v=c7e49b44:6444:53)
+    at beginWork (react-dom_client.js?v=c7e49b44:7830:104)
+    at runWithFiberInDEV (react-dom_client.js?v=c7e49b44:1485:72)
+    at performUnitOfWork (react-dom_client.js?v=c7e49b44:10868:98)
+    at workLoopSync (react-dom_client.js?v=c7e49b44:10728:43)
+throwOnInvalidObjectType @ react-dom_client.js?v=c7e49b44:5440
+createChild @ react-dom_client.js?v=c7e49b44:5608
+reconcileChildrenArray @ react-dom_client.js?v=c7e49b44:5789
+reconcileChildFibersImpl @ react-dom_client.js?v=c7e49b44:5995
+(anonymous) @ react-dom_client.js?v=c7e49b44:6061
+reconcileChildren @ react-dom_client.js?v=c7e49b44:6444
+beginWork @ react-dom_client.js?v=c7e49b44:7830
+runWithFiberInDEV @ react-dom_client.js?v=c7e49b44:1485
+performUnitOfWork @ react-dom_client.js?v=c7e49b44:10868
+workLoopSync @ react-dom_client.js?v=c7e49b44:10728
+renderRootSync @ react-dom_client.js?v=c7e49b44:10711
+performWorkOnRoot @ react-dom_client.js?v=c7e49b44:10359
+performSyncWorkOnRoot @ react-dom_client.js?v=c7e49b44:11635
+flushSyncWorkAcrossRoots_impl @ react-dom_client.js?v=c7e49b44:11536
+processRootScheduleInMicrotask @ react-dom_client.js?v=c7e49b44:11558
+(anonymous) @ react-dom_client.js?v=c7e49b44:11649
+<h2>
+exports.jsxDEV @ react_jsx-dev-runtime.js?v=c7e49b44:250
+AssetResultCard @ AssetResultCard.tsx:66
+react-stack-bottom-frame @ react-dom_client.js?v=c7e49b44:17424
+renderWithHooksAgain @ react-dom_client.js?v=c7e49b44:4281
+renderWithHooks @ react-dom_client.js?v=c7e49b44:4217
+updateFunctionComponent @ react-dom_client.js?v=c7e49b44:6619
+beginWork @ react-dom_client.js?v=c7e49b44:7654
+runWithFiberInDEV @ react-dom_client.js?v=c7e49b44:1485
+performUnitOfWork @ react-dom_client.js?v=c7e49b44:10868
+workLoopSync @ react-dom_client.js?v=c7e49b44:10728
+renderRootSync @ react-dom_client.js?v=c7e49b44:10711
+performWorkOnRoot @ react-dom_client.js?v=c7e49b44:10359
+performSyncWorkOnRoot @ react-dom_client.js?v=c7e49b44:11635
+flushSyncWorkAcrossRoots_impl @ react-dom_client.js?v=c7e49b44:11536
+processRootScheduleInMicrotask @ react-dom_client.js?v=c7e49b44:11558
+(anonymous) @ react-dom_client.js?v=c7e49b44:11649
+<AssetResultCard>
+exports.jsxDEV @ react_jsx-dev-runtime.js?v=c7e49b44:250
+(anonymous) @ ResultsSection.tsx:38
+ResultsSection @ ResultsSection.tsx:37
+react-stack-bottom-frame @ react-dom_client.js?v=c7e49b44:17424
+renderWithHooksAgain @ react-dom_client.js?v=c7e49b44:4281
+renderWithHooks @ react-dom_client.js?v=c7e49b44:4217
+updateFunctionComponent @ react-dom_client.js?v=c7e49b44:6619
+beginWork @ react-dom_client.js?v=c7e49b44:7654
+runWithFiberInDEV @ react-dom_client.js?v=c7e49b44:1485
+performUnitOfWork @ react-dom_client.js?v=c7e49b44:10868
+workLoopSync @ react-dom_client.js?v=c7e49b44:10728
+renderRootSync @ react-dom_client.js?v=c7e49b44:10711
+performWorkOnRoot @ react-dom_client.js?v=c7e49b44:10359
+performSyncWorkOnRoot @ react-dom_client.js?v=c7e49b44:11635
+flushSyncWorkAcrossRoots_impl @ react-dom_client.js?v=c7e49b44:11536
+processRootScheduleInMicrotask @ react-dom_client.js?v=c7e49b44:11558
+(anonymous) @ react-dom_client.js?v=c7e49b44:11649Understand this error
+AssetResultCard.tsx:66 An error occurred in the <h2> component.
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://react.dev/link/error-boundaries to learn more about error boundaries.
