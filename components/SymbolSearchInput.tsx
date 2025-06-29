@@ -91,12 +91,12 @@ export const SymbolSearchInput: React.FC<SymbolSearchInputProps> = ({ selectedSy
                     Asset Symbols
                     {marketType === 'STOCKS' ? ' (e.g., AAPL, TSLA)' : ''}
                 </label>
-                {marketType !== 'STOCKS' && getSymbolsForMarket().length === 0 && (
+                {marketType !== 'STOCKS' && market && getSymbolsForMarket().length === 0 && (
                     <p className="text-sm text-amber-600 dark:text-amber-400 mb-2">
                         This market selection doesn't have predefined symbols. Please select a different market.
                     </p>
                 )}
-                {marketType === 'STOCKS' && market && getSymbolsForMarket().length === 0 && (
+                {marketType === 'STOCKS' && market === 'US' && (
                     <p className="text-sm text-green-600 dark:text-green-400 mb-2">
                         Search any US stock symbol (NASDAQ/NYSE).
                     </p>
@@ -117,7 +117,7 @@ export const SymbolSearchInput: React.FC<SymbolSearchInputProps> = ({ selectedSy
                                     : "Please select a market with available symbols"
                         }
                         className={inputClasses}
-                        disabled={isDisabled || (marketType !== 'STOCKS' && getSymbolsForMarket().length === 0)}
+                        disabled={isDisabled || (marketType !== 'STOCKS' && market && getSymbolsForMarket().length === 0)}
                         autoComplete="off"
                     />
                     {isDropdownOpen && (
