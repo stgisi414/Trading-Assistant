@@ -27,7 +27,6 @@ import {
     MARKET_OPTIONS,
 } from "./constants.ts";
 import { ErrorMessage } from "./components/ErrorMessage.tsx";
-import { generateChatResponse } from './services/chatbotService.ts';
 
 const getInitialDates = () => {
     const endDate = new Date();
@@ -507,31 +506,6 @@ function App() {
         setSelectedMarket: handleMarketChange,
         handleAnalyze
     };
-
-    // Add API handler for chatbot
-    useEffect(() => {
-        const handleChatRequest = async (event: MessageEvent) => {
-            if (event.data.type === 'GEMINI_CHAT_REQUEST') {
-                try {
-                    const response = await generateChatResponse(event.data.prompt);
-                    window.postMessage({
-                        type: 'GEMINI_CHAT_RESPONSE',
-                        id: event.data.id,
-                        response
-                    }, '*');
-                } catch (error) {
-                    window.postMessage({
-                        type: 'GEMINI_CHAT_ERROR',
-                        id: event.data.id,
-                        error: error instanceof Error ? error.message : 'Unknown error'
-                    }, '*');
-                }
-            }
-        };
-
-        window.addEventListener('message', handleChatRequest);
-        return () => window.removeEventListener('message', handleChatRequest);
-    }, []);
 
     return (
         <div className="bg-background text-foreground min-h-screen p-4 sm:p-6 md:p-8 relative overflow-hidden">

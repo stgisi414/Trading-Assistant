@@ -49,10 +49,9 @@ interface HeaderProps {
         mode: string;
         isPaused: boolean;
     };
-    onUpdateInputs?: (newInputs: any) => void;
 }
 
-export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme, currentInputs, analysisResults, profitMaxResult, proFlowStatus, onUpdateInputs }) => {
+export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme, currentInputs, analysisResults, profitMaxResult, proFlowStatus }) => {
     const [isChatbotOpen, setIsChatbotOpen] = useState(false);
 
     return (
@@ -111,14 +110,11 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme, currentInput
             </button>
 
             {/* Signatex Chatbot */}
-            <SignatexChatbot 
-                isOpen={isChatbotOpen} 
+            <SignatexChatbot
+                isOpen={isChatbotOpen}
                 onClose={() => setIsChatbotOpen(false)}
                 currentInputs={currentInputs}
                 analysisResults={analysisResults}
-                profitMaxResult={profitMaxResult}
-                proFlowStatus={proFlowStatus}
-                onUpdateInputs={onUpdateInputs}
             />
         </>
     );
