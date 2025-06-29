@@ -278,7 +278,17 @@ export const InputSection: React.FC<InputSectionProps> = ({
                         disabled={isLoading}
                         className="w-full bg-green-600 hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600 disabled:bg-gray-400 disabled:text-gray-200 text-white font-semibold py-4 px-8 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-[1.02] disabled:transform-none flex items-center justify-center gap-3 text-lg"
                     >
-                        {isLoading ? <><Spinner className="text-white" /> Optimizing...</> : `Signatex ProfitMax`}
+                        {isLoading ? (
+                            <>
+                                <Spinner className="text-white" /> 
+                                Optimizing...
+                            </>
+                        ) : (
+                            <>
+                                <span className="material-symbols-outlined text-xl">finance_mode</span>
+                                Signatex ProfitMax
+                            </>
+                        )}
                     </button>
                     <button
                         onClick={onAnalyze}
