@@ -42,8 +42,6 @@ function App() {
             ? "dark"
             : "light";
     });
-    const [marketType, setMarketType] = useState("STOCKS");
-    const [market, setMarket] = useState("US");
     const [selectedSymbols, setSelectedSymbols] = useState<FmpSearchResult[]>(
         [],
     );
@@ -181,6 +179,18 @@ function App() {
         localStorage.setItem("tradingApp_selectedMarket", selectedMarket);
     }, [selectedMarket]);
 
+    const onAddSymbol = (symbol: FmpSearchResult) => {
+        // Adds a symbol if it's not already in the list
+        if (!selectedSymbols.find(s => s.symbol === symbol.symbol)) {
+            setSelectedSymbols(prev => [...prev, symbol]);
+        }
+    };
+
+    const onRemoveSymbol = (symbol: string) => {
+        // Removes a symbol from the list
+        setSelectedSymbols(prev => prev.filter(s => s.symbol !== symbol));
+    };
+
     const toggleTheme = () => {
         setTheme((prev) => {
             const newTheme = prev === "light" ? "dark" : "light";
@@ -190,22 +200,23 @@ function App() {
     };
 
     const handleMarketTypeChange = (newMarketType: string) => {
-        setMarketType(newMarketType);
+        setSelectedMarketType(newMarketType as MarketType); // Use your original setter
         const newMarket = MARKET_OPTIONS[newMarketType]?.[0]?.value || "";
-        setMarket(newMarket);
-        setSelectedSymbols([]); // Clear symbols on market type change
+        setSelectedMarket(newMarket); // Use your original setter
+        setSelectedSymbols([]); 
     };
 
     const handleMarketChange = (newMarket: string) => {
-        setMarket(newMarket);
-        setSelectedSymbols([]); // Clear symbols on market change
+        setSelectedMarket(newMarket); // Use your original setter
+        setSelectedSymbols([]); 
     };
 
     const currentMarketSymbols = useMemo(() => {
-        if (!marketType || !market) return [];
-        const marketData = MARKET_OPTIONS[marketType]?.find(m => m.value === market);
+        // Depend on your original state variables
+        if (!selectedMarketType || !selectedMarket) return []; 
+        const marketData = MARKET_OPTIONS[selectedMarketType]?.find(m => m.value === selectedMarket);
         return marketData?.symbols?.map(s => s.symbol) || [];
-      }, [marketType, market]);
+    }, [selectedMarketType, selectedMarket]); // Update dependencies
 
       useEffect(() => {
         setSelectedSymbols(prevSymbols =>
@@ -399,7 +410,10 @@ function App() {
                     theme={theme}
                     toggleTheme={toggleTheme}
                     currentInputs={{
-                        selectedSymbols,
+                        // This is the line you need to change:
+                        selectedSymbols: selectedSymbols.map(s => s.symbol),
+
+                        // The rest of the props remain the same
                         walletAmount,
                         selectedIndicators,
                         selectedNonTechnicalIndicators,
@@ -420,10 +434,8 @@ function App() {
                         <div className="relative z-10">
                             <InputSection
                                 selectedSymbols={selectedSymbols}
-                                // Pass the functions to add/remove symbols
                                 onAddSymbol={onAddSymbol}
                                 onRemoveSymbol={onRemoveSymbol}
-                                // The rest of the props remain the same
                                 walletAmount={walletAmount}
                                 setWalletAmount={setWalletAmount}
                                 startDate={dates.startDate}
