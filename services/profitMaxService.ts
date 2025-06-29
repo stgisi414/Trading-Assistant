@@ -45,25 +45,28 @@ interface OptimizationCandidate {
 
 const TIER_CONFIGS = {
     light: {
+        maxSymbolsToTest: 5,
+        maxTimeframesToTest: 1,
+        maxIndicatorCombinations: 1,
+        maxWalletAmounts: 1,
+        maxTotalCombinations: 5,
+        description: 'Quick optimization (~2-5 minutes)'
+    },
+    pro: {
+        maxSymbolsToTest: 8,
+        maxTimeframesToTest: 2,
+        maxIndicatorCombinations: 2,
+        maxWalletAmounts: 2,
+        maxTotalCombinations: 10,
+        description: 'Comprehensive optimization (~5-10 minutes)'
+    },
+    ultra: {
         maxSymbolsToTest: 10,
         maxTimeframesToTest: 3,
         maxIndicatorCombinations: 3,
-        maxWalletAmounts: 3,
-        description: 'Quick optimization with basic parameter testing'
-    },
-    pro: {
-        maxSymbolsToTest: 25,
-        maxTimeframesToTest: 6,
-        maxIndicatorCombinations: 8,
-        maxWalletAmounts: 5,
-        description: 'Comprehensive optimization with extended parameter testing'
-    },
-    ultra: {
-        maxSymbolsToTest: 50,
-        maxTimeframesToTest: 10,
-        maxIndicatorCombinations: 15,
-        maxWalletAmounts: 8,
-        description: 'Maximum optimization with full parameter space exploration'
+        maxWalletAmounts: 2,
+        maxTotalCombinations: 15,
+        description: 'Maximum optimization (~10-15 minutes)'
     }
 };
 
@@ -239,24 +242,27 @@ export const runProfitMaxOptimization = async (
     const walletAmounts = generateWalletAmounts(config.initialWalletAmount, tierConfig.maxWalletAmounts);
     const timeframes = TIMEFRAME_OPTIONS.slice(0, tierConfig.maxTimeframesToTest).map(t => t.value);
     
-    const totalCombinations = Math.min(
-        symbolCandidates.length * indicatorCombinations.length * walletAmounts.length * timeframes.length,
-        config.tier === 'light' ? 50 : config.tier === 'pro' ? 200 : 500
-    );
+    const totalCombinations = tierConfig.maxTotalCombinations;
     
     onProgress?.(10, `Analyzing ${totalCombinations} optimization combinations...`);
     
     const optimizationCandidates: OptimizationCandidate[] = [];
     let processedCombinations = 0;
     
-    // Test different combinations
+    // Test different combinations efficiently
+    let combinationsProcessed = 0;
+    
     for (const timeframe of timeframes) {
+        if (combinationsProcessed >= totalCombinations) break;
+        
         for (const indicators of indicatorCombinations) {
+            if (combinationsProcessed >= totalCombinations) break;
+            
             for (const walletAmount of walletAmounts) {
-                if (optimizationCandidates.length >= totalCombinations) break;
+                if (combinationsProcessed >= totalCombinations) break;
                 
                 // Select top symbols for this combination (limit to maxSymbols)
-                const selectedSymbols = symbolCandidates.slice(0, config.maxSymbols);
+                const selectedSymbols = symbolCandidates.slice(0, Math.min(config.maxSymbols, 3));
                 
                 try {
                     const analyses = await analyzeSymbolsWithConfig(selectedSymbols, walletAmount, indicators, timeframe);
@@ -272,12 +278,13 @@ export const runProfitMaxOptimization = async (
                         analyses
                     });
                     
-                    processedCombinations++;
-                    const progress = 10 + (processedCombinations / totalCombinations) * 80;
-                    onProgress?.(progress, `Processed ${processedCombinations}/${totalCombinations} combinations...`);
+                    combinationsProcessed++;
+                    const progress = 10 + (combinationsProcessed / totalCombinations) * 80;
+                    onProgress?.(progress, `Processed ${combinationsProcessed}/${totalCombinations} combinations...`);
                     
                 } catch (error) {
                     console.error('Error in optimization candidate:', error);
+                    combinationsProcessed++;
                 }
             }
         }
@@ -306,7 +313,7 @@ export const runProfitMaxOptimization = async (
         expectedProfitPercentage: bestCandidate.expectedProfit,
         confidence: bestCandidate.confidence,
         optimizationDetails: {
-            symbolsAnalyzed: symbolCandidates.length,
+            symbolsAnalyzed: Math.min(symbolCandidates.length, 10),
             timeframesAnalyzed: timeframes.length,
             indicatorCombinationsAnalyzed: indicatorCombinations.length,
             walletAmountsAnalyzed: walletAmounts.length,
