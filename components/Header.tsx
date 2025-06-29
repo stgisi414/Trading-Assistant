@@ -40,9 +40,18 @@ interface HeaderProps {
         endDate?: string;
     };
     analysisResults?: any[];
+    profitMaxResult?: any;
+    proFlowStatus?: {
+        isRunning: boolean;
+        currentStep: number;
+        totalSteps: number;
+        currentStepName: string;
+        mode: string;
+        isPaused: boolean;
+    };
 }
 
-export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme, currentInputs, analysisResults }) => {
+export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme, currentInputs, analysisResults, profitMaxResult, proFlowStatus }) => {
     const [isChatbotOpen, setIsChatbotOpen] = useState(false);
 
     return (
