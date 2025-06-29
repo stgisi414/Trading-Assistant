@@ -323,17 +323,6 @@ function App() {
         setProFlowToasts(prev => prev.filter(toast => toast.id !== id));
     };
 
-    // ProFlow app callbacks
-    const proFlowCallbacks = {
-        setSelectedSymbols,
-        setWalletAmount,
-        setSelectedIndicators,
-        setSelectedTimeframe: handleTimeframeChange,
-        setSelectedMarketType: handleMarketTypeChange,
-        setSelectedMarket: handleMarketChange,
-        handleAnalyze
-    };
-
     const currentMarketSymbols = useMemo(() => {
         // Depend on your original state variables
         if (!selectedMarketType || !selectedMarket) return []; 
@@ -506,6 +495,17 @@ function App() {
         selectedTimeframe,
         dates,
     ]);
+
+    // ProFlow app callbacks
+    const proFlowCallbacks = {
+        setSelectedSymbols,
+        setWalletAmount,
+        setSelectedIndicators,
+        setSelectedTimeframe: handleTimeframeChange,
+        setSelectedMarketType: handleMarketTypeChange,
+        setSelectedMarket: handleMarketChange,
+        handleAnalyze
+    };
 
     return (
         <div className="bg-background text-foreground min-h-screen p-4 sm:p-6 md:p-8 relative overflow-hidden">
