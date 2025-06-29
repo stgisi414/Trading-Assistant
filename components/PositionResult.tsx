@@ -1,180 +1,166 @@
+
 import React, { useState } from 'react';
 import type { AnalysisResult } from '../types.ts';
 import { Position } from '../types.ts';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
+import { NewsSection } from './NewsSection.tsx';
+import { ImageGallery } from './ImageGallery.tsx';
 
 interface PositionResultProps {
     result: AnalysisResult;
+    theme: 'light' | 'dark';
 }
 
-const getPositionStyles = (position: Position) => {
-    switch (position) {
-        case Position.BUY:
-            return {
-                bgColor: 'bg-green-100 dark:bg-green-900/50',
-                textColor: 'text-green-800 dark:text-green-300',
-                borderColor: 'border-green-400 dark:border-green-600',
-                label: 'BUY'
-            };
-        case Position.SELL:
-            return {
-                bgColor: 'bg-red-100 dark:bg-red-900/50',
-                textColor: 'text-red-800 dark:text-red-300',
-                borderColor: 'border-red-400 dark:border-red-600',
-                label: 'SELL'
-            };
-        case Position.HOLD:
-            return {
-                bgColor: 'bg-yellow-100 dark:bg-yellow-900/50',
-                textColor: 'text-yellow-800 dark:text-yellow-300',
-                borderColor: 'border-yellow-400 dark:border-yellow-600',
-                label: 'HOLD'
-            };
-        default:
-            return {
-                bgColor: 'bg-gray-100 dark:bg-gray-700',
-                textColor: 'text-gray-800 dark:text-gray-300',
-                borderColor: 'border-gray-400 dark:border-gray-600',
-                label: 'N/A'
-            };
-    }
-};
+export const PositionResult: React.FC<PositionResultProps> = ({ result, theme }) => {
+    const [showFullReasoning, setShowFullReasoning] = useState(false);
+    
+    const getPositionColor = (position: Position) => {
+        switch (position) {
+            case Position.LONG:
+                return 'text-green-600 dark:text-green-400';
+            case Position.SHORT:
+                return 'text-red-600 dark:text-red-400';
+            case Position.HOLD:
+                return 'text-yellow-600 dark:text-yellow-400';
+            default:
+                return 'text-gray-600 dark:text-gray-400';
+        }
+    };
 
-interface ImageGalleryProps {
-    images: string[];
-    title: string;
-}
+    const getPositionIcon = (position: Position) => {
+        switch (position) {
+            case Position.LONG:
+                return '📈';
+            case Position.SHORT:
+                return '📉';
+            case Position.HOLD:
+                return '⏸️';
+            default:
+                return '❓';
+        }
+    };
 
-const ImageGallery: React.FC<ImageGalleryProps> = ({ images, title }) => {
-    return (
-        <div className="flex flex-wrap gap-2">
-            {images.map((src, index) => (
-                <img key={index} src={src} alt={`${title} ${index + 1}`} className="max-w-[100px] max-h-[100px] rounded-md object-cover" />
-            ))}
-        </div>
-    );
-};
-
-export const PositionResult: React.FC<PositionResultProps> = ({ result }) => {
-    const { position, confidence, reasoning } = result;
-    const styles = getPositionStyles(position);
-    const labelColor = 'text-gray-600 dark:text-gray-400';
-
-    const [isExpanded, setIsExpanded] = useState(false);
-    const toggleExpanded = () => setIsExpanded(!isExpanded);
-
-    // Split reasoning into paragraphs
-    const reasoningParagraphs = reasoning ? reasoning.split('\n').filter(p => p.trim() !== '') : [];
-    const firstParagraph = reasoningParagraphs.length > 0 ? reasoningParagraphs[0] : '';
-    const hasMoreContent = reasoningParagraphs.length > 1;
+    const truncateText = (text: string, maxLength: number = 200) => {
+        if (text.length <= maxLength) return text;
+        return text.substring(0, maxLength) + '...';
+    };
 
     return (
-        <div className={`p-6 rounded-lg border-2 ${styles.borderColor} ${styles.bgColor} shadow-md transition-all duration-300`}>
-            <div className="grid md:grid-cols-2 gap-6 mb-6">
-                <div>
-                    <h3 className={`text-lg font-semibold ${labelColor} mb-1`}>Recommended Position</h3>
-                    <p className={`text-5xl font-extrabold ${styles.textColor}`}>{styles.label}</p>
-                </div>
-                <div>
-                    <h3 className={`text-lg font-semibold ${labelColor} mb-1`}>Confidence Level</h3>
-                    <p className={`text-5xl font-extrabold ${styles.textColor}`}>{confidence}</p>
-                </div>
-            </div>
-            <div>
-                <h3 className={`text-lg font-semibold ${labelColor} mb-2`}>AI-Generated Reasoning</h3>
-                <div className="text-gray-700 dark:text-gray-300 leading-relaxed prose prose-sm dark:prose-invert max-w-none">
-                    <ReactMarkdown
-                        remarkPlugins={[remarkGfm]}
-                        components={{
-                            h1: ({ children }) => <h1 className="text-lg font-bold text-gray-900 dark:text-white mb-2">{children}</h1>,
-                            h2: ({ children }) => <h2 className="text-md font-semibold text-gray-800 dark:text-gray-200 mb-2">{children}</h2>,
-                            h3: ({ children }) => <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{children}</h3>,
-                            p: ({ children }) => <p className="mb-2">{children}</p>,
-                            ul: ({ children }) => <ul className="list-disc list-inside mb-2 space-y-1">{children}</ul>,
-                            ol: ({ children }) => <ol className="list-decimal list-inside mb-2 space-y-1">{children}</ol>,
-                            li: ({ children }) => <li className="text-sm">{children}</li>,
-                            strong: ({ children }) => <strong className="font-semibold text-gray-900 dark:text-white">{children}</strong>,
-                            em: ({ children }) => <em className="italic">{children}</em>,
-                            code: ({ children }) => <code className="bg-accent px-1 py-0.5 rounded text-xs font-mono">{children}</code>,
-                            blockquote: ({ children }) => <blockquote className="border-l-4 border-blue-500 pl-4 italic bg-blue-50 dark:bg-blue-900/20 py-2">{children}</blockquote>
-                        }}
-                    >
-                        {isExpanded ? reasoning : firstParagraph}
-                    </ReactMarkdown>
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 border border-gray-200 dark:border-gray-700">
+            {/* Header with Symbol and Position */}
+            <div className="flex items-center justify-between mb-4">
+                <h3 className="text-xl font-bold text-gray-800 dark:text-gray-200">
+                    {result.symbol}
+                </h3>
+                <div className={`text-lg font-semibold ${getPositionColor(result.position)}`}>
+                    {getPositionIcon(result.position)} {result.position}
                 </div>
             </div>
 
-            <div className="mt-4">
+            {/* Symbol Logo */}
+            {result.symbolLogo && result.symbolLogo.length > 0 && (
+                <div className="mb-4">
+                    <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Company Logo
+                    </h4>
+                    <ImageGallery 
+                        images={result.symbolLogo} 
+                        title="Company Logo" 
+                        theme={theme}
+                    />
+                </div>
+            )}
+
+            {/* Confidence Score */}
+            <div className="mb-4">
                 <div className="flex items-center justify-between mb-2">
-                    <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center gap-2">
-                        <span className="material-symbols-outlined text-base">psychology</span>
+                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                        Confidence Score
+                    </span>
+                    <span className="text-sm font-bold text-gray-800 dark:text-gray-200">
+                        {result.confidence}%
+                    </span>
+                </div>
+                <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                    <div 
+                        className="bg-indigo-600 h-2 rounded-full transition-all duration-300"
+                        style={{ width: `${result.confidence}%` }}
+                    ></div>
+                </div>
+            </div>
+
+            {/* Reasoning */}
+            <div className="mb-4">
+                <div className="flex items-center justify-between mb-2">
+                    <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300">
                         Analysis Reasoning
                     </h4>
-                    {hasMoreContent && (
+                    {result.reasoning && result.reasoning.length > 200 && (
                         <button
-                            onClick={toggleExpanded}
-                            className="text-xs text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 flex items-center gap-1 transition-colors"
+                            onClick={() => setShowFullReasoning(!showFullReasoning)}
+                            className="text-xs text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 font-medium"
                         >
-                            <span>{isExpanded ? 'Show Less' : 'Show More'}</span>
-                            <span className={`material-symbols-outlined text-sm transition-transform ${isExpanded ? 'rotate-180' : ''}`}>
-                                expand_more
-                            </span>
+                            {showFullReasoning ? 'Show Less' : 'Show More'}
                         </button>
                     )}
                 </div>
-                <div className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed bg-gray-50 dark:bg-gray-800/50 p-3 rounded-lg border border-gray-200 dark:border-gray-700">
-                    {isExpanded ? (
-                        <div className="space-y-3">
-                            {reasoningParagraphs.map((paragraph, index) => (
-                                <p key={index}>{paragraph}</p>
-                            ))}
-                        </div>
-                    ) : (
-                        <p>{firstParagraph}</p>
-                    )}
-                </div>
+                <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
+                    {showFullReasoning ? result.reasoning : truncateText(result.reasoning || '')}
+                </p>
             </div>
 
-            {/* Symbol Logo Display */}
-            {result.symbolLogo && result.symbolLogo.length > 0 && (
-                <div className="mt-4">
-                    <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 flex items-center gap-2">
-                        <span className="material-symbols-outlined text-base">business</span>
-                        Company Logo
+            {/* Reasoning Illustrations */}
+            {result.reasoningIllustrations && result.reasoningIllustrations.length > 0 && (
+                <div className="mb-4">
+                    <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Analysis Illustrations
                     </h4>
-                    <ImageGallery images={result.symbolLogo} title="Symbol Logo" />
+                    <ImageGallery 
+                        images={result.reasoningIllustrations} 
+                        title="Analysis Illustrations" 
+                        theme={theme}
+                    />
                 </div>
             )}
 
-            {/* Reasoning Illustrations Display */}
-            {result.reasoningIllustrations && result.reasoningIllustrations.length > 0 && (
-                <div className="mt-4">
-                    <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 flex items-center gap-2">
-                        <span className="material-symbols-outlined text-base">analytics</span>
-                        Analysis Illustrations
-                    </h4>
-                    <ImageGallery images={result.reasoningIllustrations} title="Technical Analysis" />
+            {/* Entry and Exit Points */}
+            {(result.entryPoint || result.exitPoint) && (
+                <div className="grid grid-cols-2 gap-4 mb-4">
+                    {result.entryPoint && (
+                        <div>
+                            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                Entry Point
+                            </span>
+                            <p className="text-lg font-bold text-green-600 dark:text-green-400">
+                                ${result.entryPoint.toFixed(2)}
+                            </p>
+                        </div>
+                    )}
+                    {result.exitPoint && (
+                        <div>
+                            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                Exit Point
+                            </span>
+                            <p className="text-lg font-bold text-red-600 dark:text-red-400">
+                                ${result.exitPoint.toFixed(2)}
+                            </p>
+                        </div>
+                    )}
                 </div>
             )}
-             {/* News Results Display - Assuming newsResults is part of the result */}
-             {result.newsResults && result.newsResults.length > 0 && (
-                <div className="mt-4">
-                    <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 flex items-center gap-2">
-                        <span className="material-symbols-outlined text-base">article</span>
-                        News Results
-                    </h4>
-                    <ul>
-                        {result.newsResults.map((news, index) => (
-                            <li key={index} className="mb-2">
-                                <a href={news.url} target="_blank" rel="noopener noreferrer" className="text-indigo-600 dark:text-indigo-400 hover:underline">
-                                    {news.title}
-                                </a>
-                                <p className="text-xs text-gray-500 dark:text-gray-400">{news.source} - {news.date}</p>
-                                <p className="text-sm text-gray-600 dark:text-gray-300">{news.description}</p>
-                            </li>
-                        ))}
-                    </ul>
+
+            {/* News Section */}
+            {result.news && result.news.length > 0 && (
+                <div className="mb-4">
+                    <NewsSection news={result.news} theme={theme} />
+                </div>
+            )}
+
+            {/* No News Message */}
+            {(!result.news || result.news.length === 0) && (
+                <div className="mb-4 p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-lg">
+                    <p className="text-yellow-800 dark:text-yellow-200 text-sm">
+                        No news articles found for this analysis. This could indicate API configuration issues.
+                    </p>
                 </div>
             )}
         </div>

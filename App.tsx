@@ -4,6 +4,7 @@ import { InputSection } from "./components/InputSection.tsx";
 import { ResultsSection } from "./components/ResultsSection.tsx";
 import { ProfitMaxModal } from "./components/ProfitMaxModal.tsx";
 import { ProfitMaxResultsModal } from "./components/ProfitMaxResultsModal.tsx";
+import { DebugPage } from './components/DebugPage.tsx';
 import { getTradingPosition } from "./services/geminiService.ts";
 import { fetchHistoricalData } from "./services/marketDataService.ts";
 import { analyzeChartPatterns } from "./services/patternAnalysisService.ts";
@@ -102,11 +103,14 @@ function App() {
     const [analyses, setAnalyses] = useState<AssetAnalysis[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    
+
     // ProfitMax state
     const [isProfitMaxModalOpen, setIsProfitMaxModalOpen] = useState(false);
     const [isProfitMaxResultsModalOpen, setIsProfitMaxResultsModalOpen] = useState(false);
     const [profitMaxResult, setProfitMaxResult] = useState<OptimizationResult | null>(null);
+    const [showProfitMaxResults, setShowProfitMaxResults] = useState(false);
+    const [profitMaxResults, setProfitMaxResults] = useState<any>(null);
+    const [showDebugPage, setShowDebugPage] = useState(false);
 
     useEffect(() => {
         const root = window.document.documentElement;
@@ -222,9 +226,9 @@ function App() {
     const calculateStartDateFromTimeframe = (timeframe: string, endDate: string): string => {
         const end = new Date(endDate);
         const timeframeLower = timeframe.toLowerCase();
-        
+
         let daysToSubtract = 30; // default
-        
+
         // Minutes/Hours - same day
         if (timeframeLower.includes('m') && !timeframeLower.includes('m')) {
             // Handle minutes (5m, 15m, 30m) and hours (1h, 4h, 12h)
@@ -271,7 +275,7 @@ function App() {
                  timeframeLower === '1h' || timeframeLower === '4h' || timeframeLower === '12h') {
             daysToSubtract = 1; // Same day for intraday timeframes
         }
-        
+
         const startDate = new Date(end.getTime() - daysToSubtract * 24 * 60 * 60 * 1000);
         return startDate.toISOString().split('T')[0];
     };
@@ -499,104 +503,123 @@ function App() {
             </div>
 
             <div className="relative z-10 max-w-7xl mx-auto flex flex-col gap-8">
-                <Header
-                    theme={theme}
-                    toggleTheme={toggleTheme}
-                    currentInputs={{
-                        // This is the line you need to change:
-                        selectedSymbols: selectedSymbols.map(s => s.symbol),
+                 <Header theme={theme} onToggleTheme={() => setTheme(theme === 'light' ? 'dark' : 'light')} />
 
-                        // The rest of the props remain the same
-                        walletAmount,
-                        selectedIndicators,
-                        selectedNonTechnicalIndicators,
-                        selectedTimeframe,
-                        selectedMarketType,
-                        includeOptionsAnalysis,
-                        includeCallOptions,
-                        includePutOptions,
-                        includeOrderAnalysis,
-                        startDate: dates.startDate,
-                        endDate: dates.endDate,
-                    }}
-                    analysisResults={analyses}
-                />
-                <main className="flex flex-col gap-3">
-                    <div className="glass-effect p-6 sm:p-8 rounded-2xl shadow-2xl border-border backdrop-blur-xl card-glow sharp-corners relative overflow-hidden">
-                        <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent dark:from-white/10 dark:to-transparent"></div>
-                        <div className="relative z-10">
-                            <InputSection
-                                selectedSymbols={selectedSymbols}
-                                onAddSymbol={onAddSymbol}
-                                onRemoveSymbol={onRemoveSymbol}
-                                walletAmount={walletAmount}
-                                setWalletAmount={setWalletAmount}
-                                startDate={dates.startDate}
-                                setStartDate={(d) =>
-                                    setDates((prev) => ({
-                                        ...prev,
-                                        startDate: d,
-                                    }))
-                                }
-                                endDate={dates.endDate}
-                                setEndDate={(d) =>
-                                    setDates((prev) => ({
-                                        ...prev,
-                                        endDate: d,
-                                    }))
-                                }
-                                selectedIndicators={selectedIndicators}
-                                setSelectedIndicators={setSelectedIndicators}
-                                indicatorOptions={INDICATOR_OPTIONS}
-                                selectedNonTechnicalIndicators={
-                                    selectedNonTechnicalIndicators
-                                }
-                                setSelectedNonTechnicalIndicators={
-                                    setSelectedNonTechnicalIndicators
-                                }
-                                nonTechnicalIndicatorOptions={
-                                    NON_TECHNICAL_INDICATOR_OPTIONS
-                                }
-                                selectedTimeframe={selectedTimeframe}
-                                setSelectedTimeframe={handleTimeframeChange}
-                                timeframeOptions={TIMEFRAME_OPTIONS}
+                {/* Debug Toggle Button */}
+                <div className="flex justify-end mb-4">
+                    <button
+                        onClick={() => setShowDebugPage(!showDebugPage)}
+                        className="px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors text-sm font-medium"
+                    >
+                        {showDebugPage ? '📊 Back to App' : '🔧 Debug Console'}
+                    </button>
+                </div>
+                {showDebugPage ? (
+                    <>
+                        <DebugPage />
+                    </>
+                ) : (
+                    <>
+                        <Header
+                            theme={theme}
+                            toggleTheme={toggleTheme}
+                            currentInputs={{
+                                // This is the line you need to change:
+                                selectedSymbols: selectedSymbols.map(s => s.symbol),
 
-                                // --- KEY CHANGES HERE ---
-                                selectedMarketType={selectedMarketType}
-                                setSelectedMarketType={handleMarketTypeChange} // Use the new handler
-                                selectedMarket={selectedMarket}
-                                setSelectedMarket={handleMarketChange}       // Use the new handler
-                                marketOptions={
-                                    MARKET_OPTIONS[selectedMarketType] || []
-                                }
+                                // The rest of the props remain the same
+                                walletAmount,
+                                selectedIndicators,
+                                selectedNonTechnicalIndicators,
+                                selectedTimeframe,
+                                selectedMarketType,
+                                includeOptionsAnalysis,
+                                includeCallOptions,
+                                includePutOptions,
+                                includeOrderAnalysis,
+                                startDate: dates.startDate,
+                                endDate: dates.endDate,
+                            }}
+                            analysisResults={analyses}
+                        />
+                        <main className="flex flex-col gap-3">
+                            <div className="glass-effect p-6 sm:p-8 rounded-2xl shadow-2xl border-border backdrop-blur-xl card-glow sharp-corners relative overflow-hidden">
+                                <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent dark:from-white/10 dark:to-transparent"></div>
+                                <div className="relative z-10">
+                                    <InputSection
+                                        selectedSymbols={selectedSymbols}
+                                        onAddSymbol={onAddSymbol}
+                                        onRemoveSymbol={onRemoveSymbol}
+                                        walletAmount={walletAmount}
+                                        setWalletAmount={setWalletAmount}
+                                        startDate={dates.startDate}
+                                        setStartDate={(d) =>
+                                            setDates((prev) => ({
+                                                ...prev,
+                                                startDate: d,
+                                            }))
+                                        }
+                                        endDate={dates.endDate}
+                                        setEndDate={(d) =>
+                                            setDates((prev) => ({
+                                                ...prev,
+                                                endDate: d,
+                                            }))
+                                        }
+                                        selectedIndicators={selectedIndicators}
+                                        setSelectedIndicators={setSelectedIndicators}
+                                        indicatorOptions={INDICATOR_OPTIONS}
+                                        selectedNonTechnicalIndicators={
+                                            selectedNonTechnicalIndicators
+                                        }
+                                        setSelectedNonTechnicalIndicators={
+                                            setSelectedNonTechnicalIndicators
+                                        }
+                                        nonTechnicalIndicatorOptions={
+                                            NON_TECHNICAL_INDICATOR_OPTIONS
+                                        }
+                                        selectedTimeframe={selectedTimeframe}
+                                        setSelectedTimeframe={handleTimeframeChange}
+                                        timeframeOptions={TIMEFRAME_OPTIONS}
 
-                                // The rest of the props
-                                includeOptionsAnalysis={includeOptionsAnalysis}
-                                setIncludeOptionsAnalysis={
-                                    setIncludeOptionsAnalysis
-                                }
-                                includeCallOptions={includeCallOptions}
-                                setIncludeCallOptions={setIncludeCallOptions}
-                                includePutOptions={includePutOptions}
-                                setIncludePutOptions={setIncludePutOptions}
-                                includeOrderAnalysis={includeOrderAnalysis}
-                                setIncludeOrderAnalysis={
-                                    setIncludeOrderAnalysis
-                                }
-                                onAnalyze={handleAnalyze}
+                                        // --- KEY CHANGES HERE ---
+                                        selectedMarketType={selectedMarketType}
+                                        setSelectedMarketType={handleMarketTypeChange} // Use the new handler
+                                        selectedMarket={selectedMarket}
+                                        setSelectedMarket={handleMarketChange}       // Use the new handler
+                                        marketOptions={
+                                            MARKET_OPTIONS[selectedMarketType] || []
+                                        }
+
+                                        // The rest of the props
+                                        includeOptionsAnalysis={includeOptionsAnalysis}
+                                        setIncludeOptionsAnalysis={
+                                            setIncludeOptionsAnalysis
+                                        }
+                                        includeCallOptions={includeCallOptions}
+                                        setIncludeCallOptions={setIncludeCallOptions}
+                                        includePutOptions={includePutOptions}
+                                        setIncludePutOptions={setIncludePutOptions}
+                                        includeOrderAnalysis={includeOrderAnalysis}
+                                        setIncludeOrderAnalysis={
+                                            setIncludeOrderAnalysis
+                                        }
+                                        onAnalyze={handleAnalyze}
+                                        isLoading={isLoading}
+                                        onProfitMaxClick={() => setIsProfitMaxModalOpen(true)}
+                                    />
+                                </div>
+                            </div>
+                            {error && <ErrorMessage message={error} />}
+                            <ResultsSection
+                                analyses={analyses}
+                                theme={theme}
                                 isLoading={isLoading}
-                                onProfitMaxClick={() => setIsProfitMaxModalOpen(true)}
                             />
-                        </div>
-                    </div>
-                    {error && <ErrorMessage message={error} />}
-                    <ResultsSection
-                        analyses={analyses}
-                        theme={theme}
-                        isLoading={isLoading}
-                    />
-                </main>
-            </div>
+                        </main>
+                    </>
+                )}
+            
 
             {/* ProfitMax Modals */}
             <ProfitMaxModal
