@@ -2,6 +2,7 @@ import { GoogleGenAI, GenerateContentResponse } from "@google/genai";
 import type { AnalysisResult, HistoricalDataPoint, NewsArticle } from '../types.ts';
 import { Position } from '../types.ts';
 import { searchNews } from './newsSearchService.ts';
+import { searchSymbolLogo, searchReasoningIllustration } from './imageSearchService.ts';
 
 if (!process.env.API_KEY) {
     throw new Error("API_KEY environment variable not set");
@@ -256,9 +257,28 @@ Format the options analysis as a JSON object with this structure:
 
         const parsedResult = parseGeminiResponse(responseText);
 
+        // Search for symbol logo and reasoning illustrations
+        let symbolLogo: any[] = [];
+        let reasoningIllustrations: any[] = [];
+        
+        try {
+            // Search for company logo
+            symbolLogo = await searchSymbolLogo(assetSymbol);
+            
+            // Search for reasoning illustrations based on the analysis
+            const analysisKeywords = `${assetSymbol} ${parsedResult.position.toLowerCase()} analysis`;
+            reasoningIllustrations = await searchReasoningIllustration(analysisKeywords, 'technical analysis');
+            
+            console.log(`Found ${symbolLogo.length} logo images and ${reasoningIllustrations.length} reasoning illustrations`);
+        } catch (imageError) {
+            console.warn("Failed to fetch images for analysis:", imageError);
+        }
+
         return {
             ...parsedResult,
             news: newsArticles || [],
+            symbolLogo,
+            reasoningIllustrations,
         };
 
     } catch (error) {

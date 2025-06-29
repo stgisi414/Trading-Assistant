@@ -25,8 +25,17 @@ export interface OpenInterestData {
 export interface NewsArticle {
     title: string;
     uri: string;
-    snippet?: string;
+    snippet: string;
     source?: string;
+    images?: ImageResult[];
+}
+
+export interface ImageResult {
+    url: string;
+    title: string;
+    source: 'google' | 'imagen3';
+    thumbnail?: string;
+    contextLink?: string;
 }
 
 export interface AnalysisResult {
@@ -34,6 +43,8 @@ export interface AnalysisResult {
     confidence: string;
     reasoning: string;
     news: NewsArticle[];
+    symbolLogo?: ImageResult[];
+    reasoningIllustrations?: ImageResult[];
     optionsAnalysis?: OptionsAnalysis;
     orderAnalysis?: OrderAnalysis;
     openInterestAnalysis?: OpenInterestAnalysis;
@@ -101,7 +112,7 @@ export enum MarketType {
 
 export enum TimeframeType {
     MINUTES = 'MINUTES',
-    HOURS = 'HOURS', 
+    HOURS = 'HOURS',
     DAYS = 'DAYS',
     WEEKS = 'WEEKS',
     MONTHS = 'MONTHS',

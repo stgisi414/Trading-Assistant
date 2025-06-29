@@ -1,6 +1,9 @@
 import React from 'react';
 import type { AssetAnalysis } from '../types.ts';
 import { AssetResultCard } from './AssetResultCard.tsx';
+import { PositionResult } from './PositionResult.tsx';
+import { NewsSection } from './NewsSection.tsx';
+import { ImageGallery } from './ImageGallery.tsx';
 
 interface ResultsSectionProps {
     analyses: AssetAnalysis[];
@@ -10,7 +13,7 @@ interface ResultsSectionProps {
 
 export const ResultsSection: React.FC<ResultsSectionProps> = ({ analyses, theme, isLoading }) => {
     const hasAnalyses = analyses.length > 0;
-    
+
     if (!isLoading && !hasAnalyses) {
         return (
             <div className="text-center p-12 glass-effect rounded-2xl shadow-2xl card-glow sharp-corners relative overflow-hidden border backdrop-blur-xl">
@@ -26,7 +29,7 @@ export const ResultsSection: React.FC<ResultsSectionProps> = ({ analyses, theme,
             </div>
         );
     }
-    
+
     if (!hasAnalyses) {
         return null;
     }

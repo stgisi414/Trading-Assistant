@@ -1,5 +1,6 @@
 
 import type { NewsArticle } from '../types.ts';
+import { searchSymbolLogo, searchReasoningIllustration } from './imageSearchService.ts';
 
 const GOOGLE_CUSTOM_SEARCH_API_KEY = process.env.GOOGLE_CUSTOM_SEARCH_API_KEY;
 const NEWS_CUSTOM_SEARCH_CX = process.env.NEWS_CUSTOM_SEARCH_CX;
