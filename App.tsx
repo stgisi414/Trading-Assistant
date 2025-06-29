@@ -225,7 +225,7 @@ function App() {
         
         let daysToSubtract = 30; // default
         
-        // Minutes/Hours - use a few days
+        // Minutes/Hours - use a few days for analysis
         if (timeframeLower.includes('m') || timeframeLower.includes('h')) {
             daysToSubtract = 7;
         }
@@ -234,29 +234,29 @@ function App() {
             daysToSubtract = 30;
         }
         else if (timeframeLower === '3d') {
-            daysToSubtract = 90;
+            daysToSubtract = 7; // 1 week for 3-day timeframe
         }
         else if (timeframeLower === '7d') {
-            daysToSubtract = 180;
+            daysToSubtract = 30; // 1 month for 1-week timeframe
         }
         // Weekly timeframes
         else if (timeframeLower === '2w') {
-            daysToSubtract = 365;
+            daysToSubtract = 60; // 2 months for 2-week timeframe
         }
         else if (timeframeLower === '1m') {
-            daysToSubtract = 365;
+            daysToSubtract = 7; // 1 week for 1-month timeframe (you selected this)
         }
         // Monthly timeframes
         else if (timeframeLower === '3m') {
-            daysToSubtract = 1095; // ~3 years
+            daysToSubtract = 180; // 6 months for 3-month timeframe
         }
         else if (timeframeLower === '6m') {
-            daysToSubtract = 1825; // ~5 years
+            daysToSubtract = 365; // 1 year for 6-month timeframe
         }
         // Yearly timeframes
         else if (timeframeLower.includes('y')) {
             const years = parseInt(timeframeLower.replace('y', '')) || 1;
-            daysToSubtract = years * 365 * 2; // Double the timeframe for analysis
+            daysToSubtract = years * 365; // Same timeframe for analysis
         }
         
         const startDate = new Date(end.getTime() - daysToSubtract * 24 * 60 * 60 * 1000);
