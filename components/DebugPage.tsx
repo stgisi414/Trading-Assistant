@@ -163,7 +163,7 @@ export const DebugPage: React.FC = () => {
                             </div>
                         ))}
                     </div>
-                </div>iv>
+                </div>
 
                 {/* Symbol Selection */}
                 <div className="mb-8">
