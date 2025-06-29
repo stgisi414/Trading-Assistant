@@ -23,7 +23,7 @@ export const SymbolSearchInput: React.FC<SymbolSearchInputProps> = ({ selectedSy
     const getSymbolsForMarket = useCallback(() => {
         if (marketType && market && MARKET_OPTIONS[marketType]) {
             const marketData = MARKET_OPTIONS[marketType].find(m => m.value === market);
-            return marketData ? marketData.symbols : [];
+            return marketData ? marketData.symbols || [] : [];
         }
         return [];
     }, [marketType, market]);
@@ -43,7 +43,7 @@ export const SymbolSearchInput: React.FC<SymbolSearchInputProps> = ({ selectedSy
         const symbols = getSymbolsForMarket();
         let data: FmpSearchResult[] = [];
         
-        if (symbols.length > 0) {
+        if (symbols && symbols.length > 0) {
             // Filter from predefined symbols for specific markets
             data = symbols
                 .filter(s => s.symbol.toLowerCase().includes(currentQuery.toLowerCase()) || s.name.toLowerCase().includes(currentQuery.toLowerCase()))
@@ -91,7 +91,7 @@ export const SymbolSearchInput: React.FC<SymbolSearchInputProps> = ({ selectedSy
                     Asset Symbols
                     {marketType === 'STOCKS' ? ' (e.g., AAPL, TSLA)' : ''}
                 </label>
-                {marketType !== 'STOCKS' && market && getSymbolsForMarket().length === 0 && (
+                {marketType !== 'STOCKS' && market && (getSymbolsForMarket()?.length || 0) === 0 && (
                     <p className="text-sm text-amber-600 dark:text-amber-400 mb-2">
                         This market selection doesn't have predefined symbols. Please select a different market.
                     </p>
@@ -112,12 +112,12 @@ export const SymbolSearchInput: React.FC<SymbolSearchInputProps> = ({ selectedSy
                         placeholder={
                             marketType === 'STOCKS' 
                                 ? "Type to search stocks..." 
-                                : getSymbolsForMarket().length > 0 
+                                : (getSymbolsForMarket()?.length || 0) > 0 
                                     ? "Type to search available symbols..." 
                                     : "Please select a market with available symbols"
                         }
                         className={inputClasses}
-                        disabled={isDisabled || (marketType !== 'STOCKS' && market && getSymbolsForMarket().length === 0)}
+                        disabled={isDisabled || (marketType !== 'STOCKS' && market && (getSymbolsForMarket()?.length || 0) === 0)}
                         autoComplete="off"
                     />
                     {isDropdownOpen && (
@@ -138,7 +138,7 @@ export const SymbolSearchInput: React.FC<SymbolSearchInputProps> = ({ selectedSy
                                 </ul>
                             ) : (
                                 <div className="p-4 text-center text-gray-500 dark:text-gray-400">
-                                    {marketType !== 'STOCKS' && getSymbolsForMarket().length === 0 
+                                    {marketType !== 'STOCKS' && (getSymbolsForMarket()?.length || 0) === 0 
                                         ? "No symbols available for this market selection" 
                                         : marketType === 'STOCKS' && results.length === 0 && query.length > 0
                                         ? "No stocks found. Try symbols like AAPL, MSFT, TSLA..."
