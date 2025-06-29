@@ -171,8 +171,8 @@ export const InputSection: React.FC<InputSectionProps> = ({
                                 id="startDate"
                                 value={startDate}
                                 onChange={e => setStartDate(e.target.value)}
-                                className={inputClasses}
-                                disabled={isLoading}
+                                className={`${inputClasses} ${selectedTimeframe !== 'custom' ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                disabled={isLoading || selectedTimeframe !== 'custom'}
                             />
                         </div>
                         <div>
@@ -182,8 +182,8 @@ export const InputSection: React.FC<InputSectionProps> = ({
                                 id="endDate"
                                 value={endDate}
                                 onChange={e => setEndDate(e.target.value)}
-                                className={inputClasses}
-                                disabled={isLoading}
+                                className={`${inputClasses} ${selectedTimeframe !== 'custom' ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                disabled={isLoading || selectedTimeframe !== 'custom'}
                             />
                         </div>
                     </div>

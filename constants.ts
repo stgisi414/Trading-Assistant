@@ -34,6 +34,9 @@ export const NON_TECHNICAL_INDICATOR_OPTIONS: IndicatorOption[] = [
 ];
 
 export const TIMEFRAME_OPTIONS: TimeframeOption[] = [
+    // Custom option first
+    { value: 'custom', label: 'Custom Date Range', duration: 0 },
+    
     // Minutes
     { value: '5m', label: '5 Minutes', duration: 5 },
     { value: '15m', label: '15 Minutes', duration: 15 },

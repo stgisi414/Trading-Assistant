@@ -285,12 +285,14 @@ function App() {
 
     const handleTimeframeChange = (newTimeframe: string) => {
         setSelectedTimeframe(newTimeframe);
-        // Automatically adjust start date based on new timeframe
-        const newStartDate = calculateStartDateFromTimeframe(newTimeframe, dates.endDate);
-        setDates(prev => ({
-            ...prev,
-            startDate: newStartDate
-        }));
+        // Only automatically adjust start date for non-custom timeframes
+        if (newTimeframe !== 'custom') {
+            const newStartDate = calculateStartDateFromTimeframe(newTimeframe, dates.endDate);
+            setDates(prev => ({
+                ...prev,
+                startDate: newStartDate
+            }));
+        }
     };
 
     const handleProfitMaxOptimization = (result: OptimizationResult) => {
