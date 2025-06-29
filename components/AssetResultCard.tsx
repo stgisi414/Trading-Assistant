@@ -65,7 +65,7 @@ export const AssetResultCard: React.FC<AssetResultCardProps> = ({ analysis, them
                 <div className="p-6 border-b border-white/20 dark:border-white/10 bg-gradient-to-r from-transparent via-white/5 to-transparent dark:via-white/10">
                     <h2 className="text-2xl font-bold bg-gradient-to-r from-gray-800 to-blue-600 dark:from-gray-200 dark:to-blue-400 bg-clip-text text-transparent flex items-center gap-2">
                         <div className="w-3 h-3 bg-gradient-to-r from-blue-500 to-amber-500 rounded-full animate-pulse"></div>
-                        {symbol}
+                        {symbol.symbol}
                     </h2>
                 </div>
                 <div className="p-6">

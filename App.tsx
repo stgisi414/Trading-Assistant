@@ -336,7 +336,7 @@ function App() {
 
         const initialAnalyses: AssetAnalysis[] = selectedSymbols.map(
             (symbol) => ({
-                symbol,
+                symbol: symbol,
                 isLoading: true,
                 error: undefined,
                 historicalData: [],
@@ -360,7 +360,7 @@ function App() {
                         // Always update with historical data, even if it's mock data
                         setAnalyses((prev) =>
                             prev.map((a) =>
-                                a.symbol === symbol
+                                a.symbol.symbol === symbol.symbol
                                     ? { ...a, historicalData }
                                     : a,
                             ),
@@ -429,7 +429,7 @@ function App() {
 
                         setAnalyses((prev) =>
                             prev.map((a) =>
-                                a.symbol === symbol
+                                a.symbol.symbol === symbol.symbol
                                     ? {
                                           ...a,
                                           isLoading: false,
@@ -446,7 +446,7 @@ function App() {
                             err instanceof Error ? err.message : String(err);
                         setAnalyses((prev) =>
                             prev.map((a) =>
-                                a.symbol === symbol
+                                a.symbol.symbol === symbol.symbol
                                     ? {
                                           ...a,
                                           isLoading: false,

@@ -35,7 +35,7 @@ export const ResultsSection: React.FC<ResultsSectionProps> = ({ analyses, theme,
         <section className="flex flex-col gap-6">
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
                 {analyses.map((analysis) => (
-                    <AssetResultCard key={analysis.symbol} analysis={analysis} theme={theme} />
+                    <AssetResultCard key={analysis.symbol.symbol} analysis={analysis} theme={theme} />
                 ))}
             </div>
         </section>

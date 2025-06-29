@@ -201,12 +201,8 @@ export const fetchOptionsData = async (symbol: string): Promise<any> => {
 };
 
 export const fetchHistoricalData = async (symbol: string, timeframe: string, from?: string, to?: string): Promise<HistoricalDataPoint[]> => {
-    // Always generate mock data as fallback
-    const mockData = generateMockData(symbol, timeframe);
-
     if(!FMP_API_KEY) {
-        console.log(`No API key available, using mock data for ${symbol}`);
-        return mockData;
+        throw new Error(`No FMP API key configured. Please set FMP_API_KEY environment variable to fetch real market data for ${symbol}`);
     }
 
     try {
@@ -244,8 +240,7 @@ export const fetchHistoricalData = async (symbol: string, timeframe: string, fro
         clearTimeout(timeoutId);
 
         if (!response.ok) {
-            console.log(`API request failed for ${symbol} with timeframe ${timeframe}. Status: ${response.status}. Using mock data.`);
-            return mockData;
+            throw new Error(`API request failed for ${symbol} with timeframe ${timeframe}. Status: ${response.status} - ${response.statusText}`);
         }
 
         const data = await response.json();
@@ -258,8 +253,7 @@ export const fetchHistoricalData = async (symbol: string, timeframe: string, fro
         }
 
         if (!historicalData || !Array.isArray(historicalData) || historicalData.length === 0) {
-            console.log(`No historical data available for ${symbol} with timeframe ${timeframe}. Using mock data.`);
-            return mockData;
+            throw new Error(`No historical data available for ${symbol} with timeframe ${timeframe} from FMP API`);
         }
 
         // Transform and sort data
@@ -274,19 +268,16 @@ export const fetchHistoricalData = async (symbol: string, timeframe: string, fro
         })).filter(d => d.close > 0);
 
         if (transformedData.length === 0) {
-            console.log(`All data points were invalid for ${symbol} with timeframe ${timeframe}. Using mock data.`);
-            return mockData;
+            throw new Error(`All data points were invalid for ${symbol} with timeframe ${timeframe}`);
         }
 
         console.log(`Successfully fetched ${transformedData.length} real data points for ${symbol}`);
         return transformedData.reverse();
     } catch (error) {
         if (error.name === 'AbortError') {
-            console.log(`Request timeout for ${symbol} with timeframe ${timeframe}. Using mock data.`);
+            throw new Error(`Request timeout for ${symbol} with timeframe ${timeframe}. Please try again or check your connection.`);
         } else {
-            console.log(`Network error for ${symbol} with timeframe ${timeframe}:`, error?.message || error);
-            console.log(`Using mock data for ${symbol} - this is normal when markets are closed or for testing`);
+            throw new Error(`Failed to fetch data for ${symbol}: ${error?.message || error}`);
         }
-        return mockData;
     }
 };

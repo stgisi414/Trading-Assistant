@@ -131,7 +131,7 @@ export interface PatternDetails {
 }
 
 export interface AssetAnalysis {
-    symbol: string;
+    symbol: FmpSearchResult;
     historicalData: HistoricalDataPoint[];
     analysisResult: AnalysisResult | null;
     isLoading: boolean;
