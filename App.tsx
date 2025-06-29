@@ -219,6 +219,60 @@ function App() {
         setSelectedSymbols([]); 
     };
 
+    const calculateStartDateFromTimeframe = (timeframe: string, endDate: string): string => {
+        const end = new Date(endDate);
+        const timeframeLower = timeframe.toLowerCase();
+        
+        let daysToSubtract = 30; // default
+        
+        // Minutes/Hours - use a few days
+        if (timeframeLower.includes('m') || timeframeLower.includes('h')) {
+            daysToSubtract = 7;
+        }
+        // Daily timeframes
+        else if (timeframeLower === '1d') {
+            daysToSubtract = 30;
+        }
+        else if (timeframeLower === '3d') {
+            daysToSubtract = 90;
+        }
+        else if (timeframeLower === '7d') {
+            daysToSubtract = 180;
+        }
+        // Weekly timeframes
+        else if (timeframeLower === '2w') {
+            daysToSubtract = 365;
+        }
+        else if (timeframeLower === '1m') {
+            daysToSubtract = 365;
+        }
+        // Monthly timeframes
+        else if (timeframeLower === '3m') {
+            daysToSubtract = 1095; // ~3 years
+        }
+        else if (timeframeLower === '6m') {
+            daysToSubtract = 1825; // ~5 years
+        }
+        // Yearly timeframes
+        else if (timeframeLower.includes('y')) {
+            const years = parseInt(timeframeLower.replace('y', '')) || 1;
+            daysToSubtract = years * 365 * 2; // Double the timeframe for analysis
+        }
+        
+        const startDate = new Date(end.getTime() - daysToSubtract * 24 * 60 * 60 * 1000);
+        return startDate.toISOString().split('T')[0];
+    };
+
+    const handleTimeframeChange = (newTimeframe: string) => {
+        setSelectedTimeframe(newTimeframe);
+        // Automatically adjust start date based on new timeframe
+        const newStartDate = calculateStartDateFromTimeframe(newTimeframe, dates.endDate);
+        setDates(prev => ({
+            ...prev,
+            startDate: newStartDate
+        }));
+    };
+
     const handleProfitMaxOptimization = (result: OptimizationResult) => {
         setProfitMaxResult(result);
         setIsProfitMaxResultsModalOpen(true);
@@ -489,7 +543,7 @@ function App() {
                                     NON_TECHNICAL_INDICATOR_OPTIONS
                                 }
                                 selectedTimeframe={selectedTimeframe}
-                                setSelectedTimeframe={setSelectedTimeframe}
+                                setSelectedTimeframe={handleTimeframeChange}
                                 timeframeOptions={TIMEFRAME_OPTIONS}
 
                                 // --- KEY CHANGES HERE ---
