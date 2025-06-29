@@ -619,7 +619,7 @@ function App() {
                         </main>
                     </>
                 )}
-            
+            </div>
 
             {/* ProfitMax Modals */}
             <ProfitMaxModal
