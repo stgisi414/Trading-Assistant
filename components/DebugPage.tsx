@@ -3,12 +3,14 @@ import React, { useState } from 'react';
 import { searchNews } from '../services/newsSearchService.ts';
 import { searchSymbolLogo, searchReasoningIllustration, searchFinancialImages } from '../services/imageSearchService.ts';
 import { Spinner } from './Spinner.tsx';
-import type { NewsArticle } from '../types.ts';
+import { SymbolSearchInput } from './SymbolSearchInput.tsx';
+import type { NewsArticle, FmpSearchResult } from '../types.ts';
 import type { ImageResult } from '../services/imageSearchService.ts';
 
 export const DebugPage: React.FC = () => {
-    const [newsQuery, setNewsQuery] = useState('AAPL Apple');
-    const [imageQuery, setImageQuery] = useState('AAPL');
+    const [selectedSymbols, setSelectedSymbols] = useState<FmpSearchResult[]>([
+        { symbol: 'AAPL', name: 'Apple Inc.' }
+    ]);
     const [timeframe, setTimeframe] = useState('1M');
     
     const [newsResults, setNewsResults] = useState<NewsArticle[]>([]);
@@ -24,11 +26,31 @@ export const DebugPage: React.FC = () => {
     const [newsError, setNewsError] = useState<string | null>(null);
     const [imageError, setImageError] = useState<string | null>(null);
 
+    const handleAddSymbol = (symbol: FmpSearchResult) => {
+        if (!selectedSymbols.find(s => s.symbol === symbol.symbol)) {
+            setSelectedSymbols(prev => [...prev, symbol]);
+        }
+    };
+
+    const handleRemoveSymbol = (symbolToRemove: string) => {
+        setSelectedSymbols(prev => prev.filter(s => s.symbol !== symbolToRemove));
+    };
+
+    const getCurrentSymbol = () => {
+        return selectedSymbols.length > 0 ? selectedSymbols[0] : null;
+    };
+
     const testNewsSearch = async () => {
+        const currentSymbol = getCurrentSymbol();
+        if (!currentSymbol) {
+            setNewsError('Please select a symbol first');
+            return;
+        }
+
         setNewsLoading(true);
         setNewsError(null);
         try {
-            const searchTerms = newsQuery.split(' ').filter(term => term.length > 0);
+            const searchTerms = [currentSymbol.symbol, currentSymbol.name];
             console.log('Testing news search with terms:', searchTerms);
             const results = await searchNews(searchTerms, timeframe);
             setNewsResults(results);
@@ -42,11 +64,17 @@ export const DebugPage: React.FC = () => {
     };
 
     const testLogoSearch = async () => {
+        const currentSymbol = getCurrentSymbol();
+        if (!currentSymbol) {
+            setImageError('Please select a symbol first');
+            return;
+        }
+
         setLogoLoading(true);
         setImageError(null);
         try {
-            console.log('Testing logo search for:', imageQuery);
-            const results = await searchSymbolLogo(imageQuery);
+            console.log('Testing logo search for:', currentSymbol.symbol);
+            const results = await searchSymbolLogo(currentSymbol.symbol);
             setLogoResults(results);
             console.log('Logo results:', results);
         } catch (error) {
@@ -58,11 +86,17 @@ export const DebugPage: React.FC = () => {
     };
 
     const testIllustrationSearch = async () => {
+        const currentSymbol = getCurrentSymbol();
+        if (!currentSymbol) {
+            setImageError('Please select a symbol first');
+            return;
+        }
+
         setIllustrationLoading(true);
         setImageError(null);
         try {
-            console.log('Testing illustration search for:', imageQuery);
-            const results = await searchReasoningIllustration(imageQuery, 'technical analysis');
+            console.log('Testing illustration search for:', currentSymbol.symbol);
+            const results = await searchReasoningIllustration(currentSymbol.symbol, 'technical analysis');
             setIllustrationResults(results);
             console.log('Illustration results:', results);
         } catch (error) {
@@ -74,11 +108,17 @@ export const DebugPage: React.FC = () => {
     };
 
     const testFinancialImageSearch = async () => {
+        const currentSymbol = getCurrentSymbol();
+        if (!currentSymbol) {
+            setImageError('Please select a symbol first');
+            return;
+        }
+
         setFinancialImageLoading(true);
         setImageError(null);
         try {
-            console.log('Testing financial image search for:', imageQuery);
-            const results = await searchFinancialImages(imageQuery);
+            console.log('Testing financial image search for:', currentSymbol.symbol);
+            const results = await searchFinancialImages(currentSymbol.symbol);
             setFinancialImageResults(results);
             console.log('Financial image results:', results);
         } catch (error) {
@@ -125,6 +165,30 @@ export const DebugPage: React.FC = () => {
                     </div>
                 </div>
 
+                {/* Symbol Selection */}
+                <div className="mb-8">
+                    <h2 className="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-4">
+                        🔍 Symbol Selection
+                    </h2>
+                    <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                        <SymbolSearchInput
+                            selectedSymbols={selectedSymbols}
+                            onAddSymbol={handleAddSymbol}
+                            onRemoveSymbol={handleRemoveSymbol}
+                            isDisabled={false}
+                            marketType="STOCKS"
+                            market="US"
+                        />
+                        {selectedSymbols.length > 0 && (
+                            <div className="mt-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                                <p className="text-sm text-blue-700 dark:text-blue-300">
+                                    Currently testing with: <strong>{selectedSymbols[0].symbol}</strong> ({selectedSymbols[0].name})
+                                </p>
+                            </div>
+                        )}
+                    </div>
+                </div>
+
                 {/* News Testing Section */}
                 <div className="mb-8">
                     <h2 className="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-4">
@@ -132,13 +196,6 @@ export const DebugPage: React.FC = () => {
                     </h2>
                     
                     <div className="flex flex-col md:flex-row gap-4 mb-4">
-                        <input
-                            type="text"
-                            value={newsQuery}
-                            onChange={(e) => setNewsQuery(e.target.value)}
-                            placeholder="Enter search terms (e.g., AAPL Apple earnings)"
-                            className="flex-1 p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200"
-                        />
                         <select
                             value={timeframe}
                             onChange={(e) => setTimeframe(e.target.value)}
@@ -152,7 +209,7 @@ export const DebugPage: React.FC = () => {
                         </select>
                         <button
                             onClick={testNewsSearch}
-                            disabled={newsLoading}
+                            disabled={newsLoading || selectedSymbols.length === 0}
                             className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 flex items-center space-x-2"
                         >
                             {newsLoading && <Spinner className="text-white" />}
@@ -206,17 +263,10 @@ export const DebugPage: React.FC = () => {
                     </h2>
                     
                     <div className="flex flex-col md:flex-row gap-4 mb-4">
-                        <input
-                            type="text"
-                            value={imageQuery}
-                            onChange={(e) => setImageQuery(e.target.value)}
-                            placeholder="Enter symbol or company (e.g., AAPL, Apple)"
-                            className="flex-1 p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200"
-                        />
                         <div className="flex gap-2">
                             <button
                                 onClick={testLogoSearch}
-                                disabled={logoLoading}
+                                disabled={logoLoading || selectedSymbols.length === 0}
                                 className="px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 flex items-center space-x-2"
                             >
                                 {logoLoading && <Spinner className="text-white" />}
@@ -224,7 +274,7 @@ export const DebugPage: React.FC = () => {
                             </button>
                             <button
                                 onClick={testIllustrationSearch}
-                                disabled={illustrationLoading}
+                                disabled={illustrationLoading || selectedSymbols.length === 0}
                                 className="px-4 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 flex items-center space-x-2"
                             >
                                 {illustrationLoading && <Spinner className="text-white" />}
@@ -232,7 +282,7 @@ export const DebugPage: React.FC = () => {
                             </button>
                             <button
                                 onClick={testFinancialImageSearch}
-                                disabled={financialImageLoading}
+                                disabled={financialImageLoading || selectedSymbols.length === 0}
                                 className="px-4 py-3 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 disabled:opacity-50 flex items-center space-x-2"
                             >
                                 {financialImageLoading && <Spinner className="text-white" />}
