@@ -9,8 +9,8 @@ interface SymbolSearchInputProps {
     onAddSymbol: (symbol: string) => void;
     onRemoveSymbol: (symbol: string) => void;
     isDisabled: boolean;
-    marketType: string;
-    market: string;
+    marketType?: string;
+    market?: string;
 }
 
 export const SymbolSearchInput: React.FC<SymbolSearchInputProps> = ({ selectedSymbols, onAddSymbol, onRemoveSymbol, isDisabled, marketType, market }) => {

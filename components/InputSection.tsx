@@ -88,7 +88,7 @@ export const InputSection: React.FC<InputSectionProps> = ({
                             className={inputClasses}
                             disabled={isLoading}
                         >
-                            <option value={MarketType.STOCKS}>International Markets</option>
+                            <option value={MarketType.STOCKS}>US Markets</option>
                             <option value={MarketType.COMMODITIES}>Commodities</option>
                             <option value={MarketType.CRYPTO}>Crypto</option>
                             <option value={MarketType.FOREX}>Forex</option>
