@@ -1,4 +1,3 @@
-
 import type { FmpSearchResult } from '../types.ts';
 import { INDICATOR_OPTIONS, TIMEFRAME_OPTIONS, MARKET_OPTIONS } from '../constants.ts';
 
@@ -70,8 +69,11 @@ export class ProFlowService {
 
     private showToast(message: string, type: ProFlowToast['type'] = 'info', duration = 3000) {
         if (this.toastCallback) {
+            let toastCounter = 0;
+
+            toastCounter++;
             const toast: ProFlowToast = {
-                id: Date.now().toString(),
+                id: `${Date.now()}-${toastCounter}-${Math.random().toString(36).substr(2, 9)}`,
                 message,
                 type,
                 duration
@@ -205,7 +207,7 @@ export class ProFlowService {
                 if (this.mode === 'manual' && i < this.steps.length - 1) {
                     this.isPaused = true;
                     this.showToast(`⏸️ Step "${step.name}" complete. Click Continue to proceed to next step.`, 'info', 6000);
-                    
+
                     // Wait for user confirmation
                     await new Promise<void>(resolve => {
                         this.confirmationCallback = resolve;
@@ -253,7 +255,7 @@ export class ProFlowService {
     async runQuickDemo() {
         const quickSteps = this.steps.slice(0, 4); // First 4 steps only
         this.showToast('⚡ Running Quick Demo mode...', 'info');
-        
+
         for (const step of quickSteps) {
             await step.action();
             await new Promise(resolve => setTimeout(resolve, 800));
@@ -262,12 +264,12 @@ export class ProFlowService {
 
     async runAdvancedAnalysis() {
         this.showToast('🧠 Running Advanced Analysis mode...', 'info');
-        
+
         // Set advanced parameters
         this.appCallbacks.setSelectedIndicators?.(['SMA', 'EMA', 'RSI', 'MACD', 'BollingerBands', 'StochasticOscillator', 'ADX']);
         this.appCallbacks.setWalletAmount?.('50000');
         this.appCallbacks.setSelectedTimeframe?.('3M');
-        
+
         await new Promise(resolve => setTimeout(resolve, 1000));
         this.appCallbacks.handleAnalyze?.();
         this.showToast('📊 Advanced analysis initiated with comprehensive indicators!', 'success');
