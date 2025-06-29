@@ -2,20 +2,31 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { searchSymbols } from '../services/marketDataService.ts';
 import type { FmpSearchResult } from '../types.ts';
 import { Spinner } from './Spinner.tsx';
+import { MARKET_OPTIONS } from '../constants';
 
 interface SymbolSearchInputProps {
     selectedSymbols: string[];
     onAddSymbol: (symbol: string) => void;
     onRemoveSymbol: (symbol: string) => void;
     isDisabled: boolean;
+    marketType: string;
+    market: string;
 }
 
-export const SymbolSearchInput: React.FC<SymbolSearchInputProps> = ({ selectedSymbols, onAddSymbol, onRemoveSymbol, isDisabled }) => {
+export const SymbolSearchInput: React.FC<SymbolSearchInputProps> = ({ selectedSymbols, onAddSymbol, onRemoveSymbol, isDisabled, marketType, market }) => {
     const [query, setQuery] = useState('');
     const [results, setResults] = useState<FmpSearchResult[]>([]);
     const [isSearching, setIsSearching] = useState(false);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
+
+    const getSymbolsForMarket = useCallback(() => {
+        if (marketType && market && MARKET_OPTIONS[marketType]) {
+            const marketData = MARKET_OPTIONS[marketType].find(m => m.value === market);
+            return marketData ? marketData.symbols : [];
+        }
+        return [];
+    }, [marketType, market]);
 
     useEffect(() => {
         const handler = (event: MouseEvent) => {
@@ -29,11 +40,19 @@ export const SymbolSearchInput: React.FC<SymbolSearchInputProps> = ({ selectedSy
 
     const fetchResults = useCallback(async (currentQuery: string) => {
         setIsSearching(true);
-        const data = await searchSymbols(currentQuery);
+        const symbols = getSymbolsForMarket();
+        let data: FmpSearchResult[] = [];
+        if (symbols.length > 0) {
+            data = symbols
+                .filter(s => s.symbol.toLowerCase().includes(currentQuery.toLowerCase()) || s.name.toLowerCase().includes(currentQuery.toLowerCase()))
+                .map(s => ({ symbol: s.symbol, name: s.name }));
+        } else {
+            data = await searchSymbols(currentQuery);
+        }
         setResults(data);
         setIsSearching(false);
-    }, []);
-    
+    }, [getSymbolsForMarket]);
+
     useEffect(() => {
         if (query.length < 1) {
             setResults([]);
@@ -57,7 +76,7 @@ export const SymbolSearchInput: React.FC<SymbolSearchInputProps> = ({ selectedSy
         setResults([]);
         setIsDropdownOpen(false);
     };
-    
+
     const inputClasses = "w-full p-3 bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-400 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition";
 
     return (

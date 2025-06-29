@@ -108,24 +108,77 @@ export const MARKET_OPTIONS: { [key: string]: MarketOption[] } = {
         { value: 'RU', label: 'Russia (MOEX)', region: 'Europe/Asia', currency: 'RUB' }
     ],
     COMMODITIES: [
-        { value: 'ENERGY', label: 'Energy (WTI, Brent, Natural Gas)', region: 'Global', currency: 'USD' },
-        { value: 'METALS', label: 'Precious Metals (Gold, Silver, Platinum)', region: 'Global', currency: 'USD' },
-        { value: 'INDUSTRIAL', label: 'Industrial Metals (Copper, Aluminum)', region: 'Global', currency: 'USD' },
-        { value: 'AGRICULTURE', label: 'Agriculture (Wheat, Corn, Soybeans)', region: 'Global', currency: 'USD' },
-        { value: 'LIVESTOCK', label: 'Livestock (Cattle, Hogs)', region: 'Global', currency: 'USD' },
-        { value: 'SOFT', label: 'Soft Commodities (Coffee, Sugar, Cotton)', region: 'Global', currency: 'USD' }
+        { value: 'ENERGY', label: 'Energy', region: 'Global', currency: 'USD', symbols: [
+            { symbol: 'CL', name: 'Crude Oil' },
+            { symbol: 'NG', name: 'Natural Gas' },
+            { symbol: 'HO', name: 'Heating Oil' },
+            { symbol: 'BRENT', name: 'Brent Crude' },
+        ]},
+        { value: 'METALS', label: 'Precious Metals', region: 'Global', currency: 'USD', symbols: [
+            { symbol: 'GC', name: 'Gold' },
+            { symbol: 'SI', name: 'Silver' },
+            { symbol: 'PL', name: 'Platinum' },
+            { symbol: 'PA', name: 'Palladium' },
+        ]},
+        { value: 'INDUSTRIAL', label: 'Industrial Metals', region: 'Global', currency: 'USD', symbols: [
+            { symbol: 'HG', name: 'Copper' },
+            { symbol: 'LME-ALU', name: 'Aluminum' },
+            { symbol: 'LME-ZNC', name: 'Zinc' },
+            { symbol: 'LME-TIN', name: 'Tin' },
+        ]},
+        { value: 'AGRICULTURE', label: 'Agriculture', region: 'Global', currency: 'USD', symbols: [
+            { symbol: 'C', name: 'Corn' },
+            { symbol: 'S', name: 'Soybeans' },
+            { symbol: 'W', name: 'Wheat' },
+            { symbol: 'KC', name: 'Coffee' },
+            { symbol: 'CT', name: 'Cotton' },
+            { symbol: 'SB', name: 'Sugar' },
+        ]},
+        { value: 'LIVESTOCK', label: 'Livestock', region: 'Global', currency: 'USD', symbols: [
+            { symbol: 'LE', name: 'Live Cattle' },
+            { symbol: 'HE', name: 'Lean Hogs' },
+        ]},
     ],
     CRYPTO: [
-        { value: 'MAJOR', label: 'Major Cryptocurrencies (BTC, ETH, BNB)', region: 'Global', currency: 'USD' },
-        { value: 'ALTCOINS', label: 'Altcoins (ADA, SOL, DOT, MATIC)', region: 'Global', currency: 'USD' },
-        { value: 'DEFI', label: 'DeFi Tokens (UNI, AAVE, COMP)', region: 'Global', currency: 'USD' },
-        { value: 'MEME', label: 'Meme Coins (DOGE, SHIB)', region: 'Global', currency: 'USD' },
-        { value: 'STABLE', label: 'Stablecoins (USDT, USDC, DAI)', region: 'Global', currency: 'USD' }
+        { value: 'BTC', label: 'Bitcoin', region: 'Global', currency: 'USD', symbols: [{ symbol: 'BTC', name: 'Bitcoin' }] },
+        { value: 'ETH', label: 'Ethereum', region: 'Global', currency: 'USD', symbols: [{ symbol: 'ETH', name: 'Ethereum' }] },
+        { value: 'Major', label: 'Major Cryptocurrencies', region: 'Global', currency: 'USD', symbols: [
+            { symbol: 'BTC', name: 'Bitcoin' },
+            { symbol: 'ETH', name: 'Ethereum' },
+            { symbol: 'BNB', name: 'Binance Coin' },
+            { symbol: 'SOL', name: 'Solana' },
+            { symbol: 'XRP', name: 'XRP' },
+        ]},
+        { value: 'DeFi', label: 'DeFi Tokens', region: 'Global', currency: 'USD', symbols: [
+            { symbol: 'UNI', name: 'Uniswap' },
+            { symbol: 'AAVE', name: 'Aave' },
+            { symbol: 'COMP', name: 'Compound' },
+            { symbol: 'MKR', name: 'Maker' },
+        ]},
+        { value: 'NFT', label: 'NFT & Metaverse', region: 'Global', currency: 'USD', symbols: [
+            { symbol: 'AXS', name: 'Axie Infinity' },
+            { symbol: 'SAND', name: 'The Sandbox' },
+            { symbol: 'MANA', name: 'Decentraland' },
+        ]},
     ],
     FOREX: [
-        { value: 'MAJOR', label: 'Major Pairs (EUR/USD, GBP/USD, USD/JPY)', region: 'Global', currency: 'Various' },
-        { value: 'MINOR', label: 'Minor Pairs (EUR/GBP, AUD/JPY, GBP/JPY)', region: 'Global', currency: 'Various' },
-        { value: 'EXOTIC', label: 'Exotic Pairs (USD/TRY, EUR/ZAR)', region: 'Global', currency: 'Various' },
-        { value: 'CRYPTO_PAIRS', label: 'Crypto Pairs (BTC/USD, ETH/EUR)', region: 'Global', currency: 'Various' }
+        { value: 'MAJOR', label: 'Major Pairs', region: 'Global', currency: 'USD', symbols: [
+            { symbol: 'EURUSD', name: 'EUR/USD' },
+            { symbol: 'GBPUSD', name: 'GBP/USD' },
+            { symbol: 'USDJPY', name: 'USD/JPY' },
+            { symbol: 'USDCAD', name: 'USD/CAD' },
+            { symbol: 'AUDUSD', name: 'AUD/USD' },
+        ]},
+        { value: 'MINOR', label: 'Minor Pairs', region: 'Global', currency: 'Various', symbols: [
+            { symbol: 'EURGBP', name: 'EUR/GBP' },
+            { symbol: 'EURJPY', name: 'EUR/JPY' },
+            { symbol: 'GBPJPY', name: 'GBP/JPY' },
+            { symbol: 'AUDJPY', name: 'AUD/JPY' },
+        ]},
+        { value: 'EXOTIC', label: 'Exotic Pairs', region: 'Global', currency: 'Various', symbols: [
+            { symbol: 'USDTRY', name: 'USD/TRY' },
+            { symbol: 'USDZAR', name: 'USD/ZAR' },
+            { symbol: 'USDMXN', name: 'USD/MXN' },
+        ]},
     ]
 };

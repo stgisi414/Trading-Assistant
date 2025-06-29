@@ -1,81 +1,102 @@
-import React, { useState, useCallback, useEffect } from 'react';
-import { Header } from './components/Header.tsx';
-import { InputSection } from './components/InputSection.tsx';
-import { ResultsSection } from './components/ResultsSection.tsx';
-import { getTradingPosition } from './services/geminiService.ts';
-import { fetchHistoricalData } from './services/marketDataService.ts';
-import { analyzeChartPatterns } from './services/patternAnalysisService.ts';
-import type { AnalysisResult, HistoricalDataPoint, AssetAnalysis } from './types.ts';
-import { MarketType } from './types.ts';
-import { INDICATOR_OPTIONS, NON_TECHNICAL_INDICATOR_OPTIONS, TIMEFRAME_OPTIONS, MARKET_OPTIONS } from './constants.ts';
-import { ErrorMessage } from './components/ErrorMessage.tsx';
+import React, { useState, useCallback, useEffect, useMemo } from "react";
+import { Header } from "./components/Header.tsx";
+import { InputSection } from "./components/InputSection.tsx";
+import { ResultsSection } from "./components/ResultsSection.tsx";
+import { getTradingPosition } from "./services/geminiService.ts";
+import { fetchHistoricalData } from "./services/marketDataService.ts";
+import { analyzeChartPatterns } from "./services/patternAnalysisService.ts";
+import type {
+    HistoricalData,
+    AnalysisResult,
+    FmpSearchResult,
+    AppState,
+    AssetAnalysis,
+} from "./types.ts";
+import { MarketType } from "./types.ts";
+import {
+    INDICATOR_OPTIONS,
+    NON_TECHNICAL_INDICATOR_OPTIONS,
+    TIMEFRAME_OPTIONS,
+    MARKET_OPTIONS,
+} from "./constants.ts";
+import { ErrorMessage } from "./components/ErrorMessage.tsx";
 
 const getInitialDates = () => {
     const endDate = new Date();
     const startDate = new Date();
     startDate.setDate(endDate.getDate() - 30);
     return {
-        startDate: startDate.toISOString().split('T')[0],
-        endDate: endDate.toISOString().split('T')[0],
+        startDate: startDate.toISOString().split("T")[0],
+        endDate: endDate.toISOString().split("T")[0],
     };
 };
 
 function App() {
-    const [theme, setTheme] = useState<'light' | 'dark'>(() => {
+    const [theme, setTheme] = useState<"light" | "dark">(() => {
         // Initialize theme from localStorage or system preference
-        const savedTheme = localStorage.getItem('theme');
-        if (savedTheme === 'dark' || savedTheme === 'light') {
+        const savedTheme = localStorage.getItem("theme");
+        if (savedTheme === "dark" || savedTheme === "light") {
             return savedTheme;
         }
-        return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        return window.matchMedia("(prefers-color-scheme: dark)").matches
+            ? "dark"
+            : "light";
     });
-    const [selectedSymbols, setSelectedSymbols] = useState<string[]>(() => {
-        const saved = localStorage.getItem('tradingApp_selectedSymbols');
-        return saved ? JSON.parse(saved) : ['AAPL'];
-    });
+    const [marketType, setMarketType] = useState("STOCKS");
+    const [market, setMarket] = useState("US");
+    const [selectedSymbols, setSelectedSymbols] = useState<FmpSearchResult[]>(
+        [],
+    );
     const [walletAmount, setWalletAmount] = useState(() => {
-        const saved = localStorage.getItem('tradingApp_walletAmount');
-        return saved || '10000';
+        const saved = localStorage.getItem("tradingApp_walletAmount");
+        return saved || "10000";
     });
-    const [selectedIndicators, setSelectedIndicators] = useState<string[]>(() => {
-        const saved = localStorage.getItem('tradingApp_selectedIndicators');
-        return saved ? JSON.parse(saved) : ['SMA', 'RSI', 'Volume'];
-    });
-    const [selectedNonTechnicalIndicators, setSelectedNonTechnicalIndicators] = useState<string[]>(() => {
-        const saved = localStorage.getItem('tradingApp_selectedNonTechnicalIndicators');
-        return saved ? JSON.parse(saved) : [];
-    });
+    const [selectedIndicators, setSelectedIndicators] = useState<string[]>(
+        () => {
+            const saved = localStorage.getItem("tradingApp_selectedIndicators");
+            return saved ? JSON.parse(saved) : ["SMA", "RSI", "Volume"];
+        },
+    );
+    const [selectedNonTechnicalIndicators, setSelectedNonTechnicalIndicators] =
+        useState<string[]>(() => {
+            const saved = localStorage.getItem(
+                "tradingApp_selectedNonTechnicalIndicators",
+            );
+            return saved ? JSON.parse(saved) : [];
+        });
     const [selectedTimeframe, setSelectedTimeframe] = useState<string>(() => {
-        const saved = localStorage.getItem('tradingApp_selectedTimeframe');
-        return saved || '1M';
+        const saved = localStorage.getItem("tradingApp_selectedTimeframe");
+        return saved || "1M";
     });
     const [dates, setDates] = useState(() => {
-        const saved = localStorage.getItem('tradingApp_dates');
+        const saved = localStorage.getItem("tradingApp_dates");
         return saved ? JSON.parse(saved) : getInitialDates();
     });
     const [includeOptionsAnalysis, setIncludeOptionsAnalysis] = useState(() => {
-        const saved = localStorage.getItem('tradingApp_includeOptionsAnalysis');
+        const saved = localStorage.getItem("tradingApp_includeOptionsAnalysis");
         return saved ? JSON.parse(saved) : false;
     });
     const [includeCallOptions, setIncludeCallOptions] = useState(() => {
-        const saved = localStorage.getItem('tradingApp_includeCallOptions');
+        const saved = localStorage.getItem("tradingApp_includeCallOptions");
         return saved ? JSON.parse(saved) : true;
     });
     const [includePutOptions, setIncludePutOptions] = useState(() => {
-        const saved = localStorage.getItem('tradingApp_includePutOptions');
+        const saved = localStorage.getItem("tradingApp_includePutOptions");
         return saved ? JSON.parse(saved) : true;
     });
     const [includeOrderAnalysis, setIncludeOrderAnalysis] = useState(() => {
-        const saved = localStorage.getItem('tradingApp_includeOrderAnalysis');
+        const saved = localStorage.getItem("tradingApp_includeOrderAnalysis");
         return saved ? JSON.parse(saved) : false;
     });
-    const [selectedMarketType, setSelectedMarketType] = useState<MarketType>(() => {
-        const saved = localStorage.getItem('tradingApp_selectedMarketType');
-        return saved ? JSON.parse(saved) : MarketType.STOCKS;
-    });
+    const [selectedMarketType, setSelectedMarketType] = useState<MarketType>(
+        () => {
+            const saved = localStorage.getItem("tradingApp_selectedMarketType");
+            return saved ? JSON.parse(saved) : MarketType.STOCKS;
+        },
+    );
     const [selectedMarket, setSelectedMarket] = useState<string>(() => {
-        const saved = localStorage.getItem('tradingApp_selectedMarket');
-        return saved || 'US';
+        const saved = localStorage.getItem("tradingApp_selectedMarket");
+        return saved || "US";
     });
     const [analyses, setAnalyses] = useState<AssetAnalysis[]>([]);
     const [isLoading, setIsLoading] = useState(false);
@@ -83,160 +104,274 @@ function App() {
 
     useEffect(() => {
         const root = window.document.documentElement;
-        root.classList.remove(theme === 'light' ? 'dark' : 'light');
+        root.classList.remove(theme === "light" ? "dark" : "light");
         root.classList.add(theme);
     }, [theme]);
 
     // Save input data to localStorage whenever it changes
     useEffect(() => {
-        localStorage.setItem('tradingApp_selectedSymbols', JSON.stringify(selectedSymbols));
+        localStorage.setItem(
+            "tradingApp_selectedSymbols",
+            JSON.stringify(selectedSymbols),
+        );
     }, [selectedSymbols]);
 
     useEffect(() => {
-        localStorage.setItem('tradingApp_walletAmount', walletAmount);
+        localStorage.setItem("tradingApp_walletAmount", walletAmount);
     }, [walletAmount]);
 
     useEffect(() => {
-        localStorage.setItem('tradingApp_selectedIndicators', JSON.stringify(selectedIndicators));
+        localStorage.setItem(
+            "tradingApp_selectedIndicators",
+            JSON.stringify(selectedIndicators),
+        );
     }, [selectedIndicators]);
 
     useEffect(() => {
-        localStorage.setItem('tradingApp_selectedNonTechnicalIndicators', JSON.stringify(selectedNonTechnicalIndicators));
+        localStorage.setItem(
+            "tradingApp_selectedNonTechnicalIndicators",
+            JSON.stringify(selectedNonTechnicalIndicators),
+        );
     }, [selectedNonTechnicalIndicators]);
 
     useEffect(() => {
-        localStorage.setItem('tradingApp_selectedTimeframe', selectedTimeframe);
+        localStorage.setItem("tradingApp_selectedTimeframe", selectedTimeframe);
     }, [selectedTimeframe]);
 
     useEffect(() => {
-        localStorage.setItem('tradingApp_dates', JSON.stringify(dates));
+        localStorage.setItem("tradingApp_dates", JSON.stringify(dates));
     }, [dates]);
 
     useEffect(() => {
-        localStorage.setItem('tradingApp_includeOptionsAnalysis', JSON.stringify(includeOptionsAnalysis));
+        localStorage.setItem(
+            "tradingApp_includeOptionsAnalysis",
+            JSON.stringify(includeOptionsAnalysis),
+        );
     }, [includeOptionsAnalysis]);
 
     useEffect(() => {
-        localStorage.setItem('tradingApp_includeCallOptions', JSON.stringify(includeCallOptions));
+        localStorage.setItem(
+            "tradingApp_includeCallOptions",
+            JSON.stringify(includeCallOptions),
+        );
     }, [includeCallOptions]);
 
     useEffect(() => {
-        localStorage.setItem('tradingApp_includePutOptions', JSON.stringify(includePutOptions));
+        localStorage.setItem(
+            "tradingApp_includePutOptions",
+            JSON.stringify(includePutOptions),
+        );
     }, [includePutOptions]);
 
     useEffect(() => {
-        localStorage.setItem('tradingApp_includeOrderAnalysis', JSON.stringify(includeOrderAnalysis));
+        localStorage.setItem(
+            "tradingApp_includeOrderAnalysis",
+            JSON.stringify(includeOrderAnalysis),
+        );
     }, [includeOrderAnalysis]);
 
     useEffect(() => {
-        localStorage.setItem('tradingApp_selectedMarketType', JSON.stringify(selectedMarketType));
+        localStorage.setItem(
+            "tradingApp_selectedMarketType",
+            JSON.stringify(selectedMarketType),
+        );
     }, [selectedMarketType]);
 
     useEffect(() => {
-        localStorage.setItem('tradingApp_selectedMarket', selectedMarket);
+        localStorage.setItem("tradingApp_selectedMarket", selectedMarket);
     }, [selectedMarket]);
 
     const toggleTheme = () => {
-        setTheme(prev => {
-            const newTheme = prev === 'light' ? 'dark' : 'light';
-            localStorage.setItem('theme', newTheme);
+        setTheme((prev) => {
+            const newTheme = prev === "light" ? "dark" : "light";
+            localStorage.setItem("theme", newTheme);
             return newTheme;
         });
     };
 
+    const handleMarketTypeChange = (newMarketType: string) => {
+        setMarketType(newMarketType);
+        const newMarket = MARKET_OPTIONS[newMarketType]?.[0]?.value || "";
+        setMarket(newMarket);
+        setSelectedSymbols([]); // Clear symbols on market type change
+    };
+
+    const handleMarketChange = (newMarket: string) => {
+        setMarket(newMarket);
+        setSelectedSymbols([]); // Clear symbols on market change
+    };
+
+    const currentMarketSymbols = useMemo(() => {
+        if (!marketType || !market) return [];
+        const marketData = MARKET_OPTIONS[marketType]?.find(m => m.value === market);
+        return marketData?.symbols?.map(s => s.symbol) || [];
+      }, [marketType, market]);
+
+      useEffect(() => {
+        setSelectedSymbols(prevSymbols =>
+          prevSymbols.filter(symbolObj => currentMarketSymbols.includes(symbolObj.symbol))
+        );
+      }, [currentMarketSymbols]);
+
     const handleAnalyze = useCallback(async () => {
-        if (selectedSymbols.length === 0 || !walletAmount || parseFloat(walletAmount) <= 0 || selectedIndicators.length === 0 || !selectedTimeframe) {
-            setError("Please select at least one asset symbol, enter a positive wallet amount, select at least one indicator, and choose a timeframe.");
+        if (
+            selectedSymbols.length === 0 ||
+            !walletAmount ||
+            parseFloat(walletAmount) <= 0 ||
+            selectedIndicators.length === 0 ||
+            !selectedTimeframe
+        ) {
+            setError(
+                "Please select at least one asset symbol, enter a positive wallet amount, select at least one indicator, and choose a timeframe.",
+            );
             return;
         }
 
         setIsLoading(true);
         setError(null);
 
-        const initialAnalyses: AssetAnalysis[] = selectedSymbols.map(symbol => ({
-            symbol,
-            isLoading: true,
-            error: undefined,
-            historicalData: [],
-            analysisResult: null,
-        }));
+        const initialAnalyses: AssetAnalysis[] = selectedSymbols.map(
+            (symbol) => ({
+                symbol,
+                isLoading: true,
+                error: undefined,
+                historicalData: [],
+                analysisResult: null,
+            }),
+        );
         setAnalyses(initialAnalyses);
 
         try {
-            const analysisPromises = selectedSymbols.map(async (symbol, index) => {
-                try {
-                    // Fetch historical data
-                    const historicalData = await fetchHistoricalData(symbol, selectedTimeframe, dates.startDate, dates.endDate);
-
-                    // Always update with historical data, even if it's mock data
-                    setAnalyses(prev => prev.map(a => a.symbol === symbol ? { ...a, historicalData } : a));
-
-                    // Log data source for user awareness
-                    const isLikelyMockData = historicalData.length <= 200 && historicalData.some(d => d.openInterest > 50000);
-                    if (isLikelyMockData) {
-                        console.log(`Using simulated data for ${symbol} - markets may be closed or data unavailable`);
-                    }
-
-                    // Always proceed with analysis using available data (real or mock)
-                    console.log(`Analyzing ${symbol} with ${historicalData.length} data points`);
-
-                    // Get news articles for the symbol
-                    let newsArticles = [];
+            const analysisPromises = selectedSymbols.map(
+                async (symbol, index) => {
                     try {
-                        const { generateSearchTerms } = await import('./services/geminiService.ts');
-                        const { searchNews } = await import('./services/newsSearchService.ts');
-                        // Generate search terms using Gemini
-                        const searchTerms = await generateSearchTerms(symbol);
+                        // Fetch historical data
+                        const historicalData = await fetchHistoricalData(
+                            symbol,
+                            selectedTimeframe,
+                            dates.startDate,
+                            dates.endDate,
+                        );
 
-                        // Search for news articles with timeframe context
-                        newsArticles = await searchNews(searchTerms, selectedTimeframe);
-                        console.log(`Found ${newsArticles.length} news articles for ${symbol}`);
-                    } catch (newsError) {
-                        console.warn(`Failed to fetch news for ${symbol}:`, newsError);
+                        // Always update with historical data, even if it's mock data
+                        setAnalyses((prev) =>
+                            prev.map((a) =>
+                                a.symbol === symbol
+                                    ? { ...a, historicalData }
+                                    : a,
+                            ),
+                        );
+
+                        // Log data source for user awareness
+                        const isLikelyMockData =
+                            historicalData.length <= 200 &&
+                            historicalData.some((d) => d.openInterest > 50000);
+                        if (isLikelyMockData) {
+                            console.log(
+                                `Using simulated data for ${symbol} - markets may be closed or data unavailable`,
+                            );
+                        }
+
+                        // Always proceed with analysis using available data (real or mock)
+                        console.log(
+                            `Analyzing ${symbol} with ${historicalData.length} data points`,
+                        );
+
+                        // Get news articles for the symbol
+                        let newsArticles = [];
+                        try {
+                            const { generateSearchTerms } = await import(
+                                "./services/geminiService.ts"
+                            );
+                            const { searchNews } = await import(
+                                "./services/newsSearchService.ts"
+                            );
+                            // Generate search terms using Gemini
+                            const searchTerms =
+                                await generateSearchTerms(symbol);
+
+                            // Search for news articles with timeframe context
+                            newsArticles = await searchNews(
+                                searchTerms,
+                                selectedTimeframe,
+                            );
+                            console.log(
+                                `Found ${newsArticles.length} news articles for ${symbol}`,
+                            );
+                        } catch (newsError) {
+                            console.warn(
+                                `Failed to fetch news for ${symbol}:`,
+                                newsError,
+                            );
+                        }
+
+                        const result = await getTradingPosition(
+                            symbol,
+                            parseFloat(walletAmount),
+                            selectedIndicators,
+                            historicalData,
+                            newsArticles,
+                            undefined, // openInterestAnalysis
+                            false, // includeOptionsAnalysis
+                            false, // includeCallOptions
+                            false, // includePutOptions
+                            selectedTimeframe,
+                        );
+                        const patterns = await analyzeChartPatterns(
+                            symbol,
+                            historicalData,
+                            selectedIndicators,
+                        );
+
+                        setAnalyses((prev) =>
+                            prev.map((a) =>
+                                a.symbol === symbol
+                                    ? {
+                                          ...a,
+                                          isLoading: false,
+                                          analysisResult: result,
+                                          patternDetails: patterns,
+                                          error: undefined,
+                                      }
+                                    : a,
+                            ),
+                        );
+                    } catch (err) {
+                        console.error(`Analysis failed for ${symbol}:`, err);
+                        const errorMessage =
+                            err instanceof Error ? err.message : String(err);
+                        setAnalyses((prev) =>
+                            prev.map((a) =>
+                                a.symbol === symbol
+                                    ? {
+                                          ...a,
+                                          isLoading: false,
+                                          error: `Analysis failed: ${errorMessage}`,
+                                      }
+                                    : a,
+                            ),
+                        );
                     }
-
-                    const result = await getTradingPosition(
-                        symbol,
-                        parseFloat(walletAmount),
-                        selectedIndicators,
-                        historicalData,
-                        newsArticles,
-                        undefined, // openInterestAnalysis
-                        false, // includeOptionsAnalysis
-                        false, // includeCallOptions
-                        false, // includePutOptions
-                        selectedTimeframe
-                    );
-                    const patterns = await analyzeChartPatterns(symbol, historicalData, selectedIndicators);
-
-                    setAnalyses(prev => prev.map(a => a.symbol === symbol ? { 
-                        ...a, 
-                        isLoading: false, 
-                        analysisResult: result,
-                        patternDetails: patterns,
-                        error: undefined
-                    } : a));
-
-                } catch(err) {
-                    console.error(`Analysis failed for ${symbol}:`, err);
-                    const errorMessage = err instanceof Error ? err.message : String(err);
-                    setAnalyses(prev => prev.map(a => a.symbol === symbol ? { 
-                        ...a, 
-                        isLoading: false, 
-                        error: `Analysis failed: ${errorMessage}` 
-                    } : a));
-                }
-            });
+                },
+            );
 
             await Promise.all(analysisPromises);
-
         } catch (err) {
-            const errorMessage = err instanceof Error ? err.message : "An unknown error occurred during setup.";
+            const errorMessage =
+                err instanceof Error
+                    ? err.message
+                    : "An unknown error occurred during setup.";
             setError(errorMessage);
         } finally {
             setIsLoading(false);
         }
-    }, [selectedSymbols, walletAmount, selectedIndicators, selectedTimeframe, dates]);
+    }, [
+        selectedSymbols,
+        walletAmount,
+        selectedIndicators,
+        selectedTimeframe,
+        dates,
+    ]);
 
     return (
         <div className="bg-background text-foreground min-h-screen p-4 sm:p-6 md:p-8 relative overflow-hidden">
@@ -260,8 +395,8 @@ function App() {
             </div>
 
             <div className="relative z-10 max-w-7xl mx-auto flex flex-col gap-8">
-                <Header 
-                    theme={theme} 
+                <Header
+                    theme={theme}
                     toggleTheme={toggleTheme}
                     currentInputs={{
                         selectedSymbols,
@@ -275,7 +410,7 @@ function App() {
                         includePutOptions,
                         includeOrderAnalysis,
                         startDate: dates.startDate,
-                        endDate: dates.endDate
+                        endDate: dates.endDate,
                     }}
                     analysisResults={analyses}
                 />
@@ -285,35 +420,64 @@ function App() {
                         <div className="relative z-10">
                             <InputSection
                                 selectedSymbols={selectedSymbols}
-                                setSelectedSymbols={setSelectedSymbols}
+                                // Pass the functions to add/remove symbols
+                                onAddSymbol={onAddSymbol}
+                                onRemoveSymbol={onRemoveSymbol}
+                                // The rest of the props remain the same
                                 walletAmount={walletAmount}
                                 setWalletAmount={setWalletAmount}
                                 startDate={dates.startDate}
-                                setStartDate={(d) => setDates(prev => ({...prev, startDate: d}))}
+                                setStartDate={(d) =>
+                                    setDates((prev) => ({
+                                        ...prev,
+                                        startDate: d,
+                                    }))
+                                }
                                 endDate={dates.endDate}
-                                setEndDate={(d) => setDates(prev => ({...prev, endDate: d}))}
+                                setEndDate={(d) =>
+                                    setDates((prev) => ({
+                                        ...prev,
+                                        endDate: d,
+                                    }))
+                                }
                                 selectedIndicators={selectedIndicators}
                                 setSelectedIndicators={setSelectedIndicators}
                                 indicatorOptions={INDICATOR_OPTIONS}
-                                selectedNonTechnicalIndicators={selectedNonTechnicalIndicators}
-                                setSelectedNonTechnicalIndicators={setSelectedNonTechnicalIndicators}
-                                nonTechnicalIndicatorOptions={NON_TECHNICAL_INDICATOR_OPTIONS}
+                                selectedNonTechnicalIndicators={
+                                    selectedNonTechnicalIndicators
+                                }
+                                setSelectedNonTechnicalIndicators={
+                                    setSelectedNonTechnicalIndicators
+                                }
+                                nonTechnicalIndicatorOptions={
+                                    NON_TECHNICAL_INDICATOR_OPTIONS
+                                }
                                 selectedTimeframe={selectedTimeframe}
                                 setSelectedTimeframe={setSelectedTimeframe}
                                 timeframeOptions={TIMEFRAME_OPTIONS}
+
+                                // --- KEY CHANGES HERE ---
                                 selectedMarketType={selectedMarketType}
-                                setSelectedMarketType={setSelectedMarketType}
+                                setSelectedMarketType={handleMarketTypeChange} // Use the new handler
                                 selectedMarket={selectedMarket}
-                                setSelectedMarket={setSelectedMarket}
-                                marketOptions={MARKET_OPTIONS[selectedMarketType] || []}
+                                setSelectedMarket={handleMarketChange}       // Use the new handler
+                                marketOptions={
+                                    MARKET_OPTIONS[selectedMarketType] || []
+                                }
+
+                                // The rest of the props
                                 includeOptionsAnalysis={includeOptionsAnalysis}
-                                setIncludeOptionsAnalysis={setIncludeOptionsAnalysis}
+                                setIncludeOptionsAnalysis={
+                                    setIncludeOptionsAnalysis
+                                }
                                 includeCallOptions={includeCallOptions}
                                 setIncludeCallOptions={setIncludeCallOptions}
                                 includePutOptions={includePutOptions}
                                 setIncludePutOptions={setIncludePutOptions}
                                 includeOrderAnalysis={includeOrderAnalysis}
-                                setIncludeOrderAnalysis={setIncludeOrderAnalysis}
+                                setIncludeOrderAnalysis={
+                                    setIncludeOrderAnalysis
+                                }
                                 onAnalyze={handleAnalyze}
                                 isLoading={isLoading}
                             />
