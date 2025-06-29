@@ -129,29 +129,68 @@
             left: 100%;
         }
 
-        .geometric-bg {
-            background-image: 
-                radial-gradient(circle at 25% 25%, rgba(99, 102, 241, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 75% 75%, rgba(139, 92, 246, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 50% 50%, rgba(59, 130, 246, 0.05) 0%, transparent 50%);
+        .digital-matrix {
+            background: 
+                linear-gradient(90deg, transparent 98%, rgba(59, 130, 246, 0.1) 100%),
+                linear-gradient(0deg, transparent 98%, rgba(139, 92, 246, 0.08) 100%);
+            background-size: 40px 40px;
+            position: relative;
         }
 
-        .dark .geometric-bg {
+        .digital-matrix::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(99, 102, 241, 0.1) 0%, transparent 50%);
+            animation: digital-pulse 8s ease-in-out infinite;
+        }
+
+        .dark .digital-matrix {
+            background: 
+                linear-gradient(90deg, transparent 97%, rgba(59, 130, 246, 0.2) 100%),
+                linear-gradient(0deg, transparent 97%, rgba(139, 92, 246, 0.15) 100%);
+            background-size: 50px 50px;
+        }
+
+        .dark .digital-matrix::before {
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.25) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.25) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(99, 102, 241, 0.15) 0%, transparent 50%);
+        }
+
+        @keyframes digital-pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.05); }
+        }
+
+        .cyber-grid {
             background-image: 
-                radial-gradient(circle at 25% 25%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
-                radial-gradient(circle at 75% 75%, rgba(139, 92, 246, 0.15) 0%, transparent 50%),
-                radial-gradient(circle at 50% 50%, rgba(59, 130, 246, 0.1) 0%, transparent 50%);
+                linear-gradient(rgba(59, 130, 246, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(59, 130, 246, 0.05) 1px, transparent 1px);
+            background-size: 100px 100px;
+            animation: grid-flow 20s linear infinite;
+        }
+
+        .dark .cyber-grid {
+            background-image: 
+                linear-gradient(rgba(59, 130, 246, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(59, 130, 246, 0.1) 1px, transparent 1px);
+        }
+
+        @keyframes grid-flow {
+            0% { background-position: 0 0, 0 0; }
+            100% { background-position: 100px 100px, 100px 100px; }
         }
 
         .sharp-corners {
-            clip-path: polygon(10px 0%, 100% 0%, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0% 100%, 0% 10px);
-        }
-
-        .neural-network {
-            background-image: 
-                linear-gradient(45deg, transparent 40%, rgba(99, 102, 241, 0.1) 50%, transparent 60%),
-                linear-gradient(-45deg, transparent 40%, rgba(139, 92, 246, 0.1) 50%, transparent 60%);
-            background-size: 60px 60px;
+            border-radius: 0.75rem;
         }
     </style>
     <!-- Favicon -->
@@ -166,7 +205,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="Signatex">
 </head>
-<body class="bg-gray-100 dark:bg-gray-900 transition-colors duration-300 font-inter geometric-bg neural-network min-h-screen">
+<body class="bg-gray-100 dark:bg-gray-900 transition-colors duration-300 font-inter digital-matrix cyber-grid min-h-screen">
     <div id="root"></div>
     <script type="module" src="/index.tsx"></script>
 </body>
