@@ -225,38 +225,58 @@ function App() {
         
         let daysToSubtract = 30; // default
         
-        // Minutes/Hours - use a few days for analysis
+        // Minutes/Hours - same day
         if (timeframeLower.includes('m') || timeframeLower.includes('h')) {
-            daysToSubtract = 7;
+            daysToSubtract = 1; // Same day for intraday
         }
         // Daily timeframes
         else if (timeframeLower === '1d') {
-            daysToSubtract = 30;
+            daysToSubtract = 1; // Same day for 1-day timeframe
+        }
+        else if (timeframeLower === '2d') {
+            daysToSubtract = 2; // 2 days for 2-day timeframe
         }
         else if (timeframeLower === '3d') {
-            daysToSubtract = 7; // 1 week for 3-day timeframe
+            daysToSubtract = 3; // 3 days for 3-day timeframe
         }
-        else if (timeframeLower === '7d') {
-            daysToSubtract = 30; // 1 month for 1-week timeframe
+        else if (timeframeLower === '4d') {
+            daysToSubtract = 4; // 4 days for 4-day timeframe
+        }
+        else if (timeframeLower === '5d') {
+            daysToSubtract = 5; // 5 days for 5-day timeframe
+        }
+        else if (timeframeLower === '7d' || timeframeLower === '1w') {
+            daysToSubtract = 7; // 1 week
         }
         // Weekly timeframes
         else if (timeframeLower === '2w') {
-            daysToSubtract = 60; // 2 months for 2-week timeframe
+            daysToSubtract = 14; // 2 weeks
+        }
+        else if (timeframeLower === '3w') {
+            daysToSubtract = 21; // 3 weeks
         }
         else if (timeframeLower === '1m') {
-            daysToSubtract = 7; // 1 week for 1-month timeframe (you selected this)
+            daysToSubtract = 30; // 1 month
         }
         // Monthly timeframes
+        else if (timeframeLower === '2m') {
+            daysToSubtract = 60; // 2 months
+        }
         else if (timeframeLower === '3m') {
-            daysToSubtract = 180; // 6 months for 3-month timeframe
+            daysToSubtract = 90; // 3 months
         }
         else if (timeframeLower === '6m') {
-            daysToSubtract = 365; // 1 year for 6-month timeframe
+            daysToSubtract = 180; // 6 months
         }
         // Yearly timeframes
-        else if (timeframeLower.includes('y')) {
-            const years = parseInt(timeframeLower.replace('y', '')) || 1;
-            daysToSubtract = years * 365; // Same timeframe for analysis
+        else if (timeframeLower === '1y') {
+            daysToSubtract = 365; // 1 year
+        }
+        else if (timeframeLower === '2y') {
+            daysToSubtract = 730; // 2 years
+        }
+        else if (timeframeLower === '5y') {
+            daysToSubtract = 1825; // 5 years
         }
         
         const startDate = new Date(end.getTime() - daysToSubtract * 24 * 60 * 60 * 1000);
