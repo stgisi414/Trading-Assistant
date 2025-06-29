@@ -64,12 +64,34 @@ function createEnhancedGeminiPrompt(
     **Your Analysis Task:**
     Based on your comprehensive analysis of the historical data, selected indicators, and recent news sentiment, provide the following information in a clear, structured format.
 
+    **IMPORTANT REQUIREMENTS:**
+    1. Analyze ALL selected technical indicators: ${selectedIndicators.join(", ")}
+    2. Explain what each indicator means for this specific asset
+    3. Show how the indicators work together to support your recommendation
+    4. Reference specific price movements and dates from the historical data
+    5. Cite relevant news articles and explain their market impact
+    6. Provide detailed reasoning with multiple paragraphs
+
     **Do not use markdown formatting like bold or italics for the labels.**
 
     **START_RESPONSE**
     Recommended Position: [Strictly one of: BUY, SELL, HOLD]
     Confidence Level: [A percentage, e.g., 85%]
-    Detailed Reasoning: [Provide a detailed explanation for your recommendation. Reference the historical price trends, the meaning of the chosen technical indicators in this context, and how the recent news sentiment influences the market outlook. Explain if the wallet amount is suitable for the proposed position. If the recommendation is HOLD, explain what factors contribute to market uncertainty. Cite specific news articles when relevant to your analysis.]
+    Detailed Reasoning: [Provide a comprehensive multi-paragraph explanation for your recommendation. 
+
+    PARAGRAPH 1: Start with an overview of your recommendation and confidence level.
+    
+    PARAGRAPH 2: Analyze each selected technical indicator (${selectedIndicators.join(", ")}) individually - explain what each indicator currently shows for ${assetSymbol} and what signal it's giving.
+    
+    PARAGRAPH 3: Explain how these indicators work together and any confirmations or contradictions between them.
+    
+    PARAGRAPH 4: Reference specific historical price movements from the data provided, including dates and price levels that support your analysis.
+    
+    PARAGRAPH 5: Analyze the recent news sentiment and how specific news articles impact the market outlook for ${assetSymbol}.
+    
+    PARAGRAPH 6: Explain position sizing recommendations based on the $${walletAmount.toLocaleString()} wallet amount and risk management considerations.
+    
+    PARAGRAPH 7: Provide any additional considerations, potential risks, or market conditions that could affect this position.]
     **END_RESPONSE**
     `;
 }

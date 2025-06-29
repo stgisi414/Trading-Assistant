@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import type { ImageResult } from '../types.ts';
 
@@ -36,7 +35,7 @@ export const ImageGallery: React.FC<ImageGalleryProps> = ({ images, title, class
                 <span className="material-symbols-outlined mr-2 text-blue-500">image</span>
                 {title}
             </h3>
-            
+
             <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                 {validImages.map((image, index) => (
                     <div
@@ -51,7 +50,7 @@ export const ImageGallery: React.FC<ImageGalleryProps> = ({ images, title, class
                             onError={() => handleImageError(image.url)}
                             loading="lazy"
                         />
-                        
+
                         <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all duration-300 flex items-center justify-center">
                             <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                                 <span className="material-symbols-outlined text-white text-2xl">
@@ -59,7 +58,7 @@ export const ImageGallery: React.FC<ImageGalleryProps> = ({ images, title, class
                                 </span>
                             </div>
                         </div>
-                        
+
                         <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-2">
                             <div className="flex items-center justify-between">
                                 <span className="text-xs text-white truncate flex-1">

@@ -43,7 +43,9 @@ export const AssetResultCard: React.FC<AssetResultCardProps> = ({ analysis, them
                         <OrderAnalysisSection orderAnalysis={analysisResult.orderAnalysis} />
                     )}
                     {analysisResult?.news && analysisResult.news.length > 0 && (
-                        <NewsSection news={analysisResult.news} theme={theme} />
+                        <div className="mt-6">
+                            <NewsSection news={analysisResult.news} theme={theme} />
+                        </div>
                     )}
 
                     {analysis.patternDetails && analysis.patternDetails.length > 0 && (

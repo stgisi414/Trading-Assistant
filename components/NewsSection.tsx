@@ -1,4 +1,3 @@
-
 import React from 'react';
 import type { NewsArticle } from '../types.ts';
 
@@ -6,7 +5,16 @@ interface NewsSectionProps {
     news: NewsArticle[];
 }
 
-export const NewsSection: React.FC<NewsSectionProps> = ({ news }) => {
+export const NewsSection: React.FC<NewsSectionProps> = ({ news, theme }) => {
+    console.log("📰 NewsSection received:", news?.length || 0, "articles");
+
+    if (!news || news.length === 0) {
+        return (
+            <div className="p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-lg">
+                <p className="text-yellow-800 dark:text-yellow-200">No recent news articles found for this analysis.</p>
+            </div>
+        );
+    }
     return (
         <div className="p-4 rounded-lg bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-700">
             <h3 className="font-semibold text-lg mb-4 text-gray-700 dark:text-gray-300">

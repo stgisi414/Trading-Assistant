@@ -380,7 +380,7 @@ export const searchNews = async (searchTerms: string[], timeframe: string = '1M'
         return [];
     }
 
-    console.log("Searching news with terms:", searchTerms, "for timeframe:", timeframe);
+    console.log("🔍 Starting news search with terms:", searchTerms, "for timeframe:", timeframe);
 
     const allNews: NewsArticle[] = [];
     const dateRange = getDateRangeFromTimeframe(timeframe);
@@ -449,6 +449,11 @@ export const searchNews = async (searchTerms: string[], timeframe: string = '1M'
         return bRelevance - aRelevance;
     });
 
-    console.log(`Found ${sortedNews.length} unique, relevant news articles total`);
-    return sortedNews.slice(0, 12); // Return up to 12 articles
+    console.log(`📰 Final news search results: ${sortedNews.length} unique, relevant articles found`);
+    console.log("📊 News sources breakdown:", sortedNews.map(article => article.source).join(", "));
+    
+    const finalResults = sortedNews.slice(0, 12);
+    console.log(`🎯 Returning ${finalResults.length} articles to display`);
+    
+    return finalResults;
 };
