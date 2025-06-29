@@ -520,28 +520,6 @@ function App() {
                     </>
                 ) : (
                     <>
-                        <Header
-                            theme={theme}
-                            toggleTheme={toggleTheme}
-                            currentInputs={{
-                                // This is the line you need to change:
-                                selectedSymbols: selectedSymbols.map(s => s.symbol),
-
-                                // The rest of the props remain the same
-                                walletAmount,
-                                selectedIndicators,
-                                selectedNonTechnicalIndicators,
-                                selectedTimeframe,
-                                selectedMarketType,
-                                includeOptionsAnalysis,
-                                includeCallOptions,
-                                includePutOptions,
-                                includeOrderAnalysis,
-                                startDate: dates.startDate,
-                                endDate: dates.endDate,
-                            }}
-                            analysisResults={analyses}
-                        />
                         <main className="flex flex-col gap-3">
                             <div className="glass-effect p-6 sm:p-8 rounded-2xl shadow-2xl border-border backdrop-blur-xl card-glow sharp-corners relative overflow-hidden">
                                 <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent dark:from-white/10 dark:to-transparent"></div>
