@@ -96,6 +96,11 @@ export const SymbolSearchInput: React.FC<SymbolSearchInputProps> = ({ selectedSy
                         This market selection doesn't have predefined symbols. Please select a different market.
                     </p>
                 )}
+                {marketType === 'STOCKS' && market === 'US' && (
+                    <p className="text-sm text-green-600 dark:text-green-400 mb-2">
+                        Search any US stock symbol (NASDAQ/NYSE).
+                    </p>
+                )}
                 <div ref={containerRef} className="relative">
                     <input
                         type="text"
@@ -134,6 +139,8 @@ export const SymbolSearchInput: React.FC<SymbolSearchInputProps> = ({ selectedSy
                                 <div className="p-4 text-center text-gray-500 dark:text-gray-400">
                                     {marketType !== 'STOCKS' && getSymbolsForMarket().length === 0 
                                         ? "No symbols available for this market selection" 
+                                        : marketType === 'STOCKS' && results.length === 0 && query.length > 0
+                                        ? "No stocks found. Try symbols like AAPL, MSFT, TSLA..."
                                         : "No results found"}
                                 </div>
                             )}
