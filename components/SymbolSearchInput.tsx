@@ -49,7 +49,7 @@ export const SymbolSearchInput: React.FC<SymbolSearchInputProps> = ({ selectedSy
                 .filter(s => s.symbol.toLowerCase().includes(currentQuery.toLowerCase()) || s.name.toLowerCase().includes(currentQuery.toLowerCase()))
                 .map(s => ({ symbol: s.symbol, name: s.name }));
         } else if (marketType === 'STOCKS') {
-            // Only allow general symbol search for STOCKS market type
+            // Allow general symbol search for STOCKS market type (includes NYSE/NASDAQ)
             data = await searchSymbols(currentQuery);
         }
         // For other market types without predefined symbols, no search results
