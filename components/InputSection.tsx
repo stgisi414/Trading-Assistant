@@ -5,8 +5,9 @@ import { SymbolSearchInput } from './SymbolSearchInput.tsx';
 import { Spinner } from './Spinner.tsx';
 
 interface InputSectionProps {
-    selectedSymbols: string[];
-    setSelectedSymbols: (symbols: string[]) => void;
+    selectedSymbols: FmpSearchResult[];
+    onAddSymbol: (symbol: FmpSearchResult) => void;
+    onRemoveSymbol: (symbol: string) => void;
     walletAmount: string;
     setWalletAmount: (amount: string) => void;
     startDate: string;
@@ -41,7 +42,7 @@ interface InputSectionProps {
 }
 
 export const InputSection: React.FC<InputSectionProps> = ({
-    selectedSymbols, setSelectedSymbols, walletAmount, setWalletAmount,
+    selectedSymbols, onAddSymbol, onRemoveSymbol, walletAmount, setWalletAmount,
     startDate, setStartDate, endDate, setEndDate,
     selectedIndicators, setSelectedIndicators, indicatorOptions,
     selectedNonTechnicalIndicators, setSelectedNonTechnicalIndicators, nonTechnicalIndicatorOptions,
@@ -63,14 +64,12 @@ export const InputSection: React.FC<InputSectionProps> = ({
         setSelectedNonTechnicalIndicators(selected);
     };
 
-    const handleAddSymbol = (symbol: string) => {
-        if (!selectedSymbols.includes(symbol)) {
-            setSelectedSymbols([...selectedSymbols, symbol]);
-        }
+    const handleAddSymbol = (symbol: FmpSearchResult) => {
+        onAddSymbol(symbol);
     };
 
     const handleRemoveSymbol = (symbolToRemove: string) => {
-        setSelectedSymbols(selectedSymbols.filter(symbol => symbol !== symbolToRemove));
+        onRemoveSymbol(symbolToRemove);
     };
 
     const inputClasses = "w-full p-3 bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-gray-200 placeholder-gray-400 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition";
