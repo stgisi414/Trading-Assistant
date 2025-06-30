@@ -12,6 +12,7 @@ export default defineConfig(({ mode }) => {
         'process.env.FMP_API_KEY': JSON.stringify(env.FMP_API_KEY || process.env.FMP_API_KEY),
         'process.env.NEWS_CUSTOM_SEARCH_CX': JSON.stringify(env.NEWS_CUSTOM_SEARCH_CX || process.env.NEWS_CUSTOM_SEARCH_CX),
         'process.env.IMAGE_CUSTOM_SEARCH_CX': JSON.stringify(env.IMAGE_CUSTOM_SEARCH_CX || process.env.IMAGE_CUSTOM_SEARCH_CX),
+        'process.env.GOOGLEDOTCOM_CUSTOM_SEARCH_CX': JSON.stringify(env.GOOGLEDOTCOM_CUSTOM_SEARCH_CX || process.env.GOOGLEDOTCOM_CUSTOM_SEARCH_CX),
         'process.env.GOOGLE_CUSTOM_SEARCH_API_KEY': JSON.stringify(env.GOOGLE_CUSTOM_SEARCH_API_KEY || process.env.GOOGLE_CUSTOM_SEARCH_API_KEY),
         'process.env.GOOGLE_TTS_API_KEY': JSON.stringify(env.GOOGLE_TTS_API_KEY || process.env.GOOGLE_TTS_API_KEY),
       },

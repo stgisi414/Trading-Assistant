@@ -4,12 +4,13 @@ import { searchSymbolLogo, searchReasoningIllustration } from './imageSearchServ
 
 const GOOGLE_CUSTOM_SEARCH_API_KEY = process.env.GOOGLE_CUSTOM_SEARCH_API_KEY;
 const NEWS_CUSTOM_SEARCH_CX = process.env.NEWS_CUSTOM_SEARCH_CX;
+const GOOGLEDOTCOM_CUSTOM_SEARCH_CX = process.env.GOOGLEDOTCOM_CUSTOM_SEARCH_CX;
 const GOOGLE_CUSTOM_SEARCH_URL = 'https://www.googleapis.com/customsearch/v1';
 
 const FMP_API_KEY = process.env.FMP_API_KEY;
 const FMP_BASE_URL = 'https://financialmodelingprep.com/api/v3';
 
-if (!GOOGLE_CUSTOM_SEARCH_API_KEY || !NEWS_CUSTOM_SEARCH_CX) {
+if (!GOOGLE_CUSTOM_SEARCH_API_KEY || (!NEWS_CUSTOM_SEARCH_CX && !GOOGLEDOTCOM_CUSTOM_SEARCH_CX)) {
     console.warn("Google Custom Search API keys not set. Using FMP news as primary source.");
 }
 
@@ -304,25 +305,63 @@ const searchFMPPressReleases = async (symbols: string[], dateRange: { from?: str
     return allNews;
 };
 
-// Original Google Custom Search function (kept as fallback)
+// Helper function to create news-friendly search terms
+const createNewsFriendlyTerms = (searchTerms: string[]): string[] => {
+    const newsFriendlyTerms: string[] = [];
+    
+    for (const term of searchTerms) {
+        // Extract company name and symbol from detailed terms
+        const symbolMatch = term.match(/\b[A-Z]{2,5}\b/);
+        const symbol = symbolMatch ? symbolMatch[0] : '';
+        
+        if (symbol) {
+            // Create broader, news-friendly terms
+            newsFriendlyTerms.push(`${symbol} stock`);
+            newsFriendlyTerms.push(`${symbol} earnings`);
+            
+            // Add company name versions if we can identify them
+            const companyMappings: Record<string, string> = {
+                'AAPL': 'Apple',
+                'MSFT': 'Microsoft',
+                'GOOGL': 'Google',
+                'TSLA': 'Tesla',
+                'AMZN': 'Amazon',
+                'META': 'Meta',
+                'NVDA': 'Nvidia',
+                'NFLX': 'Netflix',
+                'AI': 'C3.ai'
+            };
+            
+            if (companyMappings[symbol]) {
+                newsFriendlyTerms.push(`${companyMappings[symbol]} stock`);
+                newsFriendlyTerms.push(`${companyMappings[symbol]} financial`);
+            }
+        }
+    }
+    
+    return [...new Set(newsFriendlyTerms)]; // Remove duplicates
+};
+
+// Search Google News with news-optimized search engine
 const searchGoogleNews = async (searchTerms: string[], timeframe: string): Promise<NewsArticle[]> => {
     if (!GOOGLE_CUSTOM_SEARCH_API_KEY || !NEWS_CUSTOM_SEARCH_CX) {
         return [];
     }
     
     const allNews: NewsArticle[] = [];
+    const newsFriendlyTerms = createNewsFriendlyTerms(searchTerms);
     
     try {
-        for (const term of searchTerms.slice(0, 2)) { // Reduce to 2 terms to save quota
-            const query = encodeURIComponent(`"${term}" financial news`);
+        for (const term of newsFriendlyTerms.slice(0, 3)) { // Use news-friendly terms
+            const query = encodeURIComponent(term); // No quotes, simpler query
             const dateRestrict = getDateRestrictionFromTimeframe(timeframe);
-            const url = `${GOOGLE_CUSTOM_SEARCH_URL}?key=${GOOGLE_CUSTOM_SEARCH_API_KEY}&cx=${NEWS_CUSTOM_SEARCH_CX}&q=${query}&num=5&dateRestrict=${dateRestrict}&sort=date&lr=lang_en`;
+            const url = `${GOOGLE_CUSTOM_SEARCH_URL}?key=${GOOGLE_CUSTOM_SEARCH_API_KEY}&cx=${NEWS_CUSTOM_SEARCH_CX}&q=${query}&num=6&dateRestrict=${dateRestrict}&sort=date&lr=lang_en`;
             
             console.log(`Fetching Google news for term: "${term}"`);
             
             const response = await fetch(url);
             if (!response.ok) {
-                console.error(`Google search failed for "${term}": ${response.status}`);
+                console.error(`Google news search failed for "${term}": ${response.status}`);
                 continue;
             }
             
@@ -346,10 +385,78 @@ const searchGoogleNews = async (searchTerms: string[], timeframe: string): Promi
                 console.log(`Added ${newsItems.length} Google news items for "${term}"`);
             }
             
-            await new Promise(resolve => setTimeout(resolve, 200));
+            await new Promise(resolve => setTimeout(resolve, 300));
         }
     } catch (error) {
         console.error("Error searching Google news:", error);
+    }
+    
+    return allNews;
+};
+
+// Search broader web content (blogs, analysis, scholarly articles)
+const searchGoogleWeb = async (searchTerms: string[], timeframe: string): Promise<NewsArticle[]> => {
+    if (!GOOGLE_CUSTOM_SEARCH_API_KEY || !GOOGLEDOTCOM_CUSTOM_SEARCH_CX) {
+        return [];
+    }
+    
+    const allNews: NewsArticle[] = [];
+    const symbols = extractSymbolsFromTerms(searchTerms);
+    
+    try {
+        for (const symbol of symbols.slice(0, 2)) {
+            // Create broader search terms for web search
+            const webTerms = [
+                `${symbol} analysis 2024`,
+                `${symbol} stock analysis`,
+                `${symbol} investment thesis`
+            ];
+            
+            for (const term of webTerms.slice(0, 2)) {
+                const query = encodeURIComponent(term);
+                const dateRestrict = getDateRestrictionFromTimeframe(timeframe);
+                const url = `${GOOGLE_CUSTOM_SEARCH_URL}?key=${GOOGLE_CUSTOM_SEARCH_API_KEY}&cx=${GOOGLEDOTCOM_CUSTOM_SEARCH_CX}&q=${query}&num=4&dateRestrict=${dateRestrict}&sort=date&lr=lang_en`;
+                
+                console.log(`Fetching Google web content for term: "${term}"`);
+                
+                const response = await fetch(url);
+                if (!response.ok) {
+                    console.error(`Google web search failed for "${term}": ${response.status}`);
+                    continue;
+                }
+                
+                const data = await response.json();
+                if (data.items && Array.isArray(data.items)) {
+                    const webItems: NewsArticle[] = data.items
+                        .filter((item: any) => {
+                            const hasValidUrl = item.link && isValidNewsUrl(item.link);
+                            const isRecent = isRecentArticle(item.snippet || '', item.title || '', timeframe);
+                            const hasContent = item.title && item.title.length > 10;
+                            // Filter for financial content sites
+                            const isFinancialContent = item.link.includes('seeking') || 
+                                                     item.link.includes('finance') || 
+                                                     item.link.includes('investor') ||
+                                                     item.link.includes('market') ||
+                                                     item.link.includes('analyst') ||
+                                                     item.link.includes('research');
+                            return hasValidUrl && isRecent && hasContent && isFinancialContent;
+                        })
+                        .map((item: any) => ({
+                            title: item.title || 'Untitled',
+                            uri: item.link || '#',
+                            snippet: item.snippet || '',
+                            source: item.displayLink || 'Web'
+                        }));
+                    
+                    allNews.push(...webItems);
+                    console.log(`Added ${webItems.length} Google web items for "${term}"`);
+                }
+                
+                await new Promise(resolve => setTimeout(resolve, 300));
+            }
+        }
+    } catch (error) {
+        console.error("Error searching Google web:", error);
     }
     
     return allNews;
@@ -405,20 +512,34 @@ export const searchNews = async (searchTerms: string[], timeframe: string = '1M'
 
         // 3. Fallback to Google Custom Search if FMP didn't return much
         if (allNews.length < 5) {
-            console.log("FMP returned limited results, trying Google as fallback");
+            console.log("FMP returned limited results, trying Google searches as fallback");
+            
+            // Try news-specific search first
             const googleNews = await searchGoogleNews(searchTerms, timeframe);
             allNews.push(...googleNews);
+            
+            // If still not enough, try broader web search
+            if (allNews.length < 8) {
+                console.log("Still limited results, trying broader web search");
+                const googleWeb = await searchGoogleWeb(searchTerms, timeframe);
+                allNews.push(...googleWeb);
+            }
         }
 
     } catch (error) {
         console.error("Error in news search:", error);
         
-        // Final fallback to Google if everything else fails
+        // Final fallback to Google searches if everything else fails
         try {
             const googleNews = await searchGoogleNews(searchTerms, timeframe);
             allNews.push(...googleNews);
+            
+            if (allNews.length < 3) {
+                const googleWeb = await searchGoogleWeb(searchTerms, timeframe);
+                allNews.push(...googleWeb);
+            }
         } catch (fallbackError) {
-            console.error("Fallback Google search also failed:", fallbackError);
+            console.error("Fallback Google searches also failed:", fallbackError);
         }
     }
 
