@@ -13,6 +13,7 @@ language = "nodejs"
 deploymentTarget = "static"
 build = ["sh", "-c", "npm run build"]
 publicDir = "dist"
+run = ["sh", "-c", "cd server && npm start & npx serve -s ../dist -l 5173 & wait"]
 
 [[ports]]
 localPort = 5000
