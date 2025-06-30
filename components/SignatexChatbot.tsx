@@ -554,7 +554,7 @@ Try asking me about indicators, trading setups, or general trading advice. 🤖`
 
             // Check cache first
             let audioDataUrl = audioCache.get(messageId);
-            
+
             if (!audioDataUrl) {
                 // Synthesize speech
                 audioDataUrl = await ttsService.synthesizeSpeech({
@@ -755,7 +755,7 @@ I'm ready for fresh insights and still fully synced with your Signatex setup!
                                                 )}
                                             </div>
                                         )}
-                                        
+
                                         <div className="prose prose-sm dark:prose-invert max-w-none">
                                             <ReactMarkdown 
                                                 remarkPlugins={[remarkGfm]}
@@ -770,7 +770,7 @@ I'm ready for fresh insights and still fully synced with your Signatex setup!
                                                     strong: ({children}) => <strong className="font-bold text-gray-900 dark:text-white">{children}</strong>,
                                                     em: ({children}) => <em className="italic text-gray-700 dark:text-gray-300">{children}</em>,
                                                     code: ({children}) => <code className="bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-200 px-2 py-1 rounded text-xs font-mono border">{children}</code>,
-                                                    pre: ({children}) => <pre className="bg-gray-800 text-green-400 p-3 rounded-lg overflow-x-auto text-sm font-mono mb-3 border">{children}</pre>,
+                                                    pre: ({children}) => <preclassName="bg-gray-800 text-green-400 p-3 rounded-lg overflow-x-auto text-sm font-mono mb-3 border">{children}</pre>,
                                                     blockquote: ({children}) => <blockquote className="border-l-4 border-blue-500 pl-4 py-2 bg-blue-50 dark:bg-blue-900/20 rounded-r-lg mb-3 italic">{children}</blockquote>,
                                                     hr: () => <hr className="border-gray-300 dark:border-gray-600 my-4" />,
                                                     a: ({href, children}) => <a href={href} className="text-blue-500 hover:text-blue-700 underline" target="_blank" rel="noopener noreferrer">{children}</a>,
