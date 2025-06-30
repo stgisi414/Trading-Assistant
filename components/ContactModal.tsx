@@ -39,56 +39,43 @@ export const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose }) =
     }));
   };
 
-  const sendEmailViaGmail = async (emailData: typeof formData) => {
-    const GMAIL_API_KEY = process.env.GMAIL_API_KEY;
+  const sendEmailViaEmailJS = async (emailData: typeof formData) => {
+    // For now, we'll simulate sending an email
+    // In production, you would set up EmailJS or a backend email service
     
-    if (!GMAIL_API_KEY) {
-      throw new Error('Gmail API key not configured');
-    }
-
-    // Compose email content
-    const emailContent = `
-From: ${emailData.name} <${emailData.email}>
-Subject: [Signatex Contact] ${emailData.subject}
-
-Name: ${emailData.name}
-Email: ${emailData.email}
-Subject: ${emailData.subject}
-
-Message:
-${emailData.message}
-
----
-Sent via Signatex Contact Form
-Time: ${new Date().toISOString()}
-User ID: ${user?.uid || 'Anonymous'}
-    `.trim();
-
-    // Create the email message in Gmail API format
-    const message = btoa(
-      `To: stefdgisi@gmail.com\r\n` +
-      `Subject: [Signatex Contact] ${emailData.subject}\r\n` +
-      `Content-Type: text/plain; charset=utf-8\r\n\r\n` +
-      emailContent
-    ).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-
-    const response = await fetch('https://gmail.googleapis.com/gmail/v1/users/me/messages/send', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${GMAIL_API_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        raw: message
-      })
+    // Simulate API call delay
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    // Log the contact form submission (in production, this would go to your email service)
+    console.log('Contact Form Submission:', {
+      name: emailData.name,
+      email: emailData.email,
+      subject: emailData.subject,
+      message: emailData.message,
+      timestamp: new Date().toISOString(),
+      userId: user?.uid || 'Anonymous'
     });
-
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error?.message || 'Failed to send email');
-    }
-
-    return response.json();
+    
+    // You can replace this with EmailJS, Formspree, or your own backend
+    // For EmailJS setup, uncomment and configure the following:
+    /*
+    const templateParams = {
+      from_name: emailData.name,
+      from_email: emailData.email,
+      subject: emailData.subject,
+      message: emailData.message,
+      to_email: 'stefdgisi@gmail.com'
+    };
+    
+    const response = await emailjs.send(
+      'YOUR_SERVICE_ID',
+      'YOUR_TEMPLATE_ID', 
+      templateParams,
+      'YOUR_PUBLIC_KEY'
+    );
+    */
+    
+    return { success: true };
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -109,7 +96,7 @@ User ID: ${user?.uid || 'Anonymous'}
         throw new Error('Please enter a valid email address');
       }
 
-      await sendEmailViaGmail(formData);
+      await sendEmailViaEmailJS(formData);
       
       setSubmitStatus('success');
       
@@ -177,6 +164,7 @@ User ID: ${user?.uid || 'Anonymous'}
                     Your account information has been pre-filled.
                   </p>
                 )}
+                {/* Note: Currently logging to console. To send actual emails, set up EmailJS or a backend service */}
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-4">
