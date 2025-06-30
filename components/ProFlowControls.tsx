@@ -25,11 +25,16 @@ export const ProFlowControls: React.FC<ProFlowControlsProps> = ({ onShowToast, a
         // Set up ProFlow service callbacks
         proFlowService.setToastCallback(onShowToast);
         proFlowService.setAppCallbacks(appCallbacks);
+        
+        // Set up status change callback for immediate updates
+        proFlowService.setStatusChangeCallback(() => {
+            setStatus(proFlowService.getStatus());
+        });
 
-        // Update status periodically
+        // Update status periodically as backup
         const interval = setInterval(() => {
             setStatus(proFlowService.getStatus());
-        }, 500);
+        }, 1000);
 
         return () => clearInterval(interval);
     }, [onShowToast, appCallbacks]);
@@ -53,12 +58,10 @@ export const ProFlowControls: React.FC<ProFlowControlsProps> = ({ onShowToast, a
     const handleModeChange = (mode: ProFlowMode) => {
         setSelectedMode(mode);
         proFlowService.setMode(mode);
-        setStatus(proFlowService.getStatus()); // Update status to reflect mode change
     };
 
     const handleContinue = () => {
         proFlowService.continueFromManualPause();
-        setStatus(proFlowService.getStatus()); // Force status update
     };
 
     const handleFlowPromptChange = (value: string) => {

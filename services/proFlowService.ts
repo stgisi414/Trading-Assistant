@@ -31,6 +31,7 @@ export class ProFlowService {
     private isPaused = false;
     private toastCallback?: (toast: ProFlowToast) => void;
     private confirmationCallback?: () => void;
+    private statusChangeCallback?: () => void;
     private flowPrompt: FlowPromptConfig = { prompt: '', isCustom: false };
     private appCallbacks: {
         setSelectedSymbols?: (symbols: FmpSearchResult[]) => void;
@@ -50,12 +51,23 @@ export class ProFlowService {
         this.toastCallback = callback;
     }
 
+    setStatusChangeCallback(callback: () => void) {
+        this.statusChangeCallback = callback;
+    }
+
     setAppCallbacks(callbacks: typeof this.appCallbacks) {
         this.appCallbacks = callbacks;
     }
 
     setMode(mode: ProFlowMode) {
         this.mode = mode;
+        this.notifyStatusChange();
+    }
+
+    private notifyStatusChange() {
+        if (this.statusChangeCallback) {
+            this.statusChangeCallback();
+        }
     }
 
     getMode(): ProFlowMode {
@@ -69,6 +81,7 @@ export class ProFlowService {
     continueFromManualPause() {
         if (this.isPaused && this.confirmationCallback) {
             this.isPaused = false;
+            this.notifyStatusChange();
             const callback = this.confirmationCallback;
             this.confirmationCallback = undefined;
             callback();
@@ -318,6 +331,7 @@ export class ProFlowService {
                 // In manual mode, pause after each step (except the last one)
                 if (this.mode === 'manual' && i < this.steps.length - 1) {
                     this.isPaused = true;
+                    this.notifyStatusChange();
                     this.showToast(`⏸️ Step "${step.name}" complete. Click Continue to proceed to next step.`, 'info', 6000);
 
                     // Wait for user confirmation
@@ -339,6 +353,7 @@ export class ProFlowService {
         this.isRunning = false;
         this.currentStep = 0;
         this.isPaused = false;
+        this.notifyStatusChange();
     }
 
     stopProFlow() {
@@ -349,6 +364,7 @@ export class ProFlowService {
 
         this.isRunning = false;
         this.isPaused = false;
+        this.notifyStatusChange();
         this.showToast('🛑 ProFlow automation stopped by user.', 'info');
     }
 
