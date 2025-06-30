@@ -2,7 +2,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { X, Send, Users, MessageCircle, TrendingUp, TrendingDown, Zap, RotateCcw, Clock } from 'lucide-react';
+import { X, Send, Users, MessageCircle, TrendingUp, TrendingDown, Zap, RotateCcw, Clock, Shield, Ban, UserX, AlertTriangle } from 'lucide-react';
 
 interface Message {
   id: string;
@@ -28,16 +28,43 @@ const TRADING_CHANNELS = [
 ];
 
 export const ChatroomModal: React.FC<ChatroomModalProps> = ({ isOpen, onClose }) => {
-  const { user, sendMessage, loadMessages, subscribeToMessages } = useAuth();
+  const { 
+    user, 
+    userProfile, 
+    sendMessage, 
+    loadMessages, 
+    subscribeToMessages, 
+    isUserAdmin,
+    kickUserFromChannel,
+    banUserFromChannel,
+    banUserGlobally,
+    unbanUser
+  } = useAuth();
   const [activeChannel, setActiveChannel] = useState('swing');
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState('');
   const [onlineUsers, setOnlineUsers] = useState<number>(0);
   const [isLoading, setIsLoading] = useState(false);
   const [isSending, setIsSending] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<string | null>(null);
+  const [moderationAction, setModerationAction] = useState<'kick' | 'ban_channel' | 'ban_global' | null>(null);
+  const [moderationReason, setModerationReason] = useState('');
+  const [banDuration, setBanDuration] = useState(24);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const unsubscribeRef = useRef<(() => void) | null>(null);
+
+  // Check admin status
+  useEffect(() => {
+    const checkAdminStatus = async () => {
+      if (user) {
+        const adminStatus = await isUserAdmin();
+        setIsAdmin(adminStatus);
+      }
+    };
+    checkAdminStatus();
+  }, [user, isUserAdmin]);
 
   // Load messages when channel changes or modal opens
   useEffect(() => {
@@ -112,6 +139,42 @@ export const ChatroomModal: React.FC<ChatroomModalProps> = ({ isOpen, onClose })
       e.preventDefault();
       handleSendMessage();
     }
+  };
+
+  const handleModerationAction = async () => {
+    if (!selectedUser || !moderationAction) return;
+
+    try {
+      switch (moderationAction) {
+        case 'kick':
+          await kickUserFromChannel(selectedUser, activeChannel, moderationReason);
+          break;
+        case 'ban_channel':
+          await banUserFromChannel(selectedUser, activeChannel, banDuration, moderationReason);
+          break;
+        case 'ban_global':
+          await banUserGlobally(selectedUser, banDuration, moderationReason);
+          break;
+      }
+      
+      setSelectedUser(null);
+      setModerationAction(null);
+      setModerationReason('');
+      setBanDuration(24);
+      
+      // Reload messages to show moderation action
+      await loadChannelMessages();
+    } catch (error) {
+      console.error('Moderation action failed:', error);
+      alert(`Failed to ${moderationAction.replace('_', ' ')}: ${error}`);
+    }
+  };
+
+  const openModerationMenu = (userId: string, userName: string, actionType: 'kick' | 'ban_channel' | 'ban_global') => {
+    if (!isAdmin || userId === user?.uid) return;
+    
+    setSelectedUser(userId);
+    setModerationAction(actionType);
   };
 
   const formatTime = (date: Date) => {
@@ -235,26 +298,34 @@ export const ChatroomModal: React.FC<ChatroomModalProps> = ({ isOpen, onClose })
           <div className="flex-1 flex flex-col">
             {/* Channel Header */}
             <div className="p-4 border-b border-gray-200 dark:border-gray-700">
-              <div className="flex items-center space-x-3">
-                {(() => {
-                  const channel = TRADING_CHANNELS.find(c => c.id === activeChannel);
-                  const Icon = channel?.icon || MessageCircle;
-                  return (
-                    <>
-                      <div className={`p-2 rounded-lg ${channel?.color || 'bg-gray-500'}`}>
-                        <Icon className="w-5 h-5 text-white" />
-                      </div>
-                      <div>
-                        <h3 className="font-semibold text-gray-900 dark:text-white">
-                          {channel?.name || 'Unknown Channel'}
-                        </h3>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">
-                          {channel?.description || 'Trading discussion'}
-                        </p>
-                      </div>
-                    </>
-                  );
-                })()}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-3">
+                  {(() => {
+                    const channel = TRADING_CHANNELS.find(c => c.id === activeChannel);
+                    const Icon = channel?.icon || MessageCircle;
+                    return (
+                      <>
+                        <div className={`p-2 rounded-lg ${channel?.color || 'bg-gray-500'}`}>
+                          <Icon className="w-5 h-5 text-white" />
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-gray-900 dark:text-white">
+                            {channel?.name || 'Unknown Channel'}
+                          </h3>
+                          <p className="text-sm text-gray-500 dark:text-gray-400">
+                            {channel?.description || 'Trading discussion'}
+                          </p>
+                        </div>
+                      </>
+                    );
+                  })()}
+                </div>
+                {isAdmin && (
+                  <div className="flex items-center space-x-2 bg-red-100 dark:bg-red-900 px-3 py-1 rounded-full">
+                    <Shield className="w-4 h-4 text-red-600 dark:text-red-400" />
+                    <span className="text-xs font-medium text-red-600 dark:text-red-400">Admin</span>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -295,31 +366,62 @@ export const ChatroomModal: React.FC<ChatroomModalProps> = ({ isOpen, onClose })
                         {dayMessages.map((message) => (
                           <div
                             key={message.id}
-                            className={`flex space-x-3 ${
+                            className={`group relative flex space-x-3 ${
                               message.userId === user?.uid ? 'flex-row-reverse space-x-reverse' : ''
-                            }`}
+                            } ${message.userId === 'system' ? 'justify-center' : ''}`}
                           >
-                            <img
-                              src={message.userPhoto}
-                              alt={message.userName}
-                              className="w-8 h-8 rounded-full flex-shrink-0"
-                            />
+                            {message.userId !== 'system' && (
+                              <img
+                                src={message.userPhoto}
+                                alt={message.userName}
+                                className="w-8 h-8 rounded-full flex-shrink-0"
+                              />
+                            )}
                             <div
                               className={`flex-1 ${
                                 message.userId === user?.uid ? 'text-right' : ''
-                              }`}
+                              } ${message.userId === 'system' ? 'text-center' : ''}`}
                             >
-                              <div className="flex items-center space-x-2 mb-1">
-                                <span className="text-sm font-medium text-gray-900 dark:text-white">
-                                  {message.userName}
-                                </span>
-                                <span className="text-xs text-gray-500 dark:text-gray-400">
-                                  {formatTime(message.timestamp)}
-                                </span>
-                              </div>
+                              {message.userId !== 'system' && (
+                                <div className="flex items-center space-x-2 mb-1">
+                                  <span className="text-sm font-medium text-gray-900 dark:text-white">
+                                    {message.userName}
+                                  </span>
+                                  <span className="text-xs text-gray-500 dark:text-gray-400">
+                                    {formatTime(message.timestamp)}
+                                  </span>
+                                  {isAdmin && message.userId !== user?.uid && message.userId !== 'system' && (
+                                    <div className="opacity-0 group-hover:opacity-100 transition-opacity flex space-x-1">
+                                      <button
+                                        onClick={() => openModerationMenu(message.userId, message.userName, 'kick')}
+                                        className="p-1 hover:bg-red-100 dark:hover:bg-red-900 rounded text-red-600 dark:text-red-400"
+                                        title="Kick user"
+                                      >
+                                        <UserX className="w-3 h-3" />
+                                      </button>
+                                      <button
+                                        onClick={() => openModerationMenu(message.userId, message.userName, 'ban_channel')}
+                                        className="p-1 hover:bg-red-100 dark:hover:bg-red-900 rounded text-red-600 dark:text-red-400"
+                                        title="Ban from channel"
+                                      >
+                                        <Ban className="w-3 h-3" />
+                                      </button>
+                                      <button
+                                        onClick={() => openModerationMenu(message.userId, message.userName, 'ban_global')}
+                                        className="p-1 hover:bg-red-100 dark:hover:bg-red-900 rounded text-red-600 dark:text-red-400"
+                                        title="Ban globally"
+                                      >
+                                        <AlertTriangle className="w-3 h-3" />
+                                      </button>
+                                    </div>
+                                  )}
+                                </div>
+                              )}
                               <div
                                 className={`inline-block p-3 rounded-lg max-w-xs lg:max-w-md ${
-                                  message.userId === user?.uid
+                                  message.userId === 'system'
+                                    ? 'bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200 text-sm'
+                                    : message.userId === user?.uid
                                     ? 'bg-blue-500 text-white'
                                     : 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white'
                                 }`}
@@ -369,6 +471,76 @@ export const ChatroomModal: React.FC<ChatroomModalProps> = ({ isOpen, onClose })
           </div>
         </div>
       </div>
+
+      {/* Moderation Modal */}
+      {moderationAction && selectedUser && (
+        <div className="fixed inset-0 bg-black/70 z-[110] flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-md p-6">
+            <div className="flex items-center space-x-3 mb-4">
+              <AlertTriangle className="w-6 h-6 text-red-500" />
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                {moderationAction === 'kick' ? 'Kick User' : 
+                 moderationAction === 'ban_channel' ? 'Ban from Channel' : 'Global Ban'}
+              </h3>
+            </div>
+            
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Reason
+                </label>
+                <textarea
+                  value={moderationReason}
+                  onChange={(e) => setModerationReason(e.target.value)}
+                  placeholder="Enter reason for moderation action..."
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  rows={3}
+                />
+              </div>
+              
+              {moderationAction !== 'kick' && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Duration (hours)
+                  </label>
+                  <select
+                    value={banDuration}
+                    onChange={(e) => setBanDuration(Number(e.target.value))}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  >
+                    <option value={1}>1 hour</option>
+                    <option value={6}>6 hours</option>
+                    <option value={24}>24 hours</option>
+                    <option value={72}>3 days</option>
+                    <option value={168}>1 week</option>
+                    <option value={720}>30 days</option>
+                  </select>
+                </div>
+              )}
+            </div>
+            
+            <div className="flex space-x-3 mt-6">
+              <button
+                onClick={() => {
+                  setSelectedUser(null);
+                  setModerationAction(null);
+                  setModerationReason('');
+                  setBanDuration(24);
+                }}
+                className="flex-1 px-4 py-2 bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-400 dark:hover:bg-gray-500 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleModerationAction}
+                className="flex-1 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+              >
+                Confirm {moderationAction === 'kick' ? 'Kick' : 'Ban'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>,
     document.body
   );

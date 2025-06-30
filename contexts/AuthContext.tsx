@@ -17,6 +17,11 @@ interface AuthContextType {
   sendMessage: (channel: string, content: string) => Promise<string>;
   loadMessages: (channel: string) => Promise<any[]>;
   subscribeToMessages: (channel: string, callback: (messages: any[]) => void) => () => void;
+  isUserAdmin: () => Promise<boolean>;
+  kickUserFromChannel: (targetUserId: string, channel: string, reason?: string) => Promise<void>;
+  banUserFromChannel: (targetUserId: string, channel: string, duration?: number, reason?: string) => Promise<void>;
+  banUserGlobally: (targetUserId: string, duration?: number, reason?: string) => Promise<void>;
+  unbanUser: (targetUserId: string, channel?: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -150,6 +155,26 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     return firebaseService.subscribeToMessages(channel, callback);
   };
 
+  const isUserAdmin = async () => {
+    return await firebaseService.isUserAdmin();
+  };
+
+  const kickUserFromChannel = async (targetUserId: string, channel: string, reason?: string) => {
+    await firebaseService.kickUserFromChannel(targetUserId, channel, reason);
+  };
+
+  const banUserFromChannel = async (targetUserId: string, channel: string, duration: number = 24, reason?: string) => {
+    await firebaseService.banUserFromChannel(targetUserId, channel, duration, reason);
+  };
+
+  const banUserGlobally = async (targetUserId: string, duration: number = 24, reason?: string) => {
+    await firebaseService.banUserGlobally(targetUserId, duration, reason);
+  };
+
+  const unbanUser = async (targetUserId: string, channel?: string) => {
+    await firebaseService.unbanUser(targetUserId, channel);
+  };
+
   const value: AuthContextType = {
     user,
     userProfile,
@@ -164,7 +189,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     deleteAnalysis,
     sendMessage,
     loadMessages,
-    subscribeToMessages
+    subscribeToMessages,
+    isUserAdmin,
+    kickUserFromChannel,
+    banUserFromChannel,
+    banUserGlobally,
+    unbanUser
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

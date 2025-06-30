@@ -27,6 +27,12 @@ try {
   console.log('Firebase initialization warning:', error);
 }
 
+// Admin configuration - Add UIDs of users who should have admin privileges
+const ADMIN_UIDS = [
+  // Add admin user IDs here
+  // Example: 'your-firebase-uid-here'
+];
+
 // Google Auth Provider
 const googleProvider = new GoogleAuthProvider();
 googleProvider.addScope('email');
@@ -42,6 +48,10 @@ export interface UserProfile {
   tier: 'free' | 'premium';
   analysisCount: number;
   maxAnalyses: number;
+  isAdmin?: boolean;
+  bannedFromChannels?: string[];
+  bannedGlobally?: boolean;
+  bannedUntil?: Date;
 }
 
 export interface CloudUserData {
@@ -177,13 +187,17 @@ export class FirebaseService {
         lastLoginAt: new Date(),
         tier: 'free',
         analysisCount: 0,
-        maxAnalyses: 50
+        maxAnalyses: 50,
+        isAdmin: ADMIN_UIDS.includes(user.uid),
+        bannedFromChannels: [],
+        bannedGlobally: false
       };
       await setDoc(userRef, userProfile);
     } else {
-      // Update last login
+      // Update last login and admin status
       await updateDoc(userRef, {
-        lastLoginAt: new Date()
+        lastLoginAt: new Date(),
+        isAdmin: ADMIN_UIDS.includes(user.uid)
       });
     }
   }
@@ -337,9 +351,189 @@ export class FirebaseService {
     }
   }
 
+  // Admin methods
+  async isUserAdmin(): Promise<boolean> {
+    if (!this.currentUser) return false;
+    const userProfile = await this.getUserProfile();
+    return userProfile?.isAdmin || false;
+  }
+
+  async kickUserFromChannel(targetUserId: string, channel: string, reason?: string): Promise<void> {
+    if (!this.currentUser) throw new Error('User not authenticated');
+    
+    const isAdmin = await this.isUserAdmin();
+    if (!isAdmin) throw new Error('Insufficient permissions');
+
+    // Add a kick record
+    const kickRef = doc(db, 'moderation', 'kicks', 'records', `${Date.now()}_${Math.random().toString(36).substr(2, 9)}`);
+    await setDoc(kickRef, {
+      targetUserId,
+      adminUserId: this.currentUser.uid,
+      adminUserName: this.currentUser.displayName || 'Admin',
+      channel,
+      reason: reason || 'No reason provided',
+      timestamp: new Date(),
+      type: 'kick'
+    });
+
+    // Send a system message about the kick
+    const systemMessageRef = doc(db, 'chatrooms', channel, 'messages', `kick_${Date.now()}`);
+    await setDoc(systemMessageRef, {
+      id: `kick_${Date.now()}`,
+      userId: 'system',
+      userName: 'System',
+      userPhoto: '',
+      content: `User was kicked from the channel. Reason: ${reason || 'No reason provided'}`,
+      timestamp: new Date(),
+      channel: channel,
+      isSystemMessage: true,
+      expiresAt: new Date(Date.now() + 48 * 60 * 60 * 1000)
+    });
+  }
+
+  async banUserFromChannel(targetUserId: string, channel: string, duration: number = 24, reason?: string): Promise<void> {
+    if (!this.currentUser) throw new Error('User not authenticated');
+    
+    const isAdmin = await this.isUserAdmin();
+    if (!isAdmin) throw new Error('Insufficient permissions');
+
+    const targetUserRef = doc(db, 'users', targetUserId);
+    const targetUserDoc = await getDoc(targetUserRef);
+    
+    if (targetUserDoc.exists()) {
+      const userData = targetUserDoc.data() as UserProfile;
+      const bannedChannels = userData.bannedFromChannels || [];
+      
+      if (!bannedChannels.includes(channel)) {
+        bannedChannels.push(channel);
+      }
+
+      await updateDoc(targetUserRef, {
+        bannedFromChannels: bannedChannels,
+        bannedUntil: new Date(Date.now() + duration * 60 * 60 * 1000) // duration in hours
+      });
+    }
+
+    // Add a ban record
+    const banRef = doc(db, 'moderation', 'bans', 'records', `${Date.now()}_${Math.random().toString(36).substr(2, 9)}`);
+    await setDoc(banRef, {
+      targetUserId,
+      adminUserId: this.currentUser.uid,
+      adminUserName: this.currentUser.displayName || 'Admin',
+      channel,
+      duration,
+      reason: reason || 'No reason provided',
+      timestamp: new Date(),
+      type: 'channel_ban'
+    });
+
+    // Send a system message about the ban
+    const systemMessageRef = doc(db, 'chatrooms', channel, 'messages', `ban_${Date.now()}`);
+    await setDoc(systemMessageRef, {
+      id: `ban_${Date.now()}`,
+      userId: 'system',
+      userName: 'System',
+      userPhoto: '',
+      content: `User was banned from the channel for ${duration} hours. Reason: ${reason || 'No reason provided'}`,
+      timestamp: new Date(),
+      channel: channel,
+      isSystemMessage: true,
+      expiresAt: new Date(Date.now() + 48 * 60 * 60 * 1000)
+    });
+  }
+
+  async banUserGlobally(targetUserId: string, duration: number = 24, reason?: string): Promise<void> {
+    if (!this.currentUser) throw new Error('User not authenticated');
+    
+    const isAdmin = await this.isUserAdmin();
+    if (!isAdmin) throw new Error('Insufficient permissions');
+
+    const targetUserRef = doc(db, 'users', targetUserId);
+    await updateDoc(targetUserRef, {
+      bannedGlobally: true,
+      bannedUntil: new Date(Date.now() + duration * 60 * 60 * 1000)
+    });
+
+    // Add a global ban record
+    const banRef = doc(db, 'moderation', 'bans', 'records', `${Date.now()}_${Math.random().toString(36).substr(2, 9)}`);
+    await setDoc(banRef, {
+      targetUserId,
+      adminUserId: this.currentUser.uid,
+      adminUserName: this.currentUser.displayName || 'Admin',
+      duration,
+      reason: reason || 'No reason provided',
+      timestamp: new Date(),
+      type: 'global_ban'
+    });
+  }
+
+  async unbanUser(targetUserId: string, channel?: string): Promise<void> {
+    if (!this.currentUser) throw new Error('User not authenticated');
+    
+    const isAdmin = await this.isUserAdmin();
+    if (!isAdmin) throw new Error('Insufficient permissions');
+
+    const targetUserRef = doc(db, 'users', targetUserId);
+    const targetUserDoc = await getDoc(targetUserRef);
+    
+    if (targetUserDoc.exists()) {
+      const userData = targetUserDoc.data() as UserProfile;
+      
+      if (channel) {
+        // Unban from specific channel
+        const bannedChannels = (userData.bannedFromChannels || []).filter(c => c !== channel);
+        await updateDoc(targetUserRef, {
+          bannedFromChannels: bannedChannels
+        });
+      } else {
+        // Global unban
+        await updateDoc(targetUserRef, {
+          bannedGlobally: false,
+          bannedFromChannels: [],
+          bannedUntil: null
+        });
+      }
+    }
+  }
+
+  async checkUserBanStatus(channel: string): Promise<boolean> {
+    if (!this.currentUser) return false;
+
+    const userProfile = await this.getUserProfile();
+    if (!userProfile) return false;
+
+    // Check global ban
+    if (userProfile.bannedGlobally) {
+      if (userProfile.bannedUntil && new Date() > userProfile.bannedUntil) {
+        // Ban expired, remove it
+        await this.unbanUser(this.currentUser.uid);
+        return false;
+      }
+      return true;
+    }
+
+    // Check channel-specific ban
+    if (userProfile.bannedFromChannels?.includes(channel)) {
+      if (userProfile.bannedUntil && new Date() > userProfile.bannedUntil) {
+        // Ban expired, remove it
+        await this.unbanUser(this.currentUser.uid, channel);
+        return false;
+      }
+      return true;
+    }
+
+    return false;
+  }
+
   // Chatroom methods
   async sendMessage(channel: string, content: string): Promise<string> {
     if (!this.currentUser) throw new Error('User not authenticated');
+
+    // Check if user is banned from this channel
+    const isBanned = await this.checkUserBanStatus(channel);
+    if (isBanned) {
+      throw new Error('You are banned from this channel');
+    }
 
     const messageId = `msg_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
     const messageRef = doc(db, 'chatrooms', channel, 'messages', messageId);
