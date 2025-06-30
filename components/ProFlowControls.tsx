@@ -65,6 +65,12 @@ export const ProFlowControls: React.FC<ProFlowControlsProps> = ({ onShowToast, a
         proFlowService.setFlowPrompt(value);
     };
 
+    const handleFlowPromptBlur = () => {
+        if (flowPrompt.trim()) {
+            proFlowService.confirmFlowPrompt(flowPrompt);
+        }
+    };
+
     const handleImprovePrompt = async () => {
         setIsGeneratingPrompt(true);
         try {
@@ -179,6 +185,7 @@ export const ProFlowControls: React.FC<ProFlowControlsProps> = ({ onShowToast, a
                             <textarea
                                 value={flowPrompt}
                                 onChange={(e) => handleFlowPromptChange(e.target.value)}
+                                onBlur={handleFlowPromptBlur}
                                 disabled={status.isRunning}
                                 placeholder="Optional: Describe your trading strategy focus (e.g., 'Focus on dividend stocks with strong fundamentals' or 'Analyze crypto with technical indicators'). Leave empty for default flow."
                                 className="w-full p-3 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:border-purple-500 dark:focus:border-purple-400 focus:ring-2 focus:ring-purple-200 dark:focus:ring-purple-800 resize-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed"

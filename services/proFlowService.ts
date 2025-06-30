@@ -75,6 +75,11 @@ export class ProFlowService {
 
     setFlowPrompt(prompt: string, isCustom: boolean = true) {
         this.flowPrompt = { prompt, isCustom };
+        // Don't show toast on every keystroke - only when explicitly setting a meaningful prompt
+    }
+
+    confirmFlowPrompt(prompt: string) {
+        this.flowPrompt = { prompt, isCustom: true };
         if (prompt.trim()) {
             this.showToast('🎯 Custom flow prompt set! ProFlow will adapt to your instructions.', 'success');
         }
