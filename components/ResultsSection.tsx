@@ -76,7 +76,7 @@ export const ResultsSection: React.FC<ResultsSectionProps> = ({
             <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent dark:from-white/10 dark:to-transparent"></div>
             <div className="relative z-10">
                 <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-2xl sm:text-3xl font-bold text-foreground flex items-center gap-3">
+                    <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
                         <span className="material-symbols-outlined text-3xl text-green-600 dark:text-green-400">
                             trending_up
                         </span>
