@@ -914,7 +914,7 @@ Try asking me about indicators, trading setups, or general trading advice. 🤖`
                                 )}
                                 {proFlowStatus?.isRunning && (
                                     <span className="inline-flex items-center gap-1 px-1 sm:px-2 py-0.5 sm:py-1 text-xs bg-blue-100 dark:bg-blue-500/20 text-blue-700 dark:text-blue-200 rounded-full border dark:border-blue-400/30">
-                                        <img src="https://cdn.hugeicons.com/icons/workflow-square-09-stroke-rounded.svg" className="w-2.5 h-2.5 sm:w-3 sm:h-3 animate-pulse text-blue-600 dark:text-blue-300 dark:filter dark:brightness-0 dark:invert" />
+                                        <img src="https://cdn.hugeicons.com/icons/ai-innovation-02-solid-rounded.svg" className="w-2.5 h-2.5 sm:w-3 sm:h-3 animate-pulse text-blue-600 dark:text-blue-300 dark:filter dark:brightness-0 dark:invert" />
                                         <span className="hidden sm:inline">ProFlow Active</span>
                                     </span>
                                 )}
