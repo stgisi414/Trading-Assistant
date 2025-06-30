@@ -150,15 +150,8 @@ export const PositionResult: React.FC<PositionResultProps> = ({ result, theme })
 
             {/* News Section */}
             {result.news && result.news.length > 0 && (
-                <div className="mb-4">
-                    <NewsSection news={result.news} theme={theme} />
-                </div>
-            )}
-
-            {/* News Section */}
-            {result.news && result.news.length > 0 && (
                 <div className="mb-6">
-                    <NewsSection news={result.news} />
+                    <NewsSection news={result.news} theme={theme} />
                 </div>
             )}
 

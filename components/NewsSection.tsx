@@ -8,6 +8,7 @@ interface NewsSectionProps {
 
 export const NewsSection: React.FC<NewsSectionProps> = ({ news, theme }) => {
     console.log("📰 NewsSection received:", news?.length || 0, "articles");
+    console.log("📰 NewsSection news data:", news);
 
     if (!news || news.length === 0) {
         return (
