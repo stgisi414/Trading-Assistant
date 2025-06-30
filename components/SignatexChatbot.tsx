@@ -1,4 +1,3 @@
-typescript
 import React, { useState, useRef, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -647,41 +646,36 @@ Your settings have been applied successfully!
 
         // Provide contextual responses based on message content
         if (lowerMessage.includes('beginner') || lowerMessage.includes('new') || lowerMessage.includes('starting')) {
-            return `## 🎯 Perfect! Welcome to Advanced Trading! 
+            return `## 🎯 Perfect! Welcome to Trading! 
 
-### 🌟 **The Beginner's Power Quartet**
+### 🌟 **The Beginner's Golden Trio**
 
-For someone just starting, I recommend these **four essential features**:
+For someone just starting their trading journey, I recommend these **three essential indicators**:
 
-#### 1. 📈 **SMA + RSI + Volume** (The Classic Trio)
-- 🎯 **Purpose**: Trend direction, momentum, and confirmation
-- 💡 **Why it's great**: Simple, reliable, and works across all markets
-- 🔧 **How to use**: SMA for trend, RSI for timing, Volume for strength
+#### 1. 📈 **SMA (Simple Moving Average)**
+- 🎯 **Purpose**: Shows trend direction crystal clear
+- 💡 **Why it's great**: No confusing signals, just pure trend
+- 🔧 **How to use**: Price above SMA = uptrend, below = downtrend
 
-#### 2. 📰 **News Sentiment Analysis**
-- 🎯 **Purpose**: Understand market-moving events
-- 💡 **Why it's great**: Real-time news impact on your symbols
-- 🔧 **How to use**: Positive news = potential uptrend, negative = downtrend
+#### 2. 🔄 **RSI (Relative Strength Index)**  
+- 🎯 **Purpose**: Spots overbought/oversold conditions
+- 💡 **Why it's great**: Simple 0-100 scale (>70 = overbought, <30 = oversold)
+- 🔧 **How to use**: Perfect for timing your entries and exits
 
-#### 3. 🏢 **Company Profile Analysis**
-- 🎯 **Purpose**: Know what you're trading
-- 💡 **Why it's great**: Fundamental analysis made simple
-- 🔧 **How to use**: Strong companies = better investment candidates
-
-#### 4. 🔍 **Pattern Recognition**
-- 🎯 **Purpose**: Identify chart patterns automatically
-- 💡 **Why it's great**: AI spots patterns you might miss
-- 🔧 **How to use**: Follow pattern implications for entry/exit points
+#### 3. 📊 **Volume**
+- 🎯 **Purpose**: Confirms price movements
+- 💡 **Why it's great**: High volume = strong moves, low volume = weak moves
+- 🔧 **How to use**: Only trust breakouts with high volume
 
 ---
 
-### 🤝 **Want me to set this up for you?** 
-Just say *"configure beginner setup"* and I'll enable all these features automatically! 
+### 🤝 **Want me to set these up for you?** 
+Just say *"use beginner indicators"* and I'll configure them automatically! 
 
-### 🚀 **Why This Combo Works:**
-You get **technical + fundamental + sentiment + pattern analysis** - a complete trading toolkit!
+### 🚀 **Why This Combo Rocks:**
+These three work like a **trading dream team** - SMA shows direction, RSI shows timing, and Volume shows strength!
 
-**Ready to start your advanced trading journey? 🎮💰**`;
+**Ready to start your trading adventure? 🎮💰**`;
         }
 
         if (lowerMessage.includes('indicator')) {
@@ -689,187 +683,66 @@ You get **technical + fundamental + sentiment + pattern analysis** - a complete 
 
 ### 🔧 **Your Current Setup:**
 > ${currentInputs?.selectedIndicators?.length ? 
-    `📊 **Technical:** ${currentInputs.selectedIndicators.join(', ')}` : 
-    '❌ **No technical indicators selected yet**'}
-
-> ${currentInputs?.selectedNonTechnicalIndicators?.length ? 
-    `🧠 **Advanced:** ${currentInputs.selectedNonTechnicalIndicators.join(', ')}` : 
-    '❌ **No advanced analysis selected yet**'}
+    `📊 **Active:** ${currentInputs.selectedIndicators.join(', ')}` : 
+    '❌ **No indicators selected yet**'}
 
 ---
 
-### 🎯 **Complete Indicator Categories:**
+### 🎯 **Popular Indicator Combinations:**
 
-#### 📈 **Technical Indicators (20+ Available)**
-| Category | Indicators | Best For |
+| Strategy | Indicators | Best For |
 |----------|------------|----------|
-| 📊 **Trend** | SMA, EMA, MACD, Parabolic SAR | Following trends |
-| ⚡ **Momentum** | RSI, Stochastic, Williams %R, CCI | Timing entries |
-| 📈 **Volatility** | Bollinger Bands, ATR, Keltner | Risk assessment |
-| 📊 **Volume** | Volume, VWAP, OBV | Confirming moves |
-| 🔮 **Advanced** | Fibonacci, Ichimoku, Elliott Wave | Pro trading |
-
-#### 🧠 **Advanced Analysis**
-- 📰 **News Sentiment** - Real-time market news analysis
-- 📱 **Social Media Sentiment** - Twitter/Reddit buzz tracking
-- 🏢 **Company Profiles** - Fundamental company data
-- 🔍 **Pattern Recognition** - AI-powered chart patterns
-- 🎯 **Options Analysis** - Options flow and recommendations
-- 📊 **Open Interest** - Options market sentiment
+| 📈 **Trend Following** | SMA + EMA + MACD | Catching big moves |
+| 🔄 **Mean Reversion** | RSI + Bollinger Bands + Stochastic | Buy low, sell high |
+| ⚡ **Momentum** | RSI + MACD + Volume | Momentum trades |
+| 🚀 **Day Trading** | EMA + RSI + VWAP + Volume | Quick scalps |
+| 🎯 **Swing Trading** | SMA + MACD + RSI + Volume | Multi-day holds |
 
 ---
 
-### 💭 **What's your trading style?**
-- 🏃‍♂️ **Day trader?** → EMA + RSI + VWAP + News
-- 🏋️‍♂️ **Swing trader?** → SMA + MACD + Patterns + Company Profiles  
-- 📚 **Complete beginner?** → SMA + RSI + Volume + News
-- 🚀 **Advanced trader?** → Full suite with Options + Social Sentiment
+### 💭 **Tell me about your trading style:**
+- 🏃‍♂️ **Day trader?** (Quick in and out)
+- 🏋️‍♂️ **Swing trader?** (Hold for days/weeks)  
+- 📚 **Complete beginner?** (Learning the ropes)
+- 🚀 **Advanced trader?** (Want complex setups)
 
 **I'll recommend the perfect combination for YOU! 🎯✨**`;
         }
 
-        if (lowerMessage.includes('options') || lowerMessage.includes('option')) {
-            return `## 🎯 Options Analysis - Your Institutional Edge! 
+        return `## 💬 I'm Here to Help You Succeed! 
 
-### 📊 **What Signatex Options Analysis Provides:**
+### 🤖 **What I Can Do:**
 
-#### 🎯 **Smart Recommendations**
-- 📈 **Call Options**: Optimal strike prices and expiration dates
-- 📉 **Put Options**: Best hedging and profit opportunities  
-- 💰 **Premium Analysis**: Bid/ask spreads and fair value
-- 🎲 **Risk Assessment**: Greeks analysis for each position
+#### 📊 **Trading Setup:**
+- 🎯 Choose optimal indicators for your skill level
+- 💰 Set up wallet amounts and position sizing
+- ⏰ Configure timeframes for your trading style
+- 🔧 Update all your settings through conversation
 
-#### 📊 **Open Interest Insights**
-- 🔍 **Institutional Flow**: Where big money is moving
-- 📈 **Sentiment Indicators**: Bullish vs bearish positioning
-- ⚡ **Volume Spikes**: Unusual options activity alerts
-- 🎯 **Support/Resistance**: Key levels from options data
+#### 📈 **Analysis & Insights:**
+- 📊 Explain your analysis results in detail
+- 🎨 Generate visual market insights  
+- 📰 Analyze market news and sentiment
+- 🔍 Spot patterns in your data
 
----
-
-### 🚀 **How to Enable:**
-Just say *"Enable options analysis"* and I'll turn on:
-- ✅ Call option recommendations
-- ✅ Put option analysis  
-- ✅ Open interest tracking
-- ✅ Institutional sentiment
-
-### 💡 **Pro Tip:**
-Options data often predicts stock movements before they happen. Institutional traders use options to position before big moves!
-
-**Want to see what the big players are doing with your symbols? 🎯📊**`;
-        }
-
-        if (lowerMessage.includes('news') || lowerMessage.includes('sentiment')) {
-            return `## 📰 News & Sentiment Analysis - Market Pulse! 
-
-### 🔍 **Real-Time Market Intelligence:**
-
-#### 📰 **News Sentiment Analysis**
-- 🌍 **Global News Sources**: Reuters, Bloomberg, AP, and more
-- 🤖 **AI Sentiment Scoring**: Positive, negative, neutral with confidence
-- ⚡ **Breaking News Alerts**: Real-time market-moving events
-- 📊 **Impact Assessment**: How news affects your specific symbols
-
-#### 📱 **Social Media Sentiment**
-- 🐦 **Twitter Analysis**: Real-time social buzz and sentiment
-- 📱 **Reddit Tracking**: Community sentiment and discussions
-- 🔥 **Viral Content**: Trending topics affecting your stocks
-- 📈 **Sentiment Trends**: Social sentiment momentum tracking
+#### 🚀 **Advanced Features:**
+- 🎛️ Guide you through ProfitMax optimization
+- ⚡ Walk you through ProFlow automation
 
 ---
 
-### 🎯 **Why This Matters:**
-- 📈 **Early Detection**: Spot sentiment shifts before price moves
-- 🚨 **Risk Management**: Avoid trading against negative sentiment
-- 💡 **Opportunity Finding**: Find undervalued assets with improving sentiment
-- 📊 **Confirmation**: Validate technical analysis with fundamental news
+### 💡 **Try These Commands:**
 
-### 🚀 **How to Enable:**
-- *"Enable news sentiment analysis"* → Real-time news tracking
-- *"Include social media sentiment"* → Twitter/Reddit analysis
-- *"Add sentiment analysis"* → Both news and social combined
-
-**Ready to read the market's mind? 🧠📰**`;
-        }
-
-        if (lowerMessage.includes('pattern') || lowerMessage.includes('chart')) {
-            return `## 🔍 AI Pattern Recognition - Your Chart Analyst! 
-
-### 🎯 **Advanced Pattern Detection:**
-
-#### 📊 **Supported Patterns**
-- 📈 **Head & Shoulders**: Top and bottom formations
-- 🔄 **Double Tops/Bottoms**: Classic reversal patterns
-- 📈 **Triangle Patterns**: Ascending, descending, symmetrical
-- 🌊 **Cup & Handle**: Bullish continuation patterns
-- ⚡ **Flag & Pennant**: Short-term continuation signals
-
-#### 🤖 **AI Analysis Features**
-- 🎯 **Confidence Scoring**: 0-100% pattern reliability
-- 📊 **Trading Implications**: Entry/exit recommendations
-- 🎯 **Target Prices**: Projected price movements
-- 📈 **Key Levels**: Support, resistance, necklines
-- ⏰ **Timeframe Analysis**: Pattern validity across timeframes
+> 🔰 **"I'm a beginner, what indicators should I use?"**
+> 🎛️ **"Set up a day trading configuration"**  
+> 📊 **"Explain my analysis results"**
+> 💰 **"Set my wallet to $50,000"**
+> 📈 **"Add AAPL and TSLA to my watchlist"**
 
 ---
 
-### 💡 **Why Pattern Recognition Matters:**
-- 🎯 **Objective Analysis**: Remove emotional bias from trading
-- 📊 **Historical Success**: Patterns have statistical edge
-- ⚡ **Early Detection**: Spot patterns before completion
-- 🎮 **Game Changer**: What took years to learn, AI does instantly
-
-### 🚀 **How to Enable:**
-Just say *"Enable pattern recognition"* and I'll activate:
-- ✅ Real-time pattern scanning
-- ✅ Confidence scoring
-- ✅ Trading recommendations
-- ✅ Key level identification
-
-**Want AI to be your personal chart analyst? 🤖📊**`;
-        }
-
-        return `## 💬 I'm Your Complete Trading Assistant! 
-
-### 🤖 **Full Feature Arsenal:**
-
-#### 📊 **Core Trading Tools:**
-- 🎯 **20+ Technical Indicators** (SMA, RSI, MACD, Bollinger Bands, etc.)
-- 💰 **Smart Position Sizing** and wallet management
-- ⏰ **Multi-Timeframe Analysis** (1m to 1y)
-- 🌍 **4 Major Markets** (Stocks, Crypto, Commodities, Forex)
-
-#### 🧠 **Advanced Analytics:**
-- 📰 **News Sentiment Analysis** - Real-time market news impact
-- 📱 **Social Media Sentiment** - Twitter/Reddit buzz tracking
-- 🏢 **Company Profiles** - CEO, industry, fundamentals
-- 🔍 **AI Pattern Recognition** - Chart patterns with confidence scores
-- 🎯 **Options Analysis** - Call/put recommendations with Greeks
-- 📊 **Open Interest Analysis** - Institutional options flow
-
-#### ⚡ **Automation & Cloud:**
-- 🎛️ **ProfitMax** - AI portfolio optimization
-- ⚡ **ProFlow** - Automated trading workflows
-- 💾 **Cloud Storage** - Save/sync analysis across devices
-- 🔐 **Secure Authentication** - Google/email sign-in
-
----
-
-### 💡 **Popular Commands:**
-
-> 🔰 **"Configure complete beginner setup"**
-> 🎛️ **"Enable all advanced features"**  
-> 📊 **"Add news and social sentiment"**
-> 💰 **"Set wallet to $100,000"**
-> 📈 **"Add tech stocks with options analysis"**
-> 🎯 **"Run ProfitMax optimization"**
-> ⚡ **"Start ProFlow automation"**
-
----
-
-### 🎯 **Ready to Master Professional Trading?** 
-I have **every tool** you need to trade like a pro! What feature excites you most? 🚀📈✨`;
+### 🎯 **What Would You Like to Explore Today?** 
+I'm excited to help you optimize your trading! 🚀📈✨`;
     };
 
     const handleSendMessage = async () => {
@@ -888,7 +761,9 @@ I have **every tool** you need to trade like a pro! What feature excites you mos
 
         // Parse user commands and execute actions
         const actions = parseUserCommands(inputMessage);
-        const actionsExecuted = executeActions(actions);// Generate response with Gemini AI
+        const actionsExecuted = executeActions(actions);
+
+        // Generate response with Gemini AI
         try {
             const response = await generateGeminiResponse(inputMessage, actions);
 
