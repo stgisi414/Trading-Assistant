@@ -201,7 +201,7 @@ const PositionResult: React.FC<PositionResultProps> = ({
                         Confidence Score
                     </span>
                     <span className="text-sm font-bold text-gray-800 dark:text-gray-200">
-                        {result.confidence}%
+                        {result.confidence}
                     </span>
                 </div>
                 <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
