@@ -37,6 +37,7 @@ import { ErrorMessage } from "./components/ErrorMessage.tsx";
 import { SymbolDebugger } from "./components/SymbolDebugger.tsx";
 import { LoadingOverlay } from "./components/LoadingOverlay.tsx";
 import { Footer } from './components/Footer';
+import { PaperTradingModal } from './components/PaperTradingModal.tsx';
 
 const getInitialDates = () => {
     const endDate = new Date();
@@ -159,6 +160,9 @@ function App() {
     const [analysisHistory, setAnalysisHistory] = useState<any[]>([]);
     const [cloudSyncStatus, setCloudSyncStatus] = useState<'idle' | 'syncing' | 'success' | 'error'>('idle');
     const [isChatroomOpen, setIsChatroomOpen] = useState(false);
+    const [showAnalysisHistory, setShowAnalysisHistory] = useState(false);
+    const [showChatrooms, setShowChatrooms] = useState(false);
+    const [showPaperTrading, setShowPaperTrading] = useState(false);
 
     // ProFlow state
     const [proFlowToasts, setProFlowToasts] = useState<ProFlowToast[]>([]);
@@ -855,6 +859,10 @@ function App() {
         setIsChatroomOpen(true);
     };
 
+    const handleOpenPaperTrading = () => {
+        setShowPaperTrading(true);
+    };
+
     // Authentication using useAuth hook
     const { user, signIn, signOut, signUp, resetPassword, verifyEmail, handleSyncData, handleDeleteAnalysis, loadAnalysisHistory } = useAuth();
 
@@ -906,10 +914,11 @@ function App() {
                     // Add authentication props
                     onSignInClick={() => setIsAuthModalOpen(true)}
                     userProfile={
-                                <UserProfile 
+                                <UserProfile
                                     onSyncData={handleSyncData}
                                     onViewHistory={handleViewHistory}
                                     onViewChatrooms={handleViewChatrooms}
+                                    onOpenPaperTrading={handleOpenPaperTrading}
                                 />
                             }
                 />
@@ -1069,6 +1078,11 @@ function App() {
             <ChatroomModal
                 isOpen={isChatroomOpen}
                 onClose={() => setIsChatroomOpen(false)}
+            />
+
+            <PaperTradingModal
+                isOpen={showPaperTrading}
+                onClose={() => setShowPaperTrading(false)}
             />
 
             {/* ProFlow Toast Notifications */}

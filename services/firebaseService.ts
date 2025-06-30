@@ -655,32 +655,107 @@ export class FirebaseService {
     }
   }
 
-  // Paper trading methods (placeholder for future implementation)
+  // Paper trading methods
   async savePaperTrade(tradeData: any): Promise<string> {
     if (!this.currentUser) throw new Error('User not authenticated');
 
-    const tradeId = `trade_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-    const tradeRef = doc(db, 'paperTrades', this.currentUser.uid, 'trades', tradeId);
+    const tradeRef = doc(db, 'paperTrades', this.currentUser.uid, 'trades', tradeData.id);
+    const cleanedTradeData = this.cleanObjectForFirestore(tradeData);
 
-    await setDoc(tradeRef, {
-      ...tradeData,
-      id: tradeId,
-      userId: this.currentUser.uid,
-      timestamp: new Date(),
-      status: 'active'
-    });
-
-    return tradeId;
+    await setDoc(tradeRef, cleanedTradeData);
+    return tradeData.id;
   }
 
   async loadPaperTrades(): Promise<any[]> {
     if (!this.currentUser) return [];
 
-    const tradesRef = collection(db, 'paperTrades', this.currentUser.uid, 'trades');
-    const q = query(tradesRef, orderBy('timestamp', 'desc'));
-    const querySnapshot = await getDocs(q);
+    try {
+      const tradesRef = collection(db, 'paperTrades', this.currentUser.uid, 'trades');
+      const q = query(tradesRef, orderBy('timestamp', 'desc'));
+      const querySnapshot = await getDocs(q);
 
-    return querySnapshot.docs.map(doc => doc.data());
+      return querySnapshot.docs.map(doc => ({
+        ...doc.data(),
+        timestamp: doc.data().timestamp?.toDate() || new Date(),
+        closedAt: doc.data().closedAt?.toDate()
+      }));
+    } catch (error) {
+      console.error('Error loading paper trades:', error);
+      return [];
+    }
+  }
+
+  async loadPaperTrade(tradeId: string): Promise<any | null> {
+    if (!this.currentUser) return null;
+
+    try {
+      const tradeRef = doc(db, 'paperTrades', this.currentUser.uid, 'trades', tradeId);
+      const tradeDoc = await getDoc(tradeRef);
+
+      if (tradeDoc.exists()) {
+        const data = tradeDoc.data();
+        return {
+          ...data,
+          timestamp: data.timestamp?.toDate() || new Date(),
+          closedAt: data.closedAt?.toDate()
+        };
+      }
+      return null;
+    } catch (error) {
+      console.error('Error loading paper trade:', error);
+      return null;
+    }
+  }
+
+  async savePaperTradingPortfolio(portfolio: any): Promise<void> {
+    if (!this.currentUser) throw new Error('User not authenticated');
+
+    const portfolioRef = doc(db, 'paperTradingPortfolios', this.currentUser.uid);
+    const cleanedPortfolio = this.cleanObjectForFirestore(portfolio);
+
+    await setDoc(portfolioRef, cleanedPortfolio);
+  }
+
+  async loadPaperTradingPortfolio(): Promise<any | null> {
+    if (!this.currentUser) return null;
+
+    try {
+      const portfolioRef = doc(db, 'paperTradingPortfolios', this.currentUser.uid);
+      const portfolioDoc = await getDoc(portfolioRef);
+
+      if (portfolioDoc.exists()) {
+        const data = portfolioDoc.data();
+        return {
+          ...data,
+          createdAt: data.createdAt?.toDate() || new Date(),
+          updatedAt: data.updatedAt?.toDate() || new Date()
+        };
+      }
+      return null;
+    } catch (error) {
+      console.error('Error loading paper trading portfolio:', error);
+      return null;
+    }
+  }
+
+  async deletePaperTradingData(): Promise<void> {
+    if (!this.currentUser) throw new Error('User not authenticated');
+
+    try {
+      // Delete all trades
+      const tradesRef = collection(db, 'paperTrades', this.currentUser.uid, 'trades');
+      const tradesSnapshot = await getDocs(tradesRef);
+      
+      const deletePromises = tradesSnapshot.docs.map(doc => deleteDoc(doc.ref));
+      await Promise.all(deletePromises);
+
+      // Delete portfolio
+      const portfolioRef = doc(db, 'paperTradingPortfolios', this.currentUser.uid);
+      await deleteDoc(portfolioRef);
+    } catch (error) {
+      console.error('Error deleting paper trading data:', error);
+      throw error;
+    }
   }
 }
 

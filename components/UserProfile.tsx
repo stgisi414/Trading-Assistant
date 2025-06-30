@@ -6,9 +6,10 @@ interface UserProfileProps {
   onSyncData: () => void;
   onViewHistory: () => void;
   onViewChatrooms: () => void;
+  onOpenPaperTrading?: () => void;
 }
 
-export const UserProfile: React.FC<UserProfileProps> = ({ onSyncData, onViewHistory, onViewChatrooms }) => {
+export const UserProfile: React.FC<UserProfileProps> = ({ onSyncData, onViewHistory, onViewChatrooms, onOpenPaperTrading }) => {
   const { user, userProfile, signOut } = useAuth();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [dropdownPosition, setDropdownPosition] = useState({ top: 0, right: 0 });
@@ -171,6 +172,21 @@ export const UserProfile: React.FC<UserProfileProps> = ({ onSyncData, onViewHist
               </svg>
               <span>Trading Chatrooms</span>
             </button>
+
+            {onOpenPaperTrading && (
+              <button
+                onClick={() => {
+                  onOpenPaperTrading();
+                  setIsDropdownOpen(false);
+                }}
+                className="w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center space-x-2"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                </svg>
+                <span>Paper Trading</span>
+              </button>
+            )}
 
             <div className="border-t border-gray-200 dark:border-gray-700 my-2"></div>
 

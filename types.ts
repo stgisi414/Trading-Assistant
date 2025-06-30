@@ -208,3 +208,49 @@ export interface CloudSyncStatus {
     isOnline: boolean;
     pendingChanges: number;
 }
+
+export interface PaperTrade {
+    id: string;
+    userId: string;
+    symbol: string;
+    action: 'BUY' | 'SELL';
+    quantity: number;
+    price: number;
+    orderType: 'MARKET' | 'LIMIT';
+    limitPrice?: number;
+    stopLoss?: number;
+    takeProfit?: number;
+    reasoning?: string;
+    timestamp: Date;
+    status: 'pending' | 'active' | 'closed' | 'cancelled';
+    closedAt?: Date;
+    realizedPnL?: number;
+}
+
+export interface PaperTradingPosition {
+    symbol: string;
+    quantity: number;
+    averagePrice: number;
+    currentPrice: number;
+    marketValue: number;
+    unrealizedPnL: number;
+    unrealizedPnLPercent: number;
+}
+
+export interface PaperTradingPortfolio {
+    userId: string;
+    initialBalance: number;
+    cashBalance: number;
+    totalValue: number;
+    positions: PaperTradingPosition[];
+    createdAt: Date;
+    updatedAt: Date;
+}
+
+export interface MarketData {
+    symbol: string;
+    price: number;
+    change: number;
+    changePercent: number;
+    timestamp: Date;
+}
