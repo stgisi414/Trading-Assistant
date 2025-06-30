@@ -117,10 +117,12 @@ export const Header: React.FC<HeaderProps> = ({
                                     </p>
                                 </div>
                             </div>
-                            <p className="text-xs sm:text-sm md:text-base lg:text-lg text-muted dark:text-gray-300 mb-2 sm:mb-4 ml-6 sm:ml-12 md:ml-18">
-                                <span className="hidden sm:block">Leveraging Gemini for Market Insights</span>
-                                <span className="block sm:hidden">AI Trading Assistant</span>
-                            </p>
+                            <div className="ml-10">
+                                <p className="text-xs sm:text-sm md:text-base lg:text-lg text-muted dark:text-gray-300 mb-2 sm:mb-4">
+                                    <span className="hidden sm:block">Leveraging Gemini for Market Insights</span>
+                                    <span className="block sm:hidden">AI Trading Assistant</span>
+                                </p>
+                            </div>
                         </div>
 
                         <div className="flex items-center gap-1 sm:gap-2 md:gap-3">
