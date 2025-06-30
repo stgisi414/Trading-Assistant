@@ -585,42 +585,26 @@ function App() {
     const handleChatbotInputUpdates = (updates: any) => {
         console.log('🤖 handleChatbotInputUpdates called with:', updates);
         
-        // Handle single updates synchronously to prevent race conditions
-        if (updates.selectedMarketType !== undefined || updates.selectedMarket !== undefined || updates.addSymbols !== undefined) {
-            // Use a single state update for market changes + symbol additions
-            console.log('🤖 Processing market change with symbol addition');
+        // Handle addSymbols first and separately
+        if (updates.addSymbols) {
+            console.log('🤖 Processing addSymbols:', updates.addSymbols);
             
-            setSelectedSymbols(prevSymbols => {
-                let newSymbols = prevSymbols;
-                
-                // Only clear symbols if we're changing market type without adding new ones
-                if (updates.selectedMarketType !== undefined && !updates.addSymbols) {
-                    console.log('🤖 Clearing symbols due to market type change (no new symbols to add)');
-                    newSymbols = [];
-                } else if (updates.addSymbols) {
-                    console.log('🤖 Adding symbols:', updates.addSymbols);
-                    
-                    const symbolsToAdd = updates.addSymbols.filter((newSymbol: any) => {
-                        const exists = prevSymbols.some(existing => existing.symbol === newSymbol.symbol);
-                        return !exists;
-                    });
-                    
-                    newSymbols = [...prevSymbols, ...symbolsToAdd];
-                    console.log('🤖 New symbols after addition:', newSymbols);
-                }
-                
-                return newSymbols;
+            // Add symbols one by one using the existing onAddSymbol function
+            updates.addSymbols.forEach((symbolToAdd: any) => {
+                console.log('🤖 Adding individual symbol:', symbolToAdd);
+                onAddSymbol(symbolToAdd);
             });
-            
-            // Update market settings after symbol handling
-            if (updates.selectedMarketType !== undefined) {
-                console.log('🤖 Setting market type to:', updates.selectedMarketType);
-                setSelectedMarketType(updates.selectedMarketType as MarketType);
-            }
-            if (updates.selectedMarket !== undefined) {
-                console.log('🤖 Setting market to:', updates.selectedMarket);
-                setSelectedMarket(updates.selectedMarket);
-            }
+        }
+        
+        // Handle market type changes
+        if (updates.selectedMarketType !== undefined) {
+            console.log('🤖 Setting market type to:', updates.selectedMarketType);
+            setSelectedMarketType(updates.selectedMarketType as MarketType);
+        }
+        
+        if (updates.selectedMarket !== undefined) {
+            console.log('🤖 Setting market to:', updates.selectedMarket);
+            setSelectedMarket(updates.selectedMarket);
         }
         
         // Handle other updates
