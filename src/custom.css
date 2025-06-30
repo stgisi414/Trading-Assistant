@@ -1,0 +1,268 @@
+/* Import Google Fonts first */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+/* Custom embossed text effect for Signatex branding */
+.signatex-embossed {
+    all: unset;
+    background: linear-gradient(135deg, #3b82f6, #8b5cf6, #3b82f6);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: inline;
+}
+
+/* Animated shooting streaks background */
+@keyframes streak {
+    0% {
+        transform: translateY(-100vh) translateX(0) rotate(15deg);
+        opacity: 0;
+    }
+    10% {
+        opacity: 1;
+    }
+    90% {
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(100vh) translateX(-50px) rotate(15deg);
+        opacity: 0;
+    }
+}
+
+@keyframes streak-reverse {
+    0% {
+        transform: translateY(-100vh) translateX(0) rotate(-15deg);
+        opacity: 0;
+    }
+    10% {
+        opacity: 1;
+    }
+    90% {
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(100vh) translateX(50px) rotate(-15deg);
+        opacity: 0;
+    }
+}
+
+.shooting-streaks {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 0;
+}
+
+.streak {
+    position: absolute;
+    width: 3px;
+    height: 150px;
+    border-radius: 2px;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+}
+
+.streak-blue {
+    background: linear-gradient(to bottom, transparent, #3b82f6, #60a5fa, transparent);
+    box-shadow: 0 0 15px #3b82f6, 0 0 30px #3b82f6;
+}
+
+.streak-purple {
+    background: linear-gradient(to bottom, transparent, #8b5cf6, #a78bfa, transparent);
+    box-shadow: 0 0 15px #8b5cf6, 0 0 30px #8b5cf6;
+}
+
+.streak-1 { left: 10%; animation: streak 3s infinite; animation-delay: 0s; }
+.streak-2 { left: 20%; animation: streak-reverse 2.5s infinite; animation-delay: 0.5s; }
+.streak-3 { left: 30%; animation: streak 3.5s infinite; animation-delay: 1s; }
+.streak-4 { left: 40%; animation: streak-reverse 2.8s infinite; animation-delay: 1.5s; }
+.streak-5 { left: 50%; animation: streak 3.2s infinite; animation-delay: 2s; }
+.streak-6 { left: 60%; animation: streak-reverse 2.7s infinite; animation-delay: 2.5s; }
+.streak-7 { left: 70%; animation: streak 3.3s infinite; animation-delay: 3s; }
+.streak-8 { left: 80%; animation: streak-reverse 2.9s infinite; animation-delay: 3.5s; }
+.streak-9 { left: 90%; animation: streak 3.1s infinite; animation-delay: 4s; }
+.streak-10 { left: 15%; animation: streak-reverse 2.6s infinite; animation-delay: 4.5s; }
+.streak-11 { left: 35%; animation: streak 3.4s infinite; animation-delay: 5s; }
+.streak-12 { left: 55%; animation: streak-reverse 2.4s infinite; animation-delay: 5.5s; }
+.streak-13 { left: 75%; animation: streak 3.6s infinite; animation-delay: 6s; }
+.streak-14 { left: 85%; animation: streak-reverse 2.3s infinite; animation-delay: 6.5s; }
+.streak-15 { left: 25%; animation: streak 3.7s infinite; animation-delay: 7s; }
+
+:root {
+  /* Light Mode Palette */
+  --color-primary: #3B82F6; /* Blue-500 */
+  --color-background: #FFFFFF; /* White */
+  --color-foreground: #111827; /* Gray-900 */
+  --color-card: #F9FAFB; /* Gray-50 */
+  --color-border: #E5E7EB; /* Gray-200 */
+  --color-muted: #6B7280; /* Gray-500 */
+  --color-accent: #F3F4F6; /* Gray-100 */
+}
+
+:root.dark,
+.dark {
+  /* Dark Mode Palette */
+  --color-primary: #60A5FA; /* Blue-400 */
+  --color-background: #111827; /* Gray-900 */
+  --color-foreground: #F9FAFB; /* Gray-50 */
+  --color-card: #1F2937; /* Gray-800 */
+  --color-border: #374151; /* Gray-700 */
+  --color-muted: #9CA3AF; /* Gray-400 */
+  --color-accent: #374151; /* Gray-700 */
+}
+
+/* Custom glass effect using theme variables */
+.glass-effect {
+  background: color-mix(in srgb, var(--color-card) 80%, transparent);
+  backdrop-filter: blur(20px);
+  border: 1px solid color-mix(in srgb, var(--color-border) 50%, transparent);
+}
+
+.card-glow {
+  box-shadow: 0 4px 6px -1px color-mix(in srgb, var(--color-primary) 10%, transparent);
+}
+
+.sharp-corners {
+  border-radius: 0.75rem;
+}
+
+/* Animation delay classes */
+.animation-delay-2000 {
+  animation-delay: 2s;
+}
+
+.animation-delay-200 {
+  animation-delay: 0.2s;
+}
+
+.animation-delay-400 {
+  animation-delay: 0.4s;
+}
+
+/* Loading overlay fade out */
+.loading-fade-out {
+  animation: fadeOut 0.5s ease-in-out forwards;
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  color: var(--color-foreground);
+  background-color: var(--color-background);
+  font-size: 14px;
+}
+
+@media (min-width: 640px) {
+  body {
+    font-size: 16px;
+  }
+}
+
+/* Mobile-first button optimizations */
+.btn-mobile {
+  @apply px-2 py-2 text-sm;
+} 
+
+@media (min-width: 640px) {
+  .btn-mobile {
+    @apply px-4 py-3 text-base;
+  }
+}
+
+/* Icon-only buttons for mobile */
+.btn-icon-mobile {
+  @apply p-2 w-10 h-10 flex items-center justify-center;
+}
+
+@media (min-width: 640px) {
+  .btn-icon-mobile {
+    @apply px-4 py-3 w-auto h-auto;
+  }
+}
+
+/* Hide text on mobile, show on desktop */
+.text-mobile-hidden {
+  @apply hidden;
+}
+
+@media (min-width: 640px) {
+  .text-mobile-hidden {
+    @apply inline;
+  }
+}
+
+/* Compact spacing for mobile */
+.space-mobile > * + * {
+  margin-top: 0.5rem;
+}
+
+@media (min-width: 640px) {
+  .space-mobile > * + * {
+    margin-top: 1rem;
+  }
+}
+
+/* Remove nested padding on mobile */
+.mobile-no-padding {
+  @apply p-0;
+}
+
+@media (min-width: 640px) {
+  .mobile-no-padding {
+    @apply p-3;
+  }
+}
+
+/* Reduce card padding on mobile */
+.card-mobile-padding {
+  @apply p-2;
+}
+
+@media (min-width: 640px) {
+  .card-mobile-padding {
+    @apply p-4;
+  }
+}
+
+@media (min-width: 768px) {
+  .card-mobile-padding {
+    @apply p-6;
+  }
+}
+
+/* Analysis results mobile padding - 2.5px left/right */
+.analysis-results-mobile {
+  padding-left: 2.5px;
+  padding-right: 2.5px;
+}
+
+@media (min-width: 640px) {
+  .analysis-results-mobile {
+    @apply px-6;
+  }
+}
+
+/* Analysis results nested containers mobile padding */
+.analysis-nested-mobile {
+  padding-left: 2.5px;
+  padding-right: 2.5px;
+}
+
+@media (min-width: 640px) {
+  .analysis-nested-mobile {
+    @apply px-3;
+  }
+}
