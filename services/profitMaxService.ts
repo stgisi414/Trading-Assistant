@@ -14,6 +14,7 @@ export interface ProfitMaxConfig {
     initialWalletAmount: number;
     maxSymbols: number;
     targetProfitPercentage?: number;
+    selectedStockGroups?: string[];
 }
 
 export interface OptimizationResult {
@@ -70,8 +71,84 @@ const TIER_CONFIGS = {
     }
 };
 
-const generateSymbolCandidates = async (marketType: MarketType, market: string, maxSymbols: number): Promise<FmpSearchResult[]> => {
+export const STOCK_GROUPS = {
+    'mega-cap': {
+        name: 'Mega Cap Tech',
+        description: 'Largest technology companies by market cap',
+        symbols: ['AAPL', 'MSFT', 'GOOGL', 'AMZN', 'NVDA', 'META', 'TSLA', 'NFLX']
+    },
+    'financial': {
+        name: 'Financial Sector',
+        description: 'Banks, insurance, and financial services',
+        symbols: ['JPM', 'BAC', 'WFC', 'GS', 'MS', 'C', 'AXP', 'V', 'MA', 'PYPL']
+    },
+    'healthcare': {
+        name: 'Healthcare & Biotech',
+        description: 'Pharmaceutical and healthcare companies',
+        symbols: ['JNJ', 'PFE', 'UNH', 'ABBV', 'MRK', 'TMO', 'ABT', 'LLY', 'BMY', 'AMGN']
+    },
+    'energy': {
+        name: 'Energy Sector',
+        description: 'Oil, gas, and renewable energy companies',
+        symbols: ['XOM', 'CVX', 'COP', 'EOG', 'SLB', 'PXD', 'KMI', 'OKE', 'WMB', 'PSX']
+    },
+    'consumer': {
+        name: 'Consumer Discretionary',
+        description: 'Retail, automotive, and consumer goods',
+        symbols: ['AMZN', 'TSLA', 'HD', 'MCD', 'NKE', 'SBUX', 'TGT', 'LOW', 'TJX', 'F']
+    },
+    'utilities': {
+        name: 'Utilities & Infrastructure',
+        description: 'Electric, gas, and water utilities',
+        symbols: ['NEE', 'DUK', 'SO', 'AEP', 'EXC', 'XEL', 'SRE', 'PEG', 'ES', 'AWK']
+    },
+    'real-estate': {
+        name: 'Real Estate (REITs)',
+        description: 'Real Estate Investment Trusts',
+        symbols: ['AMT', 'PLD', 'CCI', 'EQIX', 'PSA', 'O', 'WELL', 'SPG', 'DLR', 'EQR']
+    },
+    'etfs': {
+        name: 'Popular ETFs',
+        description: 'Exchange-Traded Funds for diversification',
+        symbols: ['SPY', 'QQQ', 'IWM', 'XLF', 'XLE', 'XLK', 'XLV', 'XLI', 'XLP', 'XLU']
+    },
+    'dividend': {
+        name: 'Dividend Aristocrats',
+        description: 'High-quality dividend-paying stocks',
+        symbols: ['KO', 'PEP', 'JNJ', 'PG', 'WMT', 'MMM', 'IBM', 'CVX', 'MCD', 'VZ']
+    },
+    'growth': {
+        name: 'High Growth Stocks',
+        description: 'Fast-growing companies with high potential',
+        symbols: ['NVDA', 'AMD', 'CRM', 'SHOP', 'ROKU', 'SQ', 'ZOOM', 'DOCU', 'PTON', 'TDOC']
+    }
+};
+
+const generateSymbolCandidates = async (
+    marketType: MarketType, 
+    market: string, 
+    maxSymbols: number,
+    selectedStockGroups?: string[]
+): Promise<FmpSearchResult[]> => {
     const candidates: FmpSearchResult[] = [];
+    
+    // If stock groups are selected, use those symbols
+    if (selectedStockGroups && selectedStockGroups.length > 0 && marketType === MarketType.STOCKS) {
+        const groupSymbols = new Set<string>();
+        
+        selectedStockGroups.forEach(groupKey => {
+            const group = STOCK_GROUPS[groupKey];
+            if (group) {
+                group.symbols.forEach(symbol => groupSymbols.add(symbol));
+            }
+        });
+        
+        Array.from(groupSymbols).forEach(symbol => {
+            candidates.push({ symbol, name: `${symbol} - Selected Group` });
+        });
+        
+        return candidates.slice(0, maxSymbols);
+    }
     
     // Get symbols from market options
     const marketData = MARKET_OPTIONS[marketType]?.find(m => m.value === market);
@@ -242,7 +319,12 @@ export const runProfitMaxOptimization = async (
     onProgress?.(0, 'Initializing ProfitMax optimization...');
     
     // Generate optimization candidates
-    const symbolCandidates = await generateSymbolCandidates(config.marketType, config.market, tierConfig.maxSymbolsToTest);
+    const symbolCandidates = await generateSymbolCandidates(
+        config.marketType, 
+        config.market, 
+        tierConfig.maxSymbolsToTest,
+        config.selectedStockGroups
+    );
     const indicatorCombinations = generateIndicatorCombinations(config.userSelectedIndicators, tierConfig.maxIndicatorCombinations);
     const walletAmounts = generateWalletAmounts(config.initialWalletAmount, tierConfig.maxWalletAmounts);
     const validTimeframes = getValidTimeframes();

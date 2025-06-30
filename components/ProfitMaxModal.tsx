@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { runProfitMaxOptimization, getProfitMaxRecommendations, type ProfitMaxConfig, type OptimizationResult } from '../services/profitMaxService.ts';
+import { runProfitMaxOptimization, getProfitMaxRecommendations, STOCK_GROUPS, type ProfitMaxConfig, type OptimizationResult } from '../services/profitMaxService.ts';
 import { MarketType } from '../types.ts';
 import { Spinner } from './Spinner.tsx';
 
@@ -26,6 +26,7 @@ export const ProfitMaxModal: React.FC<ProfitMaxModalProps> = ({
     const [selectedTier, setSelectedTier] = useState<'light' | 'pro' | 'ultra'>('pro');
     const [maxSymbols, setMaxSymbols] = useState(5);
     const [targetProfit, setTargetProfit] = useState(15);
+    const [selectedStockGroups, setSelectedStockGroups] = useState<string[]>([]);
     const [isOptimizing, setIsOptimizing] = useState(false);
     const [progress, setProgress] = useState(0);
     const [status, setStatus] = useState('');
@@ -59,7 +60,8 @@ export const ProfitMaxModal: React.FC<ProfitMaxModalProps> = ({
                 market: currentMarket,
                 initialWalletAmount: parseFloat(currentWalletAmount) || 10000,
                 maxSymbols,
-                targetProfitPercentage: targetProfit
+                targetProfitPercentage: targetProfit,
+                selectedStockGroups: selectedStockGroups.length > 0 ? selectedStockGroups : undefined
             };
 
             const result = await runProfitMaxOptimization(config, (prog, stat) => {
@@ -162,6 +164,97 @@ export const ProfitMaxModal: React.FC<ProfitMaxModalProps> = ({
                             ))}
                         </div>
                     </div>
+
+                    {/* Stock Groups Selection (Only for Stocks) */}
+                    {currentMarketType === MarketType.STOCKS && (
+                        <div>
+                            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">
+                                Stock Groups to Analyze
+                            </h3>
+                            <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                                Select specific stock groups to focus your analysis. Leave empty to use all available symbols.
+                            </p>
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 max-h-60 overflow-y-auto">
+                                {Object.entries(STOCK_GROUPS).map(([key, group]) => (
+                                    <div
+                                        key={key}
+                                        className={`cursor-pointer p-3 rounded-lg border-2 transition-all ${
+                                            selectedStockGroups.includes(key)
+                                                ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-300 dark:border-blue-600'
+                                                : 'bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'
+                                        }`}
+                                        onClick={() => {
+                                            if (isOptimizing) return;
+                                            setSelectedStockGroups(prev => 
+                                                prev.includes(key) 
+                                                    ? prev.filter(g => g !== key)
+                                                    : [...prev, key]
+                                            );
+                                        }}
+                                    >
+                                        <div className="flex items-center justify-between mb-1">
+                                            <h4 className={`font-medium text-sm ${
+                                                selectedStockGroups.includes(key) 
+                                                    ? 'text-blue-800 dark:text-blue-200' 
+                                                    : 'text-gray-900 dark:text-white'
+                                            }`}>
+                                                {group.name}
+                                            </h4>
+                                            <div className={`w-4 h-4 rounded border-2 flex items-center justify-center ${
+                                                selectedStockGroups.includes(key)
+                                                    ? 'bg-blue-600 border-blue-600'
+                                                    : 'border-gray-300 dark:border-gray-600'
+                                            }`}>
+                                                {selectedStockGroups.includes(key) && (
+                                                    <svg className="w-2 h-2 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                                    </svg>
+                                                )}
+                                            </div>
+                                        </div>
+                                        <p className={`text-xs ${
+                                            selectedStockGroups.includes(key) 
+                                                ? 'text-blue-700 dark:text-blue-300' 
+                                                : 'text-gray-600 dark:text-gray-400'
+                                        }`}>
+                                            {group.description}
+                                        </p>
+                                        <p className={`text-xs mt-1 ${
+                                            selectedStockGroups.includes(key) 
+                                                ? 'text-blue-600 dark:text-blue-400' 
+                                                : 'text-gray-500 dark:text-gray-500'
+                                        }`}>
+                                            {group.symbols.length} symbols
+                                        </p>
+                                    </div>
+                                ))}
+                            </div>
+                            {selectedStockGroups.length > 0 && (
+                                <div className="mt-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                                    <p className="text-sm text-blue-800 dark:text-blue-200">
+                                        <strong>{selectedStockGroups.length}</strong> groups selected • 
+                                        <strong> {selectedStockGroups.reduce((total, key) => total + STOCK_GROUPS[key].symbols.length, 0)}</strong> total symbols
+                                    </p>
+                                    <div className="mt-2 flex flex-wrap gap-1">
+                                        {selectedStockGroups.map(key => (
+                                            <span key={key} className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-blue-100 dark:bg-blue-800 text-blue-800 dark:text-blue-200">
+                                                {STOCK_GROUPS[key].name}
+                                                <button
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        setSelectedStockGroups(prev => prev.filter(g => g !== key));
+                                                    }}
+                                                    className="ml-1 text-blue-600 dark:text-blue-300 hover:text-blue-800 dark:hover:text-blue-100"
+                                                >
+                                                    ×
+                                                </button>
+                                            </span>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    )}
 
                     {/* Configuration */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
