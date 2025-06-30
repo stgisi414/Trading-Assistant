@@ -9,7 +9,7 @@ interface AuthModalProps {
 }
 
 export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess }) => {
-  const { signIn, user } = useAuth();
+  const { signIn, user, isAuthRedirectPending } = useAuth();
   const [isSigningIn, setIsSigningIn] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -99,11 +99,16 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onSuccess
         {/* Sign in button */}
         <button
           onClick={handleGoogleSignIn}
-          disabled={isSigningIn}
+          disabled={isSigningIn || isAuthRedirectPending}
           className="w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg px-6 py-3 flex items-center justify-center space-x-3 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {isSigningIn ? (
-            <div className="w-5 h-5 border-2 border-gray-300 border-t-blue-600 rounded-full animate-spin"></div>
+          {isSigningIn || isAuthRedirectPending ? (
+            <>
+              <div className="w-5 h-5 border-2 border-gray-300 border-t-blue-600 rounded-full animate-spin"></div>
+              <span className="text-gray-700 dark:text-gray-300 font-medium">
+                {isAuthRedirectPending ? 'Redirecting...' : 'Signing in...'}
+              </span>
+            </>
           ) : (
             <>
               <svg className="w-5 h-5" viewBox="0 0 24 24">

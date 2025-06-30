@@ -7,6 +7,7 @@ interface AuthContextType {
   user: User | null;
   userProfile: UserProfile | null;
   isLoading: boolean;
+  isAuthRedirectPending: boolean;
   signIn: () => Promise<void>;
   signOut: () => Promise<void>;
   saveDataToCloud: (data: CloudUserData) => Promise<void>;
@@ -34,14 +35,23 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isAuthRedirectPending, setIsAuthRedirectPending] = useState(false);
 
   useEffect(() => {
     const initializeAuth = async () => {
+      // Check if redirect is pending
+      setIsAuthRedirectPending(firebaseService.isAuthRedirectPending());
+      
       // First check for redirect result
       try {
-        await firebaseService.handleRedirectResult();
+        const result = await firebaseService.handleRedirectResult();
+        if (result) {
+          console.log('Authentication successful via redirect');
+        }
       } catch (error) {
         console.error('Error handling redirect result:', error);
+      } finally {
+        setIsAuthRedirectPending(false);
       }
     };
 
@@ -52,6 +62,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       if (user) {
         const profile = await firebaseService.getUserProfile();
         setUserProfile(profile);
+        setIsAuthRedirectPending(false);
       } else {
         setUserProfile(null);
       }
@@ -113,6 +124,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     user,
     userProfile,
     isLoading,
+    isAuthRedirectPending,
     signIn,
     signOut,
     saveDataToCloud,

@@ -82,6 +82,7 @@ export class FirebaseService {
   // Authentication methods
   async signInWithGoogle(): Promise<User> {
     try {
+      // Try popup first
       const result = await signInWithPopup(auth, googleProvider);
       this.currentUser = result.user;
       await this.createOrUpdateUserProfile(result.user);
@@ -89,16 +90,22 @@ export class FirebaseService {
     } catch (error: any) {
       console.error('Google sign-in error:', error);
       
-      // If popup is blocked, try redirect method
-      if (error.code === 'auth/popup-blocked') {
-        console.log('Popup blocked, trying redirect method...');
+      // If popup is blocked or fails due to CORS/cross-origin issues, use redirect
+      if (error.code === 'auth/popup-blocked' || 
+          error.code === 'auth/popup-closed-by-user' ||
+          error.code === 'auth/cancelled-popup-request' ||
+          error.message?.includes('Cross-Origin') ||
+          error.message?.includes('popup')) {
+        console.log('Popup authentication failed, using redirect method...');
         try {
+          // Set a flag to indicate we're redirecting
+          localStorage.setItem('auth_redirect_pending', 'true');
           await signInWithRedirect(auth, googleProvider);
-          // The redirect will reload the page, so we won't reach this return
-          // The actual user will be handled by getRedirectResult on page load
+          // This will redirect the page
           throw new Error('Redirecting for authentication...');
         } catch (redirectError) {
           console.error('Redirect sign-in error:', redirectError);
+          localStorage.removeItem('auth_redirect_pending');
           throw redirectError;
         }
       }
@@ -131,13 +138,23 @@ export class FirebaseService {
       if (result?.user) {
         this.currentUser = result.user;
         await this.createOrUpdateUserProfile(result.user);
+        // Clear the redirect pending flag
+        localStorage.removeItem('auth_redirect_pending');
         return result.user;
       }
+      // Clear redirect pending flag if no result
+      localStorage.removeItem('auth_redirect_pending');
       return null;
     } catch (error) {
       console.error('Redirect result error:', error);
+      localStorage.removeItem('auth_redirect_pending');
       throw error;
     }
+  }
+
+  // Check if authentication redirect is pending
+  isAuthRedirectPending(): boolean {
+    return localStorage.getItem('auth_redirect_pending') === 'true';
   }
 
   getCurrentUser(): User | null {
