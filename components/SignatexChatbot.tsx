@@ -273,13 +273,47 @@ What would you like to explore today? 🚀📈`,
             });
         }
 
-        // Market switching with stock additions - Enhanced pattern matching
-        if ((lowerMessage.includes('switch to stocks') || lowerMessage.includes('change to stocks')) || 
+        // Market type switching
+        if (lowerMessage.includes('switch to crypto') || lowerMessage.includes('change to crypto') || 
+            (lowerMessage.includes('crypto') && (lowerMessage.includes('market') || lowerMessage.includes('add')))) {
+            actions.push({
+                type: 'switchToCrypto',
+                value: 'CRYPTO',
+                description: 'Switch to crypto market'
+            });
+        }
+
+        if (lowerMessage.includes('switch to stocks') || lowerMessage.includes('change to stocks') || 
             (lowerMessage.includes('stocks market') && (lowerMessage.includes('ai stocks') || lowerMessage.includes('add')))) {
             actions.push({
-                type: 'switchToStocksAndAddAI',
-                value: ['NVDA', 'GOOGL', 'MSFT', 'AMZN', 'META', 'TSLA'],
-                description: 'Switch to stocks market and add AI stocks: NVDA, GOOGL, MSFT, AMZN, META, TSLA'
+                type: 'switchToStocks',
+                value: 'STOCKS',
+                description: 'Switch to stocks market'
+            });
+        }
+
+        // Crypto symbol additions
+        if (lowerMessage.includes('ethereum') || lowerMessage.includes('eth')) {
+            actions.push({
+                type: 'addCryptoSymbols',
+                value: ['ETH'],
+                description: 'Add Ethereum (ETH)'
+            });
+        }
+
+        if (lowerMessage.includes('bitcoin') || lowerMessage.includes('btc')) {
+            actions.push({
+                type: 'addCryptoSymbols',
+                value: ['BTC'],
+                description: 'Add Bitcoin (BTC)'
+            });
+        }
+
+        if (lowerMessage.includes('major crypto') || lowerMessage.includes('major cryptocurrencies')) {
+            actions.push({
+                type: 'addCryptoSymbols',
+                value: ['BTC', 'ETH', 'BNB', 'SOL', 'XRP'],
+                description: 'Add major cryptocurrencies'
             });
         }
 
@@ -378,34 +412,46 @@ What would you like to explore today? 🚀📈`,
                     // Don't execute - this is an error case that will be handled in the response
                     executed = false;
                     break;
-                case 'switchToStocksAndAddAI':
+                case 'switchToCrypto':
                     if (onUpdateInputs) {
-                        // Create symbols first
-                        const symbolsToAdd = action.value.map((symbol: string) => {
-                            const symbolNames: Record<string, string> = {
-                                'NVDA': 'NVIDIA Corporation',
-                                'GOOGL': 'Alphabet Inc.',
-                                'MSFT': 'Microsoft Corporation',
-                                'AMZN': 'Amazon.com Inc.',
-                                'META': 'Meta Platforms Inc.',
-                                'TSLA': 'Tesla Inc.',
-                                'XOM': 'Exxon Mobil Corporation',
-                                'CVX': 'Chevron Corporation'
-                            };
-                            
-                            return {
-                                symbol: symbol,
-                                name: symbolNames[symbol] || `${symbol} Corporation`
-                            };
+                        onUpdateInputs({ 
+                            selectedMarketType: 'CRYPTO',
+                            selectedMarket: 'Major'
                         });
-                        
-                        // Switch market and add symbols in a single update
+                        executed = true;
+                    }
+                    break;
+                case 'switchToStocks':
+                    if (onUpdateInputs) {
                         onUpdateInputs({ 
                             selectedMarketType: 'STOCKS',
-                            selectedMarket: 'US',
-                            addSymbols: symbolsToAdd
+                            selectedMarket: 'US'
                         });
+                        executed = true;
+                    }
+                    break;
+                case 'addCryptoSymbols':
+                    if (onUpdateInputs) {
+                        const cryptoNames: Record<string, string> = {
+                            'BTC': 'Bitcoin',
+                            'ETH': 'Ethereum',
+                            'BNB': 'Binance Coin',
+                            'SOL': 'Solana',
+                            'XRP': 'XRP',
+                            'ADA': 'Cardano',
+                            'AVAX': 'Avalanche',
+                            'DOT': 'Polkadot',
+                            'MATIC': 'Polygon',
+                            'UNI': 'Uniswap'
+                        };
                         
+                        const symbolsToAdd = action.value.map((symbol: string) => ({
+                            symbol: symbol,
+                            name: cryptoNames[symbol] || `${symbol} Token`
+                        }));
+                        
+                        console.log('🤖 Chatbot: Adding crypto symbols:', symbolsToAdd);
+                        onUpdateInputs({ addSymbols: symbolsToAdd });
                         executed = true;
                     }
                     break;

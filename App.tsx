@@ -257,15 +257,27 @@ function App() {
     };
 
     const handleMarketTypeChange = (newMarketType: string) => {
+        console.log('🔧 Changing market type from', selectedMarketType, 'to', newMarketType);
+        
         setSelectedMarketType(newMarketType as MarketType);
         const newMarket = MARKET_OPTIONS[newMarketType]?.[0]?.value || "";
         setSelectedMarket(newMarket);
-        // setSelectedSymbols([]); // <-- DELETED
+        
+        // Clear symbols when switching market types since they're incompatible
+        console.log('🔧 Clearing symbols due to market type change:', selectedSymbols.map(s => s.symbol));
+        setSelectedSymbols([]);
     };
 
     const handleMarketChange = (newMarket: string) => {
+        console.log('🔧 Changing market from', selectedMarket, 'to', newMarket);
         setSelectedMarket(newMarket);
-        // setSelectedSymbols([]); // <-- DELETED
+        
+        // For some market types like COMMODITIES/CRYPTO/FOREX, different markets have different symbols
+        // So we should clear symbols when switching between them
+        if (selectedMarketType !== MarketType.STOCKS) {
+            console.log('🔧 Clearing symbols due to market change in non-stocks market:', selectedSymbols.map(s => s.symbol));
+            setSelectedSymbols([]);
+        }
     };
 
     const calculateStartDateFromTimeframe = (timeframe: string, endDate: string): string => {
@@ -627,15 +639,15 @@ function App() {
             }, 100);
         }
         
-        // Handle market type changes
+        // Handle market type changes using proper handlers
         if (updates.selectedMarketType !== undefined) {
             console.log('🤖 Setting market type to:', updates.selectedMarketType);
-            setSelectedMarketType(updates.selectedMarketType as MarketType);
+            handleMarketTypeChange(updates.selectedMarketType);
         }
         
         if (updates.selectedMarket !== undefined) {
             console.log('🤖 Setting market to:', updates.selectedMarket);
-            setSelectedMarket(updates.selectedMarket);
+            handleMarketChange(updates.selectedMarket);
         }
         
         // Handle other updates
