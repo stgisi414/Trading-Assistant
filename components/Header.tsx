@@ -104,13 +104,19 @@ export const Header: React.FC<HeaderProps> = ({
                 <div className="relative z-10">
                     <div className="flex items-center justify-between">
                         <div>
-                            <h1 className="text-lg sm:text-2xl md:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 bg-clip-text text-transparent mb-1 sm:mb-2 flex items-center gap-2 sm:gap-3" style={{ letterSpacing: '-0.05em' }}>
-                                <span className="material-symbols-outlined text-xl sm:text-3xl md:text-4xl lg:text-5xl text-indigo-600 dark:text-indigo-400">
-                                    finance
-                                </span>
-                                <span className="hidden xs:inline">AI-Powered Trading Assistant</span>
-                                <span className="xs:hidden">Signatex</span>
-                            </h1>
+                            <div className="flex items-center space-x-2">
+                                <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+                                    <img src="https://cdn.hugeicons.com/icons/analytics-02-bulk-rounded.svg" className="w-5 h-5 filter brightness-0 invert" />
+                                </div>
+                                <div>
+                                    <h1 className="text-xl font-bold text-gray-900 dark:text-white signatex-embossed">
+                                        Signatex
+                                    </h1>
+                                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                                        AI-Powered Trading Assistant
+                                    </p>
+                                </div>
+                            </div>
                             <p className="text-xs sm:text-sm md:text-base lg:text-lg text-muted dark:text-gray-300 mb-2 sm:mb-4 ml-6 sm:ml-12 md:ml-18">
                                 <span className="hidden sm:inline">Leveraging Gemini for Market Insights</span>
                                 <span className="sm:hidden">AI Trading Assistant</span>

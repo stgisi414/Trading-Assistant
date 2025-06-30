@@ -149,7 +149,7 @@ function App() {
     const [profitMaxResults, setProfitMaxResults] = useState<any>(null);
     const [showDebugPage, setShowDebugPage] = useState(false);
     const [isInitialLoading, setIsInitialLoading] = useState(true);
-    
+
     // Authentication state
     const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
     const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
@@ -165,15 +165,15 @@ function App() {
     useEffect(() => {
         const root = window.document.documentElement;
         const body = window.document.body;
-        
+
         // Remove both theme classes first
         root.classList.remove("light", "dark");
         body.classList.remove("light", "dark");
-        
+
         // Add the current theme class
         root.classList.add(theme);
         body.classList.add(theme);
-        
+
         // Update localStorage
         localStorage.setItem("theme", theme);
     }, [theme]);
@@ -874,7 +874,7 @@ function App() {
                     />}
                 />
 
-                
+
                 {showDebugPage ? (
                     <>
                         <DebugPage />
@@ -1026,7 +1026,7 @@ function App() {
                             patternDetails: result.patternDetails
                         }));
                         setAnalyses(convertedResults);
-                        
+
                         // Show success message
                         setTimeout(() => {
                             alert(`Successfully loaded analysis with ${convertedResults.length} symbols`);

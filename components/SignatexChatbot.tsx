@@ -890,46 +890,37 @@ Try asking me about indicators, trading setups, or general trading advice. 🤖`
                 <div className="flex items-center justify-between p-3 sm:p-4 border-b border-gray-200 dark:border-gray-700">
                     <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
                         <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center flex-shrink-0">
-                            <span className="text-white font-bold text-sm sm:text-lg drop-shadow-lg" style={{textShadow: '0 1px 2px rgba(0,0,0,0.5)'}}>S</span>
+                            <img src="https://cdn.hugeicons.com/icons/google-gemini-bulk-rounded.svg" alt="Gemini AI" className="w-5 h-5 sm:w-6 sm:h-6 filter brightness-0 invert" />
                         </div>
                         <div className="min-w-0 flex-1">
                             <h2 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-1 sm:gap-2 flex-wrap">
                                 <span className="signatex-embossed">Signatex Assistant</span>
                                 <span className="inline-flex items-center gap-1 px-1 sm:px-2 py-0.5 sm:py-1 text-xs bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-300 rounded-full">
-                                    <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-green-500 rounded-full animate-pulse"></div>
+                                    <img src="https://cdn.hugeicons.com/icons/ai-cloud-stroke-rounded.svg" className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-green-500" />
                                     <span className="hidden sm:inline">Gemini AI</span>
-                                    <svg className="w-2.5 h-2.5 sm:hidden" fill="currentColor" viewBox="0 0 24 24">
-                                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                                    </svg>
+                                    <img src="https://cdn.hugeicons.com/icons/google-gemini-stroke-rounded.svg" className="w-2.5 h-2.5 sm:hidden text-green-500" />
                                 </span>
                                 {ttsService.isAvailable() && (
                                     <span className="inline-flex items-center gap-1 px-1 sm:px-2 py-0.5 sm:py-1 text-xs bg-purple-100 dark:bg-purple-900/50 text-purple-700 dark:text-purple-300 rounded-full">
-                                        <svg className="w-2.5 h-2.5 sm:w-3 sm:h-3" fill="currentColor" viewBox="0 0 24 24">
-                                            <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
-                                        </svg>
+                                        <img src="https://cdn.hugeicons.com/icons/voice-stroke-rounded.svg" className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
                                         <span className="hidden sm:inline">TTS Ready</span>
                                     </span>
                                 )}
                                 {speechSupported && (
                                     <span className="inline-flex items-center gap-1 px-1 sm:px-2 py-0.5 sm:py-1 text-xs bg-orange-100 dark:bg-orange-900/50 text-orange-700 dark:text-orange-300 rounded-full">
-                                        <svg className="w-2.5 h-2.5 sm:w-3 sm:h-3" fill="currentColor" viewBox="0 0 24 24">
-                                            <path d="M12 2a3 3 0 0 1 3 3v6a3 3 0 0 1-6 0V5a3 3 0 0 1 3-3Z"/>
-                                            <path d="M19 11a7 7 0 0 1-14 0"/>
-                                        </svg>
+                                        <img src="https://cdn.hugeicons.com/icons/mic-01-stroke-rounded.svg" className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
                                         <span className="hidden sm:inline">Voice Input</span>
                                     </span>
                                 )}
                                 {proFlowStatus?.isRunning && (
                                     <span className="inline-flex items-center gap-1 px-1 sm:px-2 py-0.5 sm:py-1 text-xs bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 rounded-full">
-                                        <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-blue-500 rounded-full animate-pulse"></div>
+                                        <img src="https://cdn.hugeicons.com/icons/workflow-square-09-stroke-rounded.svg" className="w-2.5 h-2.5 sm:w-3 sm:h-3 animate-pulse" />
                                         <span className="hidden sm:inline">ProFlow Active</span>
                                     </span>
                                 )}
                                 {profitMaxResult && (
                                     <span className="inline-flex items-center px-1 sm:px-2 py-0.5 sm:py-1 text-xs bg-purple-100 dark:bg-purple-900/50 text-purple-700 dark:text-purple-300 rounded-full">
-                                        <svg className="w-2.5 h-2.5 sm:hidden" fill="currentColor" viewBox="0 0 24 24">
-                                            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                        </svg>
+                                        <img src="https://cdn.hugeicons.com/icons/money-add-02-stroke-rounded.svg" className="w-2.5 h-2.5 sm:hidden" />
                                         <span className="hidden sm:inline">ProfitMax Ready</span>
                                     </span>
                                 )}
@@ -971,18 +962,14 @@ I'm ready for fresh insights and still fully synced with your Signatex setup!
                             className="p-1.5 sm:p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors text-gray-500 dark:text-gray-400"
                             title="Clear conversation"
                         >
-                            <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                            </svg>
+                            <img src="https://cdn.hugeicons.com/icons/delete-02-stroke-rounded.svg" className="w-4 h-4 sm:w-5 sm:h-5" />
                         </button>
                         <button
                             onClick={onClose}
                             className="p-1.5 sm:p-2 hover:bg-red-100 dark:hover:bg-red-900/50 rounded-lg transition-colors bg-red-50 dark:bg-red-900/30"
                             title="Close chat"
                         >
-                            <svg className="w-5 h-5 sm:w-6 sm:h-6 text-red-500 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                            </svg>
+                            <img src="https://cdn.hugeicons.com/icons/cancel-01-stroke-rounded.svg" className="w-5 h-5 sm:w-6 sm:h-6 text-red-500 dark:text-red-400" />
                         </button>
                     </div>
                 </div>
@@ -1012,9 +999,7 @@ I'm ready for fresh insights and still fully synced with your Signatex setup!
                                                         className="bg-red-500 hover:bg-red-600 text-white p-1.5 rounded-full shadow-lg transition-colors z-10"
                                                         title="Stop audio"
                                                     >
-                                                        <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
-                                                            <path d="M6 6h12v12H6z"/>
-                                                        </svg>
+                                                        <img src="https://cdn.hugeicons.com/icons/stop-stroke-rounded.svg" className="w-3 h-3 filter brightness-0 invert" />
                                                     </button>
                                                 ) : (
                                                     <button
@@ -1022,16 +1007,12 @@ I'm ready for fresh insights and still fully synced with your Signatex setup!
                                                         className="bg-blue-500 hover:bg-blue-600 text-white p-1.5 rounded-full shadow-lg transition-colors z-10"
                                                         title="Play audio"
                                                     >
-                                                        <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
-                                                            <path d="M8 5v14l11-7z"/>
-                                                        </svg>
+                                                        <img src="https://cdn.hugeicons.com/icons/play-stroke-rounded.svg" className="w-3 h-3 filter brightness-0 invert" />
                                                     </button>
                                                 )}
                                                 {audioCache.has(message.id) && (
                                                     <div className="bg-green-500 text-white p-1.5 rounded-full shadow-lg" title="Audio cached">
-                                                        <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
-                                                            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
-                                                        </svg>
+                                                        <img src="https://cdn.hugeicons.com/icons/tick-02-stroke-rounded.svg" className="w-3 h-3 filter brightness-0 invert" />
                                                     </div>
                                                 )}
                                             </div>
@@ -1116,15 +1097,9 @@ I'm ready for fresh insights and still fully synced with your Signatex setup!
                                 title={isListening ? 'Stop listening' : 'Start voice input'}
                             >
                                 {isListening ? (
-                                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                                        <path d="M6 6h12v12H6z"/>
-                                    </svg>
+                                    <img src="https://cdn.hugeicons.com/icons/stop-stroke-rounded.svg" className="w-5 h-5 filter brightness-0 invert" />
                                 ) : (
-                                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                                        <path d="M12 2a3 3 0 0 1 3 3v6a3 3 0 0 1-6 0V5a3 3 0 0 1 3-3Z"/>
-                                        <path d="M19 11a7 7 0 0 1-14 0m7 0a4 4 0 0 0 4-4V5a4 4 0 0 0-8 0v2a4 4 0 0 0 4 4Z"/>
-                                        <path d="M12 19v3m-4 0h8"/>
-                                    </svg>
+                                    <img src="https://cdn.hugeicons.com/icons/mic-01-stroke-rounded.svg" className="w-5 h-5 filter brightness-0 invert" />
                                 )}
                             </button>
                         )}
@@ -1134,9 +1109,7 @@ I'm ready for fresh insights and still fully synced with your Signatex setup!
                             disabled={!inputMessage.trim() || isThinking}
                             className="bg-blue-500 hover:bg-blue-600 disabled:bg-gray-400 text-white rounded-lg px-4 py-2 transition-colors"
                         >
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-                            </svg>
+                            <img src="https://cdn.hugeicons.com/icons/sent-stroke-rounded.svg" className="w-5 h-5 filter brightness-0 invert" />
                         </button>
                     </div>
 

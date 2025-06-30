@@ -25,7 +25,7 @@ export const ProFlowControls: React.FC<ProFlowControlsProps> = ({ onShowToast, a
         // Set up ProFlow service callbacks
         proFlowService.setToastCallback(onShowToast);
         proFlowService.setAppCallbacks(appCallbacks);
-        
+
         // Set up status change callback for immediate updates
         proFlowService.setStatusChangeCallback(() => {
             setStatus(proFlowService.getStatus());
