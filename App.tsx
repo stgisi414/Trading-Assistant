@@ -35,6 +35,7 @@ import {
 import { ErrorMessage } from "./components/ErrorMessage.tsx";
 import { SymbolDebugger } from "./components/SymbolDebugger.tsx";
 import { LoadingOverlay } from "./components/LoadingOverlay.tsx";
+import { Footer } from './components/Footer';
 
 const getInitialDates = () => {
     const endDate = new Date();
@@ -1054,6 +1055,7 @@ function App() {
                 toasts={proFlowToasts}
                 onRemoveToast={handleRemoveToast}
             />
+             <Footer />
         </div>
         </>
     );
