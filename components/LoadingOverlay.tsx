@@ -39,7 +39,6 @@ export const LoadingOverlay: React.FC<LoadingOverlayProps> = ({ isVisible }) => 
                 {/* Branding */}
                 <div className="mb-6">
                     <h1 className="text-4xl font-bold text-white mb-2 flex items-center justify-center gap-3">
-                        <span className="text-blue-400">📊</span>
                         <span className="bg-gradient-to-r from-blue-600 via-blue-500 to-blue-600 bg-clip-text text-transparent">
                             Signatex
                         </span>
