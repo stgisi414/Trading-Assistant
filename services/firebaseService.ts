@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app';
-import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged, User } from 'firebase/auth';
+import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, signOut, onAuthStateChanged, User } from 'firebase/auth';
 import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, query, orderBy, limit, getDocs, deleteDoc } from 'firebase/firestore';
 
 // Firebase configuration - replace with your actual config
@@ -76,8 +76,23 @@ export class FirebaseService {
       this.currentUser = result.user;
       await this.createOrUpdateUserProfile(result.user);
       return result.user;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Google sign-in error:', error);
+      
+      // If popup is blocked, try redirect method
+      if (error.code === 'auth/popup-blocked') {
+        console.log('Popup blocked, trying redirect method...');
+        try {
+          await signInWithRedirect(auth, googleProvider);
+          // The redirect will reload the page, so we won't reach this return
+          // The actual user will be handled by getRedirectResult on page load
+          throw new Error('Redirecting for authentication...');
+        } catch (redirectError) {
+          console.error('Redirect sign-in error:', redirectError);
+          throw redirectError;
+        }
+      }
+      
       throw error;
     }
   }
@@ -97,6 +112,22 @@ export class FirebaseService {
       this.currentUser = user;
       callback(user);
     });
+  }
+
+  // Handle redirect result after page reload
+  async handleRedirectResult(): Promise<User | null> {
+    try {
+      const result = await getRedirectResult(auth);
+      if (result?.user) {
+        this.currentUser = result.user;
+        await this.createOrUpdateUserProfile(result.user);
+        return result.user;
+      }
+      return null;
+    } catch (error) {
+      console.error('Redirect result error:', error);
+      throw error;
+    }
   }
 
   getCurrentUser(): User | null {
