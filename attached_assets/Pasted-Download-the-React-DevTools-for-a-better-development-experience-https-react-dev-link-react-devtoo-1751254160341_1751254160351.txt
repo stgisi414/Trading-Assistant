@@ -1,0 +1,53 @@
+Download the React DevTools for a better development experience: https://react.dev/link/react-devtools
+App.tsx:135 🔧 Saving selectedSymbols to localStorage: []
+App.tsx:140 🔧 localStorage updated for selectedSymbols
+App.tsx:135 🔧 Saving selectedSymbols to localStorage: []
+App.tsx:140 🔧 localStorage updated for selectedSymbols
+632adf7a-44e5-40a0-a51a-c17993bb9a8a-00-1x1mnek33hdee.worf.replit.dev/:1 <meta name="apple-mobile-web-app-capable" content="yes"> is deprecated. Please include <meta name="mobile-web-app-capable" content="yes">Understand this warning
+SignatexChatbot.tsx:329 🤖 Chatbot: Processing addSymbols action {type: 'addSymbols', value: Array(2), description: 'Add symbols: GOOG, MSFT'}
+SignatexChatbot.tsx:366 🤖 Chatbot: Symbols to add: (2) [{…}, {…}]
+SignatexChatbot.tsx:367 🤖 Chatbot: Calling onUpdateInputs with addSymbols
+App.tsx:586 🤖 App.tsx: handleChatbotInputUpdates called with: {addSymbols: Array(2)}
+App.tsx:587 🤖 App.tsx: Current selectedSymbols before update: []
+App.tsx:588 🤖 App.tsx: Current selectedSymbols length: 0
+App.tsx:589 🤖 App.tsx: Current selectedSymbols array: []
+App.tsx:593 🤖 App.tsx: Processing addSymbols: (2) [{…}, {…}]
+App.tsx:594 🤖 App.tsx: addSymbols is array: true
+App.tsx:595 🤖 App.tsx: addSymbols length: 2
+App.tsx:596 🤖 App.tsx: About to call onAddSymbol for each symbol
+App.tsx:600 🤖 App.tsx: Processing symbol 1/2: {symbol: 'GOOG', name: 'Alphabet Inc. Class C'}
+App.tsx:601 🤖 App.tsx: Symbol details: {symbol: 'GOOG', name: 'Alphabet Inc. Class C'}
+App.tsx:602 🤖 App.tsx: About to call onAddSymbol...
+App.tsx:209 🔧 onAddSymbol called with: {symbol: 'GOOG', name: 'Alphabet Inc. Class C'}
+App.tsx:210 🔧 Current selectedSymbols before addition: []
+App.tsx:211 🔧 Symbol validation: {symbol: 'GOOG', name: 'Alphabet Inc. Class C', isValidSymbol: true, isValidName: true}
+App.tsx:225 ✅ Adding new symbol to state...
+App.tsx:606 🤖 App.tsx: onAddSymbol called for symbol: GOOG
+App.tsx:600 🤖 App.tsx: Processing symbol 2/2: {symbol: 'MSFT', name: 'Microsoft Corporation'}
+App.tsx:601 🤖 App.tsx: Symbol details: {symbol: 'MSFT', name: 'Microsoft Corporation'}
+App.tsx:602 🤖 App.tsx: About to call onAddSymbol...
+App.tsx:209 🔧 onAddSymbol called with: {symbol: 'MSFT', name: 'Microsoft Corporation'}
+App.tsx:210 🔧 Current selectedSymbols before addition: []
+App.tsx:211 🔧 Symbol validation: {symbol: 'MSFT', name: 'Microsoft Corporation', isValidSymbol: true, isValidName: true}
+App.tsx:225 ✅ Adding new symbol to state...
+App.tsx:606 🤖 App.tsx: onAddSymbol called for symbol: MSFT
+App.tsx:621 🤖 App.tsx: Finished processing all addSymbols
+SignatexChatbot.tsx:372 🤖 Chatbot: addSymbols action executed successfully
+App.tsx:586 🤖 App.tsx: handleChatbotInputUpdates called with: {}
+App.tsx:587 🤖 App.tsx: Current selectedSymbols before update: []
+App.tsx:588 🤖 App.tsx: Current selectedSymbols length: 0
+App.tsx:589 🤖 App.tsx: Current selectedSymbols array: []
+App.tsx:228 🔧 New symbols array: [{…}]
+App.tsx:228 🔧 New symbols array: [{…}]
+App.tsx:228 🔧 New symbols array: (2) [{…}, {…}]
+App.tsx:228 🔧 New symbols array: (2) [{…}, {…}]
+App.tsx:135 🔧 Saving selectedSymbols to localStorage: (2) [{…}, {…}]
+App.tsx:140 🔧 localStorage updated for selectedSymbols
+App.tsx:610 🤖 App.tsx: Checking if GOOG was added...
+App.tsx:615 ❌ App.tsx: Symbol GOOG NOT found in selectedSymbols
+App.tsx:616 ❌ App.tsx: Current selectedSymbols after attempted add: []
+App.tsx:610 🤖 App.tsx: Checking if MSFT was added...
+App.tsx:615 ❌ App.tsx: Symbol MSFT NOT found in selectedSymbols
+App.tsx:616 ❌ App.tsx: Current selectedSymbols after attempted add: []
+App.tsx:625 🤖 App.tsx: Final check - selectedSymbols after all additions: []
+App.tsx:626 🤖 App.tsx: Final selectedSymbols count: 0
