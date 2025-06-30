@@ -390,80 +390,87 @@ export const ChatroomModal: React.FC<ChatroomModalProps> = ({ isOpen, onClose })
                         {dayMessages.map((message) => (
                           <div
                             key={message.id}
-                            className={`group relative flex space-x-3 ${
-                              message.userId === user?.uid ? 'flex-row-reverse space-x-reverse' : ''
-                            } ${message.userId === 'system' ? 'justify-center' : ''}`}
+                            className={`group relative ${
+                              message.userId === 'system' ? 'flex justify-center' : 
+                              message.userId === user?.uid ? 'flex justify-end' : 'flex justify-start'
+                            }`}
                           >
-                            {message.userId !== 'system' && (
-                              <img
-                                src={message.userPhoto}
-                                alt={message.userName}
-                                className="w-8 h-8 rounded-full flex-shrink-0"
-                              />
-                            )}
-                            <div
-                              className={`flex-1 ${
-                                message.userId === user?.uid ? 'text-right' : ''
-                              } ${message.userId === 'system' ? 'text-center' : ''}`}
-                            >
-                              {message.userId !== 'system' && (
-                                <div className="flex items-center space-x-2 mb-1">
-                                  <span className="text-sm font-medium text-gray-900 dark:text-white">
-                                    {message.userName}
-                                  </span>
-                                  <span className="text-xs text-gray-500 dark:text-gray-400">
-                                    {formatTime(message.timestamp)}
-                                  </span>
-                                  {isAdmin && message.userId !== 'system' && (
-                                    <div className="opacity-0 group-hover:opacity-100 transition-opacity flex space-x-1">
-                                      <button
-                                        onClick={() => openDeleteMessageModal(message.id)}
-                                        className="p-1 hover:bg-red-100 dark:hover:bg-red-900 rounded text-red-600 dark:text-red-400"
-                                        title="Delete message"
-                                      >
-                                        <Trash2 className="w-3 h-3" />
-                                      </button>
-                                      {message.userId !== user?.uid && (
-                                        <>
-                                          <button
-                                            onClick={() => openModerationMenu(message.userId, message.userName, 'kick')}
-                                            className="p-1 hover:bg-red-100 dark:hover:bg-red-900 rounded text-red-600 dark:text-red-400"
-                                            title="Kick user"
-                                          >
-                                            <UserX className="w-3 h-3" />
-                                          </button>
-                                          <button
-                                            onClick={() => openModerationMenu(message.userId, message.userName, 'ban_channel')}
-                                            className="p-1 hover:bg-red-100 dark:hover:bg-red-900 rounded text-red-600 dark:text-red-400"
-                                            title="Ban from channel"
-                                          >
-                                            <Ban className="w-3 h-3" />
-                                          </button>
-                                          <button
-                                            onClick={() => openModerationMenu(message.userId, message.userName, 'ban_global')}
-                                            className="p-1 hover:bg-red-100 dark:hover:bg-red-900 rounded text-red-600 dark:text-red-400"
-                                            title="Ban globally"
-                                          >
-                                            <AlertTriangle className="w-3 h-3" />
-                                          </button>
-                                        </>
-                                      )}
-                                    </div>
-                                  )}
+                            {message.userId === 'system' ? (
+                              <div className="text-center">
+                                <div className="inline-block p-3 rounded-lg bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200 text-sm">
+                                  {message.content}
                                 </div>
-                              )}
-                              <div
-                                className={`inline-block p-3 rounded-lg max-w-xs lg:max-w-md ${
-                                  message.userId === 'system'
-                                    ? 'bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200 text-sm'
-                                    : message.userId === user?.uid
-                                    ? 'bg-blue-500 text-white'
-                                    : 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white'
-                                }`}
-                              >
-                                {message.content}
                               </div>
-                            </div>
+                            ) : (
+                              <div className={`flex items-start space-x-3 max-w-[75%] ${
+                                message.userId === user?.uid ? 'flex-row-reverse space-x-reverse' : ''
+                              }`}>
+                                <img
+                                  src={message.userPhoto}
+                                  alt={message.userName}
+                                  className="w-8 h-8 rounded-full flex-shrink-0"
+                                />
+                                <div className={`flex flex-col ${
+                                  message.userId === user?.uid ? 'items-end' : 'items-start'
+                                }`}>
+                                  <div className={`flex items-center space-x-2 mb-1 ${
+                                    message.userId === user?.uid ? 'flex-row-reverse space-x-reverse' : ''
+                                  }`}>
+                                    <span className="text-sm font-medium text-gray-900 dark:text-white">
+                                      {message.userName}
+                                    </span>
+                                    <span className="text-xs text-gray-500 dark:text-gray-400">
+                                      {formatTime(message.timestamp)}
+                                    </span>
+                                    {isAdmin && (
+                                      <div className="opacity-0 group-hover:opacity-100 transition-opacity flex space-x-1">
+                                        <button
+                                          onClick={() => openDeleteMessageModal(message.id)}
+                                          className="p-1 hover:bg-red-100 dark:hover:bg-red-900 rounded text-red-600 dark:text-red-400"
+                                          title="Delete message"
+                                        >
+                                          <Trash2 className="w-3 h-3" />
+                                        </button>
+                                        {message.userId !== user?.uid && (
+                                          <>
+                                            <button
+                                              onClick={() => openModerationMenu(message.userId, message.userName, 'kick')}
+                                              className="p-1 hover:bg-red-100 dark:hover:bg-red-900 rounded text-red-600 dark:text-red-400"
+                                              title="Kick user"
+                                            >
+                                              <UserX className="w-3 h-3" />
+                                            </button>
+                                            <button
+                                              onClick={() => openModerationMenu(message.userId, message.userName, 'ban_channel')}
+                                              className="p-1 hover:bg-red-100 dark:hover:bg-red-900 rounded text-red-600 dark:text-red-400"
+                                              title="Ban from channel"
+                                            >
+                                              <Ban className="w-3 h-3" />
+                                            </button>
+                                            <button
+                                              onClick={() => openModerationMenu(message.userId, message.userName, 'ban_global')}
+                                              className="p-1 hover:bg-red-100 dark:hover:bg-red-900 rounded text-red-600 dark:text-red-400"
+                                              title="Ban globally"
+                                            >
+                                              <AlertTriangle className="w-3 h-3" />
+                                            </button>
+                                          </>
+                                        )}
+                                      </div>
+                                    )}
+                                  </div>
+                                  <div
+                                    className={`inline-block p-3 rounded-lg ${
+                                      message.userId === user?.uid
+                                        ? 'bg-blue-500 text-white'
+                                        : 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white'
+                                    }`}
+                                  >
+                                    {message.content}
+                                  </div>
+                                </div>
+                              </div>
+                            )}
                           </div>
                         ))}
                       </div>
