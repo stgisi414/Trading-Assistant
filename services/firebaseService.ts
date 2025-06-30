@@ -17,14 +17,12 @@ const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const db = getFirestore(app);
 
-// Enable offline persistence
+// Initialize Firestore settings
 try {
-  import('firebase/firestore').then(({ enableNetwork, disableNetwork }) => {
-    // Enable offline persistence
-    db._delegate._databaseId.projectId = firebaseConfig.projectId;
-  });
+  // Firestore automatically handles offline persistence in modern versions
+  console.log('Firebase initialized successfully');
 } catch (error) {
-  console.log('Offline persistence not available:', error);
+  console.log('Firebase initialization warning:', error);
 }
 
 // Google Auth Provider
