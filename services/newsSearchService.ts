@@ -172,7 +172,7 @@ const searchFMPStockNews = async (symbols: string[], dateRange: { from?: string,
         for (const symbol of symbols.slice(0, 3)) {
             const params = new URLSearchParams({
                 symbols: symbol,
-                limit: '10',
+                limit: '15',
                 apikey: FMP_API_KEY
             });
             
@@ -355,7 +355,7 @@ const searchGoogleNews = async (searchTerms: string[], timeframe: string): Promi
         for (const term of newsFriendlyTerms.slice(0, 3)) { // Use news-friendly terms
             const query = encodeURIComponent(term); // No quotes, simpler query
             const dateRestrict = getDateRestrictionFromTimeframe(timeframe);
-            const url = `${GOOGLE_CUSTOM_SEARCH_URL}?key=${GOOGLE_CUSTOM_SEARCH_API_KEY}&cx=${NEWS_CUSTOM_SEARCH_CX}&q=${query}&num=6&dateRestrict=${dateRestrict}&sort=date&lr=lang_en`;
+            const url = `${GOOGLE_CUSTOM_SEARCH_URL}?key=${GOOGLE_CUSTOM_SEARCH_API_KEY}&cx=${NEWS_CUSTOM_SEARCH_CX}&q=${query}&num=8&dateRestrict=${dateRestrict}&sort=date&lr=lang_en`;
             
             console.log(`Fetching Google news for term: "${term}"`);
             
@@ -507,7 +507,7 @@ export const searchNews = async (searchTerms: string[], timeframe: string = '1M'
 
         // 2. Get some general financial news from FMP
         console.log("Searching FMP general news");
-        const fmpGeneralNews = await searchFMPGeneralNews(8);
+        const fmpGeneralNews = await searchFMPGeneralNews(12);
         allNews.push(...fmpGeneralNews);
 
         // 3. Fallback to Google Custom Search if FMP didn't return much
@@ -551,30 +551,51 @@ export const searchNews = async (searchTerms: string[], timeframe: string = '1M'
         );
     });
 
-    // Sort by relevance
-    const sortedNews = uniqueNews.sort((a, b) => {
-        const aRelevance = searchTerms.reduce((score, term) => {
-            const termLower = term.toLowerCase();
-            const titleHits = (a.title.toLowerCase().match(new RegExp(termLower, 'g')) || []).length;
-            const snippetHits = (a.snippet.toLowerCase().match(new RegExp(termLower, 'g')) || []).length;
-            return score + titleHits * 2 + snippetHits;
-        }, 0);
-        
-        const bRelevance = searchTerms.reduce((score, term) => {
-            const termLower = term.toLowerCase();
-            const titleHits = (b.title.toLowerCase().match(new RegExp(termLower, 'g')) || []).length;
-            const snippetHits = (b.snippet.toLowerCase().match(new RegExp(termLower, 'g')) || []).length;
-            return score + titleHits * 2 + snippetHits;
-        }, 0);
-        
-        return bRelevance - aRelevance;
-    });
+    // Sort by relevance first, then apply timeframe as secondary filter
+    const sortedNews = uniqueNews
+        .map(article => {
+            // Calculate relevance score
+            const relevanceScore = searchTerms.reduce((score, term) => {
+                const termLower = term.toLowerCase();
+                const titleHits = (article.title.toLowerCase().match(new RegExp(termLower, 'g')) || []).length;
+                const snippetHits = (article.snippet.toLowerCase().match(new RegExp(termLower, 'g')) || []).length;
+                
+                // Additional relevance factors
+                const symbolMatch = termLower.match(/\b[A-Z]{2,5}\b/) ? 1 : 0;
+                const financeKeywords = ['stock', 'earnings', 'revenue', 'profit', 'financial', 'trading', 'market', 'investment'].some(keyword => 
+                    article.title.toLowerCase().includes(keyword) || article.snippet.toLowerCase().includes(keyword)
+                ) ? 1 : 0;
+                
+                return score + titleHits * 3 + snippetHits * 2 + symbolMatch + financeKeywords;
+            }, 0);
+            
+            // Check if article matches timeframe (secondary criterion)
+            const matchesTimeframe = isRecentArticle(article.snippet, article.title, timeframe);
+            
+            return {
+                ...article,
+                relevanceScore,
+                matchesTimeframe
+            };
+        })
+        .sort((a, b) => {
+            // Primary sort by relevance
+            if (a.relevanceScore !== b.relevanceScore) {
+                return b.relevanceScore - a.relevanceScore;
+            }
+            // Secondary sort by timeframe match
+            if (a.matchesTimeframe !== b.matchesTimeframe) {
+                return a.matchesTimeframe ? -1 : 1;
+            }
+            return 0;
+        })
+        .map(({ relevanceScore, matchesTimeframe, ...article }) => article); // Remove scoring properties
 
     console.log(`📰 Final news search results: ${sortedNews.length} unique, relevant articles found`);
     console.log("📊 News sources breakdown:", sortedNews.map(article => article.source).join(", "));
     
-    const finalResults = sortedNews.slice(0, 12);
-    console.log(`🎯 Returning ${finalResults.length} articles to display`);
+    const finalResults = sortedNews.slice(0, 15);
+    console.log(`🎯 Returning ${finalResults.length} articles to display (max 15)`);
     
     return finalResults;
 };
