@@ -391,10 +391,24 @@ function App() {
         return marketData?.symbols?.map(s => s.symbol) || [];
     }, [selectedMarketType, selectedMarket]); // Update dependencies
 
+      // Only filter symbols when user manually changes market, not during chatbot updates
       useEffect(() => {
-        setSelectedSymbols(prevSymbols =>
-          prevSymbols.filter(symbolObj => currentMarketSymbols.includes(symbolObj.symbol))
-        );
+        // Don't filter if we have no market symbols defined (means we're in a generic market)
+        if (currentMarketSymbols.length === 0) return;
+        
+        setSelectedSymbols(prevSymbols => {
+          const filtered = prevSymbols.filter(symbolObj => currentMarketSymbols.includes(symbolObj.symbol));
+          // Only update if there's actually a change to prevent unnecessary re-renders
+          if (filtered.length !== prevSymbols.length) {
+            console.log('🔧 Filtering symbols due to market change:', { 
+              before: prevSymbols.map(s => s.symbol), 
+              after: filtered.map(s => s.symbol),
+              marketSymbols: currentMarketSymbols 
+            });
+            return filtered;
+          }
+          return prevSymbols;
+        });
       }, [currentMarketSymbols]);
 
     const handleAnalyze = useCallback(async () => {
@@ -571,20 +585,42 @@ function App() {
     const handleChatbotInputUpdates = (updates: any) => {
         console.log('🤖 handleChatbotInputUpdates called with:', updates);
         
-        // Handle market type and market changes first if they exist
-        if (updates.selectedMarketType !== undefined) {
-            console.log('🤖 Setting market type to:', updates.selectedMarketType);
-            setSelectedMarketType(updates.selectedMarketType as MarketType);
-        }
-        if (updates.selectedMarket !== undefined) {
-            console.log('🤖 Setting market to:', updates.selectedMarket);
-            setSelectedMarket(updates.selectedMarket);
-        }
-        
-        // Clear existing symbols if market type is changing
-        if (updates.selectedMarketType !== undefined) {
-            console.log('🤖 Clearing symbols due to market type change');
-            setSelectedSymbols([]);
+        // Handle single updates synchronously to prevent race conditions
+        if (updates.selectedMarketType !== undefined || updates.selectedMarket !== undefined || updates.addSymbols !== undefined) {
+            // Use a single state update for market changes + symbol additions
+            console.log('🤖 Processing market change with symbol addition');
+            
+            setSelectedSymbols(prevSymbols => {
+                let newSymbols = prevSymbols;
+                
+                // Only clear symbols if we're changing market type without adding new ones
+                if (updates.selectedMarketType !== undefined && !updates.addSymbols) {
+                    console.log('🤖 Clearing symbols due to market type change (no new symbols to add)');
+                    newSymbols = [];
+                } else if (updates.addSymbols) {
+                    console.log('🤖 Adding symbols:', updates.addSymbols);
+                    
+                    const symbolsToAdd = updates.addSymbols.filter((newSymbol: any) => {
+                        const exists = prevSymbols.some(existing => existing.symbol === newSymbol.symbol);
+                        return !exists;
+                    });
+                    
+                    newSymbols = [...prevSymbols, ...symbolsToAdd];
+                    console.log('🤖 New symbols after addition:', newSymbols);
+                }
+                
+                return newSymbols;
+            });
+            
+            // Update market settings after symbol handling
+            if (updates.selectedMarketType !== undefined) {
+                console.log('🤖 Setting market type to:', updates.selectedMarketType);
+                setSelectedMarketType(updates.selectedMarketType as MarketType);
+            }
+            if (updates.selectedMarket !== undefined) {
+                console.log('🤖 Setting market to:', updates.selectedMarket);
+                setSelectedMarket(updates.selectedMarket);
+            }
         }
         
         // Handle other updates
@@ -599,26 +635,6 @@ function App() {
         if (updates.selectedIndicators !== undefined) {
             console.log('🤖 Setting indicators to:', updates.selectedIndicators);
             setSelectedIndicators(updates.selectedIndicators);
-        }
-        
-        // Add symbols after market changes are applied
-        if (updates.addSymbols !== undefined) {
-            console.log('🤖 Processing addSymbols:', updates.addSymbols);
-            console.log('🤖 Current selectedSymbols before adding:', selectedSymbols);
-            
-            setSelectedSymbols(prev => {
-                console.log('🤖 Previous symbols in setter:', prev);
-                
-                const newSymbols = updates.addSymbols.filter((newSymbol: any) => {
-                    const exists = prev.some(existing => existing.symbol === newSymbol.symbol);
-                    console.log(`🤖 Symbol ${newSymbol.symbol} exists: ${exists}`);
-                    return !exists;
-                });
-                
-                const result = [...prev, ...newSymbols];
-                console.log('🤖 New symbols array will be:', result);
-                return result;
-            });
         }
     };
 
