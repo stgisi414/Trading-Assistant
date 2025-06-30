@@ -105,6 +105,7 @@
   --color-accent: #F3F4F6; /* Gray-100 */
 }
 
+:root.dark,
 .dark {
   /* Dark Mode Palette */
   --color-primary: #60A5FA; /* Blue-400 */

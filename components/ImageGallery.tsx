@@ -47,7 +47,16 @@ export const ImageGallery: React.FC<ImageGalleryProps> = ({ images, title, class
                             src={image.thumbnail || image.url}
                             alt={image.title}
                             className="w-full h-24 object-cover group-hover:scale-105 transition-transform duration-300"
-                            onError={() => handleImageError(image.url)}
+                            onError={(e) => {
+                                const target = e.target as HTMLImageElement;
+                                // Try fallback to main URL if thumbnail fails
+                                if (target.src === image.thumbnail && image.url !== image.thumbnail) {
+                                    target.src = image.url;
+                                } else {
+                                    target.style.display = 'none';
+                                    console.warn('Failed to load image:', target.src);
+                                }
+                            }}
                             loading="lazy"
                         />
 
@@ -88,6 +97,11 @@ export const ImageGallery: React.FC<ImageGalleryProps> = ({ images, title, class
                             src={selectedImage.url}
                             alt={selectedImage.title}
                             className="max-w-full max-h-full object-contain rounded-lg"
+                            onError={(e) => {
+                                const target = e.target as HTMLImageElement;
+                                target.style.display = 'none';
+                                console.warn('Failed to load image:', image.url);
+                            }}
                         />
                         <button
                             onClick={() => setSelectedImage(null)}

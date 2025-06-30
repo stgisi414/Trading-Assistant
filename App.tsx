@@ -154,8 +154,18 @@ function App() {
 
     useEffect(() => {
         const root = window.document.documentElement;
-        root.classList.remove(theme === "light" ? "dark" : "light");
+        const body = window.document.body;
+        
+        // Remove both theme classes first
+        root.classList.remove("light", "dark");
+        body.classList.remove("light", "dark");
+        
+        // Add the current theme class
         root.classList.add(theme);
+        body.classList.add(theme);
+        
+        // Update localStorage
+        localStorage.setItem("theme", theme);
     }, [theme]);
 
     // Save selected symbols to localStorage whenever they change
@@ -314,11 +324,7 @@ function App() {
     };
 
     const toggleTheme = () => {
-        setTheme((prev) => {
-            const newTheme = prev === "light" ? "dark" : "light";
-            localStorage.setItem("theme", newTheme);
-            return newTheme;
-        });
+        setTheme((prev) => prev === "light" ? "dark" : "light");
     };
 
     const handleMarketTypeChange = (newMarketType: string) => {
