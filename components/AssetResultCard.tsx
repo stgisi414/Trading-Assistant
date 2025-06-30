@@ -34,7 +34,10 @@ export const AssetResultCard: React.FC<AssetResultCardProps> = ({ analysis, them
         if (analysisResult) {
             return (
                 <div className="flex flex-col gap-6">
-                    <PositionResult result={analysisResult} theme={theme} />
+                    {/* Analysis Results - includes logos and illustrations */}
+                    {analysis.analysisResult && (
+                        <PositionResult result={analysis.analysisResult} theme={theme} />
+                    )}
                     <PriceChart data={historicalData} theme={theme} />
                     {analysisResult.optionsAnalysis && (
                         <OptionsAnalysisSection optionsAnalysis={analysisResult.optionsAnalysis} />
@@ -42,7 +45,7 @@ export const AssetResultCard: React.FC<AssetResultCardProps> = ({ analysis, them
                     {analysisResult.orderAnalysis && (
                         <OrderAnalysisSection orderAnalysis={analysisResult.orderAnalysis} />
                     )}
-                    
+
 
                     {analysis.patternDetails && analysis.patternDetails.length > 0 && (
                         <PatternAnalysisSection patterns={analysis.patternDetails} theme={theme} />
