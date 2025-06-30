@@ -1103,18 +1103,26 @@ Try asking me about indicators, trading setups, or general trading advice. 🤖`
 
             if (!audioDataUrl) {
                 // Synthesize speech
-                audioDataUrl = await ttsService.synthesizeSpeech({
-                    text: content,
-                    languageCode: 'en-US',
-                    voiceName: 'en-US-Studio-O',
-                    ssmlGender: 'FEMALE', // Explicitly set supported gender
-                    speakingRate: 1.1,
-                    pitch: 0.2
-                });
+                
+                // Check if text needs chunking
+                if (ttsService.isTextTooLong(content)) {
+                    console.log('Using chunked audio playback for long content');
+                    await ttsService.playChunkedAudio(content, () => setIsPlayingAudio(null));
+                } else {
+                    // Use normal single synthesis for shorter content
+                    audioDataUrl = await ttsService.synthesizeSpeech({
+                        text: content,
+                        languageCode: 'en-US',
+                        voiceName: 'en-US-Studio-O',
+                        ssmlGender: 'FEMALE', // Explicitly set supported gender
+                        speakingRate: 1.1,
+                        pitch: 0.2
+                    });
 
-                if (audioDataUrl) {
-                    // Cache the audio
-                    setAudioCache(prev => new Map(prev).set(messageId, audioDataUrl!));
+                    if (audioDataUrl) {
+                        // Cache the audio
+                        setAudioCache(prev => new Map(prev).set(messageId, audioDataUrl!));
+                    }
                 }
             }
 

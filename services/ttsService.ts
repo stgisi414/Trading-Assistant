@@ -22,6 +22,7 @@ export class TTSService {
 
     /**
      * Convert text to speech using Google Cloud Text-to-Speech API
+     * Automatically chunks text if it exceeds byte limits
      */
     async synthesizeSpeech(options: TTSOptions): Promise<string | null> {
         if (!this.apiKey) {
@@ -31,36 +32,70 @@ export class TTSService {
         const {
             text,
             languageCode = 'en-US',
-            voiceName = 'en-US-Studio-O', // High quality neural voice
-            ssmlGender = 'FEMALE', // Changed from NEUTRAL to FEMALE (supported by API)
+            voiceName = 'en-US-Studio-O',
+            ssmlGender = 'FEMALE',
             audioEncoding = 'MP3',
             speakingRate = 1.0,
             pitch = 0.0
         } = options;
 
-        // Clean text for TTS (remove markdown and emojis)
-        let cleanText = this.cleanTextForTTS(text);
+        // Clean text for TTS
+        const cleanText = this.cleanTextForTTS(text);
 
         if (!cleanText.trim()) {
             return null;
         }
 
-        // More aggressive byte limit with larger buffer for safety
-        const maxBytes = 4000; // Increased buffer from 4500 to 4000 bytes
+        // Check if text needs chunking
+        const maxBytes = 4000; // Safe limit with buffer
         const textBytes = new TextEncoder().encode(cleanText).length;
         
-        if (textBytes > maxBytes) {
-            console.warn(`Text too long for TTS (${textBytes} bytes), truncating to ${maxBytes} bytes`);
-            cleanText = this.truncateTextToBytes(cleanText, maxBytes);
-            
-            // Double-check after truncation
-            const finalBytes = new TextEncoder().encode(cleanText).length;
-            if (finalBytes > maxBytes) {
-                console.warn(`Text still too long after truncation (${finalBytes} bytes), applying emergency truncation`);
-                cleanText = this.emergencyTruncate(cleanText, maxBytes);
-            }
+        if (textBytes <= maxBytes) {
+            // Text is small enough, process normally
+            return await this.synthesizeSingleChunk(cleanText, {
+                languageCode,
+                voiceName,
+                ssmlGender,
+                audioEncoding,
+                speakingRate,
+                pitch
+            });
         }
 
+        // Text is too long, chunk it and play sequentially
+        console.log(`Text too long (${textBytes} bytes), chunking into smaller segments`);
+        const chunks = this.chunkTextIntoSegments(cleanText, maxBytes);
+        
+        if (chunks.length === 0) {
+            return null;
+        }
+
+        // Play the first chunk immediately and return its audio
+        // Subsequent chunks will be handled by playChunkedAudio
+        return await this.synthesizeSingleChunk(chunks[0], {
+            languageCode,
+            voiceName,
+            ssmlGender,
+            audioEncoding,
+            speakingRate,
+            pitch
+        });
+    }
+
+    /**
+     * Synthesize a single text chunk
+     */
+    private async synthesizeSingleChunk(
+        text: string, 
+        voiceOptions: {
+            languageCode: string;
+            voiceName: string;
+            ssmlGender: 'FEMALE' | 'MALE';
+            audioEncoding: string;
+            speakingRate: number;
+            pitch: number;
+        }
+    ): Promise<string | null> {
         try {
             const response = await fetch(`${this.baseUrl}?key=${this.apiKey}`, {
                 method: 'POST',
@@ -69,19 +104,19 @@ export class TTSService {
                 },
                 body: JSON.stringify({
                     input: {
-                        text: cleanText
+                        text: text
                     },
                     voice: {
-                        languageCode,
-                        name: voiceName,
-                        ssmlGender
+                        languageCode: voiceOptions.languageCode,
+                        name: voiceOptions.voiceName,
+                        ssmlGender: voiceOptions.ssmlGender
                     },
                     audioConfig: {
-                        audioEncoding,
-                        speakingRate,
-                        pitch,
+                        audioEncoding: voiceOptions.audioEncoding,
+                        speakingRate: voiceOptions.speakingRate,
+                        pitch: voiceOptions.pitch,
                         volumeGainDb: 0.0,
-                        sampleRateHertz: audioEncoding === 'MP3' ? 24000 : 22050,
+                        sampleRateHertz: voiceOptions.audioEncoding === 'MP3' ? 24000 : 22050,
                         effectsProfileId: ['telephony-class-application']
                     }
                 })
@@ -95,15 +130,131 @@ export class TTSService {
             const data = await response.json();
             
             if (data.audioContent) {
-                // Create data URL for audio playback
-                const audioDataUrl = `data:audio/mp3;base64,${data.audioContent}`;
-                return audioDataUrl;
+                return `data:audio/mp3;base64,${data.audioContent}`;
             }
 
             return null;
         } catch (error) {
             console.error('TTS synthesis error:', error);
             throw error;
+        }
+    }
+
+    /**
+     * Break text into chunks that fit within byte limits
+     */
+    private chunkTextIntoSegments(text: string, maxBytes: number): string[] {
+        const chunks: string[] = [];
+        const encoder = new TextEncoder();
+        
+        // Try to split by sentences first
+        const sentences = text.split(/[.!?]+/).filter(s => s.trim());
+        let currentChunk = '';
+        
+        for (const sentence of sentences) {
+            const sentenceText = sentence.trim();
+            if (!sentenceText) continue;
+            
+            const testChunk = currentChunk 
+                ? `${currentChunk}. ${sentenceText}` 
+                : sentenceText;
+            
+            const testBytes = encoder.encode(testChunk).length;
+            
+            if (testBytes > maxBytes) {
+                // Current chunk is full, save it and start new one
+                if (currentChunk.trim()) {
+                    chunks.push(currentChunk.trim());
+                }
+                
+                // If single sentence is too long, split it by words
+                if (encoder.encode(sentenceText).length > maxBytes) {
+                    const wordChunks = this.chunkByWords(sentenceText, maxBytes);
+                    chunks.push(...wordChunks);
+                    currentChunk = '';
+                } else {
+                    currentChunk = sentenceText;
+                }
+            } else {
+                currentChunk = testChunk;
+            }
+        }
+        
+        // Add remaining chunk
+        if (currentChunk.trim()) {
+            chunks.push(currentChunk.trim());
+        }
+        
+        return chunks;
+    }
+
+    /**
+     * Split text by words when sentences are too long
+     */
+    private chunkByWords(text: string, maxBytes: number): string[] {
+        const chunks: string[] = [];
+        const encoder = new TextEncoder();
+        const words = text.split(/\s+/).filter(w => w.trim());
+        
+        let currentChunk = '';
+        
+        for (const word of words) {
+            const testChunk = currentChunk 
+                ? `${currentChunk} ${word}` 
+                : word;
+            
+            if (encoder.encode(testChunk).length > maxBytes) {
+                if (currentChunk.trim()) {
+                    chunks.push(currentChunk.trim());
+                }
+                currentChunk = word;
+            } else {
+                currentChunk = testChunk;
+            }
+        }
+        
+        if (currentChunk.trim()) {
+            chunks.push(currentChunk.trim());
+        }
+        
+        return chunks;
+    }
+
+    /**
+     * Play chunked audio sequentially
+     */
+    async playChunkedAudio(
+        text: string,
+        options: Omit<TTSOptions, 'text'> = {}
+    ): Promise<void> {
+        const cleanText = this.cleanTextForTTS(text);
+        const maxBytes = 4000;
+        const chunks = this.chunkTextIntoSegments(cleanText, maxBytes);
+        
+        console.log(`Playing ${chunks.length} audio chunks sequentially`);
+        
+        for (let i = 0; i < chunks.length; i++) {
+            console.log(`Playing chunk ${i + 1}/${chunks.length}`);
+            
+            try {
+                const audioUrl = await this.synthesizeSingleChunk(chunks[i], {
+                    languageCode: options.languageCode || 'en-US',
+                    voiceName: options.voiceName || 'en-US-Studio-O',
+                    ssmlGender: options.ssmlGender || 'FEMALE',
+                    audioEncoding: options.audioEncoding || 'MP3',
+                    speakingRate: options.speakingRate || 1.0,
+                    pitch: options.pitch || 0.0
+                });
+                
+                if (audioUrl) {
+                    await this.playAudio(audioUrl);
+                    // Small delay between chunks
+                    await new Promise(resolve => setTimeout(resolve, 200));
+                }
+            } catch (error) {
+                console.error(`Error playing chunk ${i + 1}:`, error);
+                // Continue with next chunk even if one fails
+            }
         }
     }
 
