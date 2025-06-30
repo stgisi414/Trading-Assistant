@@ -124,6 +124,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const deleteAnalysis = async (analysisId: string) => {
     await firebaseService.deleteAnalysis(analysisId);
+    // Refresh user profile to update analysis count
+    if (user) {
+      const updatedProfile = await firebaseService.getUserProfile();
+      setUserProfile(updatedProfile);
+    }
   };
 
   const value: AuthContextType = {
