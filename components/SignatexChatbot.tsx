@@ -363,7 +363,7 @@ What would you like to explore today? 🚀📈`,
                 contents: prompt,
                 config: {
                     temperature: 0.7,
-                    maxOutputTokens: 512
+                    maxOutputTokens: 2048
                 }
             });
 
