@@ -500,7 +500,8 @@ export class FirebaseService {
   }
 
   async checkUserBanStatus(channel: string): Promise<boolean> {
-    if (!this.currentUser) return false;
+    const currentUser = auth.currentUser;
+    if (!currentUser) return false;
 
     const userProfile = await this.getUserProfile();
     if (!userProfile) return false;
@@ -509,7 +510,7 @@ export class FirebaseService {
     if (userProfile.bannedGlobally) {
       if (userProfile.bannedUntil && new Date() > userProfile.bannedUntil) {
         // Ban expired, remove it
-        await this.unbanUser(this.currentUser.uid);
+        await this.unbanUser(currentUser.uid);
         return false;
       }
       return true;
@@ -519,7 +520,7 @@ export class FirebaseService {
     if (userProfile.bannedFromChannels?.includes(channel)) {
       if (userProfile.bannedUntil && new Date() > userProfile.bannedUntil) {
         // Ban expired, remove it
-        await this.unbanUser(this.currentUser.uid, channel);
+        await this.unbanUser(currentUser.uid, channel);
         return false;
       }
       return true;
@@ -530,7 +531,9 @@ export class FirebaseService {
 
   // Chatroom methods
   async sendMessage(channel: string, content: string): Promise<string> {
-    if (!this.currentUser) throw new Error('User not authenticated');
+    // Use auth.currentUser instead of this.currentUser for real-time auth state
+    const currentUser = auth.currentUser;
+    if (!currentUser) throw new Error('User not authenticated');
 
     // Check if user is banned from this channel
     const isBanned = await this.checkUserBanStatus(channel);
@@ -543,9 +546,9 @@ export class FirebaseService {
 
     const messageData = {
       id: messageId,
-      userId: this.currentUser.uid,
-      userName: this.currentUser.displayName || 'Anonymous',
-      userPhoto: this.currentUser.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(this.currentUser.displayName || 'User')}&background=3b82f6&color=fff`,
+      userId: currentUser.uid,
+      userName: currentUser.displayName || 'Anonymous',
+      userPhoto: currentUser.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser.displayName || 'User')}&background=3b82f6&color=fff`,
       content: content.trim(),
       timestamp: new Date(),
       channel: channel,
@@ -557,22 +560,34 @@ export class FirebaseService {
   }
 
   async loadMessages(channel: string): Promise<any[]> {
-    const messagesRef = collection(db, 'chatrooms', channel, 'messages');
-    const cutoffTime = new Date(Date.now() - 48 * 60 * 60 * 1000); // 48 hours ago
-    
-    const q = query(
-      messagesRef, 
-      orderBy('timestamp', 'desc'), 
-      limit(100)
-    );
-    
-    const querySnapshot = await getDocs(q);
-    
-    // Filter out expired messages and return in chronological order
-    return querySnapshot.docs
-      .map(doc => doc.data())
-      .filter(message => message.timestamp.toDate() > cutoffTime)
-      .reverse(); // Show oldest first
+    try {
+      const messagesRef = collection(db, 'chatrooms', channel, 'messages');
+      const cutoffTime = new Date(Date.now() - 48 * 60 * 60 * 1000); // 48 hours ago
+      
+      const q = query(
+        messagesRef, 
+        orderBy('timestamp', 'desc'), 
+        limit(100)
+      );
+      
+      const querySnapshot = await getDocs(q);
+      
+      // Filter out expired messages and return in chronological order
+      return querySnapshot.docs
+        .map(doc => doc.data())
+        .filter(message => message.timestamp.toDate() > cutoffTime)
+        .reverse(); // Show oldest first
+    } catch (error: any) {
+      console.error('Error loading messages:', error);
+      
+      // If permissions error, return empty array instead of throwing
+      if (error.code === 'permission-denied') {
+        console.warn('Permission denied for loading messages. Check Firestore security rules.');
+        return [];
+      }
+      
+      throw error;
+    }
   }
 
   // Subscribe to real-time messages for a channel
