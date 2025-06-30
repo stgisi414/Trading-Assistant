@@ -121,7 +121,18 @@ function App() {
         const saved = localStorage.getItem("tradingApp_selectedMarket");
         return saved || "US";
     });
-    const [analyses, setAnalyses] = useState<AssetAnalysis[]>([]);
+    const [analyses, setAnalyses] = useState<AssetAnalysis[]>(() => {
+        try {
+            const savedAnalyses = localStorage.getItem('tradingApp_analyses');
+            if (savedAnalyses) {
+                console.log('📂 Loading analyses from localStorage during initialization');
+                return JSON.parse(savedAnalyses);
+            }
+        } catch (error) {
+            console.error('❌ Error loading analyses from localStorage:', error);
+        }
+        return [];
+    });
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
@@ -223,6 +234,12 @@ function App() {
     useEffect(() => {
         localStorage.setItem("tradingApp_selectedMarket", selectedMarket);
     }, [selectedMarket]);
+
+    // Save analyses to localStorage whenever they change
+    useEffect(() => {
+        console.log('🔧 Saving analyses to localStorage:', analyses.length, 'analyses');
+        localStorage.setItem('tradingApp_analyses', JSON.stringify(analyses));
+    }, [analyses]);
 
     // Load other data from localStorage on component mount (selectedSymbols is loaded in state initialization)
     useEffect(() => {
@@ -677,6 +694,13 @@ function App() {
         handleAnalyze
     };
 
+    const handleClearResults = () => {
+        console.log('🧹 Clearing all results');
+        setAnalyses([]);
+        setError(null);
+        localStorage.removeItem('tradingApp_analyses');
+    };
+
     const handleChatbotInputUpdates = (updates: any) => {
         console.log('🤖 App.tsx: handleChatbotInputUpdates called with:', updates);
         console.log('🤖 App.tsx: Current selectedSymbols before update:', selectedSymbols);
@@ -872,6 +896,8 @@ function App() {
                                         onAnalyze={handleAnalyze}
                                         isLoading={isLoading}
                                         onProfitMaxClick={() => setIsProfitMaxModalOpen(true)}
+                                        onClearResults={handleClearResults}
+                                        hasResults={analyses.length > 0}
                                     />
                                 </div>
                             </div>

@@ -39,6 +39,8 @@ interface InputSectionProps {
     onAnalyze: () => void;
     isLoading: boolean;
     onProfitMaxClick: () => void;
+    onClearResults: () => void;
+    hasResults: boolean;
 }
 
 export const InputSection: React.FC<InputSectionProps> = ({
@@ -52,7 +54,7 @@ export const InputSection: React.FC<InputSectionProps> = ({
     includeCallOptions, setIncludeCallOptions,
     includePutOptions, setIncludePutOptions,
     includeOrderAnalysis, setIncludeOrderAnalysis,
-    onAnalyze, isLoading, onProfitMaxClick
+    onAnalyze, isLoading, onProfitMaxClick, onClearResults, hasResults
 }) => {
     const handleIndicatorChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const selected = Array.from(e.target.selectedOptions, option => option.value);
@@ -309,6 +311,15 @@ export const InputSection: React.FC<InputSectionProps> = ({
                             </>
                         )}
                     </button>
+                    {hasResults && (
+                        <button
+                            onClick={onClearResults}
+                            disabled={isLoading}
+                            className="w-full bg-red-600 hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-600 disabled:bg-gray-400 disabled:text-gray-200 text-white font-semibold py-4 px-8 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-[1.02] disabled:transform-none flex items-center justify-center gap-3 text-lg"
+                        >
+                            Clear Results
+                        </button>
+                    )}
                 </div>
             </div>
         </section>
