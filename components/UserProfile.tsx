@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useAuth } from '../contexts/AuthContext.tsx';
 
 interface UserProfileProps {
@@ -9,11 +10,14 @@ interface UserProfileProps {
 export const UserProfile: React.FC<UserProfileProps> = ({ onSyncData, onViewHistory }) => {
   const { user, userProfile, signOut } = useAuth();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [dropdownPosition, setDropdownPosition] = useState({ top: 0, right: 0 });
+  const buttonRef = useRef<HTMLButtonElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node) &&
+          buttonRef.current && !buttonRef.current.contains(event.target as Node)) {
         setIsDropdownOpen(false);
       }
     };
@@ -21,6 +25,16 @@ export const UserProfile: React.FC<UserProfileProps> = ({ onSyncData, onViewHist
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  useEffect(() => {
+    if (isDropdownOpen && buttonRef.current) {
+      const rect = buttonRef.current.getBoundingClientRect();
+      setDropdownPosition({
+        top: rect.bottom + 8,
+        right: window.innerWidth - rect.right
+      });
+    }
+  }, [isDropdownOpen]);
 
   if (!user || !userProfile) return null;
 
@@ -34,9 +48,10 @@ export const UserProfile: React.FC<UserProfileProps> = ({ onSyncData, onViewHist
   };
 
   return (
-    <div className="relative" ref={dropdownRef}>
+    <>
       {/* User Avatar Button */}
       <button
+        ref={buttonRef}
         onClick={() => setIsDropdownOpen(!isDropdownOpen)}
         className="flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
       >
@@ -63,9 +78,16 @@ export const UserProfile: React.FC<UserProfileProps> = ({ onSyncData, onViewHist
         </svg>
       </button>
 
-      {/* Dropdown Menu */}
-      {isDropdownOpen && (
-        <div className="absolute right-0 mt-2 w-64 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-[99999]">
+      {/* Portal-based Dropdown Menu */}
+      {isDropdownOpen && createPortal(
+        <div 
+          ref={dropdownRef}
+          className="fixed w-64 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-[99999]"
+          style={{
+            top: `${dropdownPosition.top}px`,
+            right: `${dropdownPosition.right}px`
+          }}
+        >
           {/* User Info */}
           <div className="p-4 border-b border-gray-200 dark:border-gray-700">
             <div className="flex items-center space-x-3">
@@ -148,8 +170,9 @@ export const UserProfile: React.FC<UserProfileProps> = ({ onSyncData, onViewHist
               <span>Sign Out</span>
             </button>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
-    </div>
+    </>
   );
 };
