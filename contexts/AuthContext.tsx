@@ -109,7 +109,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   const saveAnalysis = async (results: any[], settings: CloudUserData) => {
-    return await firebaseService.saveAnalysisResults(results, settings);
+    const analysisId = await firebaseService.saveAnalysisResults(results, settings);
+    // Refresh user profile to update analysis count
+    if (user) {
+      const updatedProfile = await firebaseService.getUserProfile();
+      setUserProfile(updatedProfile);
+    }
+    return analysisId;
   };
 
   const loadAnalysisHistory = async () => {

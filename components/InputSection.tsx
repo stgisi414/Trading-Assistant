@@ -74,7 +74,7 @@ export const InputSection: React.FC<InputSectionProps> = ({
         onRemoveSymbol(symbolToRemove);
     };
 
-    const inputClasses = "w-full p-3 bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-gray-200 placeholder-gray-400 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition";
+    const inputClasses = `w-full p-3 bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-gray-200 placeholder-gray-400 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition [color-scheme:light] dark:[color-scheme:dark]`;
     const labelClasses = "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1";
 
     return (

@@ -1,4 +1,7 @@
+Addressing date formatting, text colors, and analysis count update.
+```
 
+```typescript
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext.tsx';
 
@@ -110,7 +113,7 @@ export const AnalysisHistoryModal: React.FC<AnalysisHistoryModalProps> = ({
                   const sellRecommendations = results.filter((r: any) => 
                     r.analysisResult?.recommendation?.toLowerCase().includes('sell')
                   ).length;
-                  
+
                   return {
                     totalResults,
                     successfulResults,
@@ -122,7 +125,7 @@ export const AnalysisHistoryModal: React.FC<AnalysisHistoryModalProps> = ({
                 };
 
                 const summary = getAnalysisSummary(analysis);
-                
+
                 return (
                   <div
                     key={analysis.id}
@@ -130,26 +133,29 @@ export const AnalysisHistoryModal: React.FC<AnalysisHistoryModalProps> = ({
                   >
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
-                        <div className="flex items-center space-x-2 mb-2">
-                          <h3 className="font-medium text-gray-900 dark:text-white">
+                        {/* Basic Info */}
+                        <div className="mb-3">
+                          <div className="text-lg font-semibold text-gray-900 dark:text-white mb-1">
                             {analysis.symbols.join(', ')} Analysis
-                          </h3>
-                          <span className="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-xs rounded-full">
-                            {analysis.symbols.length} symbol{analysis.symbols.length !== 1 ? 's' : ''}
-                          </span>
-                        </div>
-                        
-                        <div className="text-sm text-gray-600 dark:text-gray-400 mb-2">
-                          <div>
-                            <strong>Date:</strong> {new Date(analysis.timestamp.seconds ? analysis.timestamp.seconds * 1000 : analysis.timestamp).toLocaleString()}
+                            <span className="ml-2 text-xs bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-2 py-1 rounded">
+                              {analysis.symbols.length} symbol{analysis.symbols.length !== 1 ? 's' : ''}
+                            </span>
                           </div>
-                          <div>
+                          <div className="text-sm text-gray-600 dark:text-gray-400">
+                            <strong>Date:</strong> {analysis.timestamp ? 
+                              (analysis.timestamp.seconds ? 
+                                new Date(analysis.timestamp.seconds * 1000).toLocaleDateString() : 
+                                new Date(analysis.timestamp).toLocaleDateString()
+                              ) : 'Invalid Date'
+                            }
+                          </div>
+                          <div className="text-sm text-gray-600 dark:text-gray-400">
                             <strong>Timeframe:</strong> {analysis.settings?.selectedTimeframe || 'N/A'}
                           </div>
-                          <div>
+                          <div className="text-sm text-gray-600 dark:text-gray-400">
                             <strong>Market:</strong> {analysis.settings?.selectedMarketType || 'N/A'}
                           </div>
-                          <div>
+                          <div className="text-sm text-gray-600 dark:text-gray-400">
                             <strong>Wallet:</strong> ${analysis.settings?.walletAmount || 'N/A'}
                           </div>
                         </div>
@@ -215,3 +221,5 @@ export const AnalysisHistoryModal: React.FC<AnalysisHistoryModalProps> = ({
     </div>
   );
 };
+```Addressing date formatting, text colors, and analysis count update.
+`
