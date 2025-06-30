@@ -1,0 +1,98 @@
+
+finance
+AI-Powered Trading Assistant
+Leveraging Gemini for Market Insights
+
+
+
+
+Ask Signatex
+
+Debug Console
+
+Signatex ProFlow
+▼
+Market Type
+
+US Markets
+Market
+
+United States (NASDAQ/NYSE)
+Asset Symbols (e.g., AAPL, TSLA)
+Search any US stock symbol (NASDAQ/NYSE).
+
+Type to search stocks...
+Trading Wallet Amount ($)
+10000
+Technical Indicators (multi-select)
+Simple Moving Average (SMA)Exponential Moving Average (EMA)Relative Strength Index (RSI)Moving Average Convergence Divergence (MACD)Bollinger BandsStochastic OscillatorAverage Directional Index (ADX)VolumeVolatilityHead and Shoulders Top PatternHead and Shoulders Bottom (Inverse H&S)Double Top PatternDouble Bottom PatternOpen Interest
+Non-Technical Indicators (multi-select)
+Price-to-Earnings Ratio (P/E)Price/Earnings to Growth (PEG)Price-to-Book Ratio (P/B)Debt-to-Equity RatioReturn on Equity (ROE)Revenue Growth RateEarnings Growth RateFree Cash FlowAnalyst Ratings & Price TargetsInsider Trading ActivitySocial Media SentimentEconomic IndicatorsSector Relative Performance
+Start Date
+
+05/30/2025
+End Date
+
+06/29/2025
+Timeframe
+
+1 Month
+Analysis Options
+
+Include Options Analysis
+
+Include Stop & Limit Order Analysis
+
+finance_mode
+Signatex ProfitMax
+
+search
+Analyze 0 Asset(s)
+Enter asset details above and click "Analyze" to see results.
+
+🔧 Symbol Addition Debugger
+Enable to track symbol addition/removal operations in real-time
+
+Enable Debug Mode
+✓
+ProfitMax Optimization Complete
+Optimal trading configuration found
+
+
+Expected Profit
+0.00%
+Confidence
+0.0%
+Optimal Wallet
+$10,000
+Best Timeframe
+custom
+📊 Optimal Configuration
+Best Symbols (3)
+AAPL
+AAPL - Popular Stock
+MSFT
+MSFT - Popular Stock
+GOOGL
+GOOGL - Popular Stock
+Best Indicators
+SMA
+RSI
+Volume
+Optimization Stats
+Symbols analyzed: 5
+Timeframes tested: 1
+Indicator combos: 1
+Total analyses: 1
+📈 Individual Symbol Analysis
+AAPL
+Analysis failed: Failed to fetch data for AAPL: No historical data available for AAPL with timeframe custom from FMP API
+MSFT
+Analysis failed: Failed to fetch data for MSFT: No historical data available for MSFT with timeframe custom from FMP API
+GOOGL
+Analysis failed: Failed to fetch data for GOOGL: No historical data available for GOOGL with timeframe custom from FMP API
+💡 Tip: This configuration has been optimized for maximum profit potential based on current market conditions.
+Close
+
+✓
+Apply Configuration
