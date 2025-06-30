@@ -120,7 +120,7 @@ export const Header: React.FC<HeaderProps> = ({
                             <div className="ml-10">
                                 <p className="text-xs sm:text-sm md:text-base lg:text-lg text-muted dark:text-gray-300 mb-2 sm:mb-4">
                                     <span className="hidden sm:block">Leveraging Gemini for Market Insights</span>
-                                    <span className="block sm:hidden">AI Trading Assistant</span>
+                                    <span className="block sm:hidden">Market Intelligence AI</span>
                                 </p>
                             </div>
                         </div>
