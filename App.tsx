@@ -834,8 +834,7 @@ function App() {
             setWalletAmount(updates.walletAmount);
         }
         if (updates.selectedTimeframe !== undefined) {
-            console.log('🤖 Setting timeframe to:', updates.selectedTimeframe);
-            setSelectedTimeframe(updates.selectedTimeframe);
+            console.log('🤖 Setting timeframe to:', updates.selectedTimeframe);            setSelectedTimeframe(updates.selectedTimeframe);
         }
         if (updates.selectedIndicators !== undefined) {
             console.log('🤖 Setting indicators to:', updates.selectedIndicators);
