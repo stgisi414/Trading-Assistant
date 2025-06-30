@@ -247,3 +247,27 @@ body {
     @apply p-6;
   }
 }
+
+/* Analysis results mobile padding - 2.5px left/right */
+.analysis-results-mobile {
+  padding-left: 2.5px;
+  padding-right: 2.5px;
+}
+
+@media (min-width: 640px) {
+  .analysis-results-mobile {
+    @apply px-6;
+  }
+}
+
+/* Analysis results nested containers mobile padding */
+.analysis-nested-mobile {
+  padding-left: 2.5px;
+  padding-right: 2.5px;
+}
+
+@media (min-width: 640px) {
+  .analysis-nested-mobile {
+    @apply px-3;
+  }
+}

@@ -72,9 +72,9 @@ export const ResultsSection: React.FC<ResultsSectionProps> = ({
     }
 
     return (
-        <section className="glass-effect p-6 sm:p-8 rounded-2xl shadow-2xl border-border backdrop-blur-xl card-glow sharp-corners relative overflow-hidden">
+        <section className="glass-effect analysis-results-mobile sm:p-8 rounded-2xl shadow-2xl border-border backdrop-blur-xl card-glow sharp-corners relative overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent dark:from-white/10 dark:to-transparent"></div>
-            <div className="relative z-10">
+            <div className="relative z-10 analysis-nested-mobile">
                 <div className="flex items-center justify-between mb-6">
                     <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
                         <span className="material-symbols-outlined text-3xl text-green-600 dark:text-green-400">
