@@ -98,14 +98,12 @@ export const ProFlowControls: React.FC<ProFlowControlsProps> = ({ onShowToast, a
             <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-3">
                     <div className="flex items-center gap-2">
-                        <div className="flex items-center gap-2">
-                            <img 
-                                src="https://cdn.hugeicons.com/icons/ai-innovation-02-solid-rounded.svg" 
-                                className={`w-5 h-5 ${status.isRunning ? 'animate-pulse filter brightness-0 saturate-100 hue-rotate-90' : 'filter brightness-0 saturate-100 hue-rotate-0'}`}
-                                alt="ProFlow AI"
-                            />
-                            <div className={`w-2 h-2 rounded-full ${status.isRunning ? 'bg-green-500 animate-pulse' : 'bg-gray-400'}`}></div>
-                        </div>
+                        <img 
+                            src="https://cdn.hugeicons.com/icons/ai-innovation-02-solid-rounded.svg" 
+                            className={`w-5 h-5 ${status.isRunning ? 'animate-pulse text-purple-600' : 'text-purple-500'}`}
+                            alt="ProFlow AI"
+                            style={{ filter: 'brightness(0) saturate(100%) invert(32%) sepia(99%) saturate(5436%) hue-rotate(265deg) brightness(89%) contrast(95%)' }}
+                        />
                         <h3 className="text-lg font-bold bg-gradient-to-r from-purple-600 to-indigo-600 dark:from-purple-400 dark:to-indigo-400 bg-clip-text text-transparent">
                             Signatex ProFlow
                         </h3>
