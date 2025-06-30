@@ -173,34 +173,45 @@ body {
 
 /* Mobile-first button optimizations */
 .btn-mobile {
-  @apply px-2 py-2 text-sm;
+  padding: 0.5rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
 } 
 
 @media (min-width: 640px) {
   .btn-mobile {
-    @apply px-4 py-3 text-base;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    line-height: 1.5rem;
   }
 }
 
 /* Icon-only buttons for mobile */
 .btn-icon-mobile {
-  @apply p-2 w-10 h-10 flex items-center justify-center;
+  padding: 0.5rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 @media (min-width: 640px) {
   .btn-icon-mobile {
-    @apply px-4 py-3 w-auto h-auto;
+    padding: 0.75rem 1rem;
+    width: auto;
+    height: auto;
   }
 }
 
 /* Hide text on mobile, show on desktop */
 .text-mobile-hidden {
-  @apply hidden;
+  display: none;
 }
 
 @media (min-width: 640px) {
   .text-mobile-hidden {
-    @apply inline;
+    display: inline;
   }
 }
 
@@ -217,29 +228,29 @@ body {
 
 /* Remove nested padding on mobile */
 .mobile-no-padding {
-  @apply p-0;
+  padding: 0;
 }
 
 @media (min-width: 640px) {
   .mobile-no-padding {
-    @apply p-3;
+    padding: 0.75rem;
   }
 }
 
 /* Reduce card padding on mobile */
 .card-mobile-padding {
-  @apply p-2;
+  padding: 0.5rem;
 }
 
 @media (min-width: 640px) {
   .card-mobile-padding {
-    @apply p-4;
+    padding: 1rem;
   }
 }
 
 @media (min-width: 768px) {
   .card-mobile-padding {
-    @apply p-6;
+    padding: 1.5rem;
   }
 }
 
@@ -251,7 +262,8 @@ body {
 
 @media (min-width: 640px) {
   .analysis-results-mobile {
-    @apply px-6;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
   }
 }
 
@@ -263,6 +275,7 @@ body {
 
 @media (min-width: 640px) {
   .analysis-nested-mobile {
-    @apply px-3;
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
   }
 }
