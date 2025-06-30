@@ -1,0 +1,68 @@
+ttsService.ts:49 
+            
+            
+           POST https://texttospeech.googleapis.com/v1/text:synthesize?key=AIzaSyA9PqKR1BekV3xaSoa4nkyptR5FDpXpWBo 403 (Forbidden)
+synthesizeSpeech @ ttsService.ts:49
+synthesizeAndPlayMessage @ SignatexChatbot.tsx:560
+onClick @ SignatexChatbot.tsx:739
+executeDispatch @ react-dom_client.js?v=4bb6fc81:11736
+runWithFiberInDEV @ react-dom_client.js?v=4bb6fc81:1485
+processDispatchQueue @ react-dom_client.js?v=4bb6fc81:11772
+(anonymous) @ react-dom_client.js?v=4bb6fc81:12182
+batchedUpdates$1 @ react-dom_client.js?v=4bb6fc81:2628
+dispatchEventForPluginEventSystem @ react-dom_client.js?v=4bb6fc81:11877
+dispatchEvent @ react-dom_client.js?v=4bb6fc81:14792
+dispatchDiscreteEvent @ react-dom_client.js?v=4bb6fc81:14773
+<button>
+exports.jsxDEV @ react_jsx-dev-runtime.js?v=4bb6fc81:250
+(anonymous) @ SignatexChatbot.tsx:738
+SignatexChatbot @ SignatexChatbot.tsx:710
+react-stack-bottom-frame @ react-dom_client.js?v=4bb6fc81:17424
+renderWithHooksAgain @ react-dom_client.js?v=4bb6fc81:4281
+renderWithHooks @ react-dom_client.js?v=4bb6fc81:4217
+updateFunctionComponent @ react-dom_client.js?v=4bb6fc81:6619
+beginWork @ react-dom_client.js?v=4bb6fc81:7654
+runWithFiberInDEV @ react-dom_client.js?v=4bb6fc81:1485
+performUnitOfWork @ react-dom_client.js?v=4bb6fc81:10868
+workLoopSync @ react-dom_client.js?v=4bb6fc81:10728
+renderRootSync @ react-dom_client.js?v=4bb6fc81:10711
+performWorkOnRoot @ react-dom_client.js?v=4bb6fc81:10330
+performSyncWorkOnRoot @ react-dom_client.js?v=4bb6fc81:11635
+flushSyncWorkAcrossRoots_impl @ react-dom_client.js?v=4bb6fc81:11536
+processRootScheduleInMicrotask @ react-dom_client.js?v=4bb6fc81:11558
+(anonymous) @ react-dom_client.js?v=4bb6fc81:11649Understand this error
+ttsService.ts:89 TTS synthesis error: Error: TTS API error: Requests from referer https://632adf7a-44e5-40a0-a51a-c17993bb9a8a-00-1x1mnek33hdee.worf.replit.dev/ are blocked.
+    at TTSService.synthesizeSpeech (ttsService.ts:76:23)
+    at async synthesizeAndPlayMessage (SignatexChatbot.tsx:560:32)
+synthesizeSpeech @ ttsService.ts:89
+await in synthesizeSpeech
+synthesizeAndPlayMessage @ SignatexChatbot.tsx:560
+onClick @ SignatexChatbot.tsx:739
+executeDispatch @ react-dom_client.js?v=4bb6fc81:11736
+runWithFiberInDEV @ react-dom_client.js?v=4bb6fc81:1485
+processDispatchQueue @ react-dom_client.js?v=4bb6fc81:11772
+(anonymous) @ react-dom_client.js?v=4bb6fc81:12182
+batchedUpdates$1 @ react-dom_client.js?v=4bb6fc81:2628
+dispatchEventForPluginEventSystem @ react-dom_client.js?v=4bb6fc81:11877
+dispatchEvent @ react-dom_client.js?v=4bb6fc81:14792
+dispatchDiscreteEvent @ react-dom_client.js?v=4bb6fc81:14773
+<button>
+exports.jsxDEV @ react_jsx-dev-runtime.js?v=4bb6fc81:250
+(anonymous) @ SignatexChatbot.tsx:738
+SignatexChatbot @ SignatexChatbot.tsx:710
+react-stack-bottom-frame @ react-dom_client.js?v=4bb6fc81:17424
+renderWithHooksAgain @ react-dom_client.js?v=4bb6fc81:4281
+renderWithHooks @ react-dom_client.js?v=4bb6fc81:4217
+updateFunctionComponent @ react-dom_client.js?v=4bb6fc81:6619
+beginWork @ react-dom_client.js?v=4bb6fc81:7654
+runWithFiberInDEV @ react-dom_client.js?v=4bb6fc81:1485
+performUnitOfWork @ react-dom_client.js?v=4bb6fc81:10868
+workLoopSync @ react-dom_client.js?v=4bb6fc81:10728
+renderRootSync @ react-dom_client.js?v=4bb6fc81:10711
+performWorkOnRoot @ react-dom_client.js?v=4bb6fc81:10330
+performSyncWorkOnRoot @ react-dom_client.js?v=4bb6fc81:11635
+flushSyncWorkAcrossRoots_impl @ react-dom_client.js?v=4bb6fc81:11536
+processRootScheduleInMicrotask @ react-dom_client.js?v=4bb6fc81:11558
+(anonymous) @ react-dom_client.js?v=4bb6fc81:11649Understand this error
+SignatexChatbot.tsx:599 TTS error: Error: TTS API error: Requests from referer https://632adf7a-44e5-40a0-a51a-c17993bb9a8a-00-1x1mnek33hdee.worf.replit.dev/ are blocked.
+    at TTSService.synthesizeSpeech (ttsService.ts:76:23)
