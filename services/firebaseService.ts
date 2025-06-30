@@ -6,10 +6,12 @@ import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, query, orderB
 const firebaseConfig = {
   apiKey: "AIzaSyAqsmue4lx8vALO5o08TdclI5uXI52BtOA",
   authDomain: "signatex-d1b11.firebaseapp.com",
-  projectId: "your-project-id",
-  storageBucket: "your-project-id.appspot.com",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  databaseURL: "https://signatex-d1b11-default-rtdb.firebaseio.com",
+  projectId: "signatex-d1b11",
+  storageBucket: "signatex-d1b11.firebasestorage.app",
+  messagingSenderId: "470730639644",
+  appId: "1:470730639644:web:a7fadaefc6446e676c12d9",
+  measurementId: "G-SZXC86690S"
 };
 
 // Initialize Firebase
