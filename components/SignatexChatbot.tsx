@@ -630,7 +630,7 @@ Try asking me about indicators, trading setups, or general trading advice. 🤖`
                         </div>
                         <div>
                             <h2 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-                                <span className="signatex-embossed">S</span>ignatex Assistant
+                                <span className="signatex-embossed">Signatex Assistant</span>
                                 <span className="inline-flex items-center gap-1 px-2 py-1 text-xs bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-300 rounded-full">
                                     <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
                                     Gemini AI
