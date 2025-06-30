@@ -10,7 +10,8 @@ import { ProFlowToastContainer } from './components/ProFlowToast.tsx';
 import { AuthProvider, useAuth } from './contexts/AuthContext.tsx';
 import { AuthModal } from './components/AuthModal.tsx';
 import { UserProfile } from './components/UserProfile.tsx';
-import { AnalysisHistoryModal } from './components/AnalysisHistoryModal.tsx';
+import { AnalysisHistoryModal } from "./components/AnalysisHistoryModal.tsx";
+import { ChatroomModal } from "./components/ChatroomModal.tsx";
 import type { ProFlowToast } from './services/proFlowService.ts';
 import { getTradingPosition } from "./services/geminiService.ts";
 import { fetchHistoricalData, searchSymbols, fetchCompanyProfile } from "./services/marketDataService.ts";
@@ -155,6 +156,7 @@ function App() {
     const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
     const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
     const [cloudSyncStatus, setCloudSyncStatus] = useState<'idle' | 'syncing' | 'success' | 'error'>('idle');
+    const [isChatroomOpen, setIsChatroomOpen] = useState(false);
 
     // ProFlow state
     const [proFlowToasts, setProFlowToasts] = useState<ProFlowToast[]>([]);
@@ -835,6 +837,25 @@ function App() {
         }
     };
 
+    const handleViewHistory = async () => {
+        if (!user) return;
+
+        try {
+            const history = await loadAnalysisHistory();
+            setAnalysisHistory(history);
+            setIsAnalysisHistoryOpen(true);
+        } catch (error) {
+            console.error('Failed to load analysis history:', error);
+        }
+    };
+
+    const handleViewChatrooms = () => {
+        setIsChatroomOpen(true);
+    };
+
+    // Authentication using useAuth hook
+    const { user, signIn, signOut, signUp, resetPassword, verifyEmail, handleSyncData, handleDeleteAnalysis, loadAnalysisHistory } = useAuth();
+
     return (
         <>
             <LoadingOverlay isVisible={isInitialLoading} />
@@ -882,10 +903,13 @@ function App() {
                     onUpdateInputs={handleChatbotInputUpdates}
                     // Add authentication props
                     onSignInClick={() => setIsAuthModalOpen(true)}
-                    userProfile={<UserProfile 
-                        onSyncData={() => {}} 
-                        onViewHistory={() => setIsHistoryModalOpen(true)} 
-                    />}
+                    userProfile={
+                                <UserProfile 
+                                    onSyncData={handleSyncData}
+                                    onViewHistory={handleViewHistory}
+                                    onViewChatrooms={handleViewChatrooms}
+                                />
+                            }
                 />
 
 
@@ -1020,34 +1044,15 @@ function App() {
             />
 
             <AnalysisHistoryModal
-                isOpen={isHistoryModalOpen}
-                onClose={() => setIsHistoryModalOpen(false)}
-                onLoadAnalysis={(analysis) => {
-                    // Load the analysis settings and results
-                    if (analysis.settings) {
-                        console.log('Loading analysis settings:', analysis.settings);
-                        applyUserData(analysis.settings);
-                    }
-                    if (analysis.results) {
-                        console.log('Loading analysis results:', analysis.results.length, 'analyses');
-                        // Convert saved results back to the expected format
-                        const convertedResults = analysis.results.map((result: any) => ({
-                            symbol: result.symbol,
-                            isLoading: false,
-                            error: result.error,
-                            historicalData: result.historicalData || [],
-                            analysisResult: result.analysisResult,
-                            patternDetails: result.patternDetails
-                        }));
-                        setAnalyses(convertedResults);
+                isOpen={isAnalysisHistoryOpen}
+                onClose={() => setIsAnalysisHistoryOpen(false)}
+                analysisHistory={analysisHistory}
+                onDeleteAnalysis={handleDeleteAnalysis}
+            />
 
-                        // Show success message
-                        setTimeout(() => {
-                            alert(`Successfully loaded analysis with ${convertedResults.length} symbols`);
-                        }, 100);
-                    }
-                    setIsHistoryModalOpen(false);
-                }}
+            <ChatroomModal
+                isOpen={isChatroomOpen}
+                onClose={() => setIsChatroomOpen(false)}
             />
 
             {/* ProFlow Toast Notifications */}
