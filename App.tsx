@@ -213,16 +213,16 @@ function App() {
     useEffect(() => {
         try {
             const savedSymbols = localStorage.getItem('selectedSymbols');
-            const savedWalletAmount = localStorage.getItem('walletAmount');
-            const savedIndicators = localStorage.getItem('selectedIndicators');
-            const savedNonTechnicalIndicators = localStorage.getItem('selectedNonTechnicalIndicators');
-            const savedTimeframe = localStorage.getItem('selectedTimeframe');
-            const savedMarketType = localStorage.getItem('selectedMarketType');
-            const savedMarket = localStorage.getItem('selectedMarket');
-            const savedIncludeOptionsAnalysis = localStorage.getItem('includeOptionsAnalysis');
-            const savedIncludeCallOptions = localStorage.getItem('includeCallOptions');
-            const savedIncludePutOptions = localStorage.getItem('includePutOptions');
-            const savedIncludeOrderAnalysis = localStorage.getItem('includeOrderAnalysis');
+            const savedWalletAmount = localStorage.getItem('tradingApp_walletAmount');
+            const savedIndicators = localStorage.getItem('tradingApp_selectedIndicators');
+            const savedNonTechnicalIndicators = localStorage.getItem('tradingApp_selectedNonTechnicalIndicators');
+            const savedTimeframe = localStorage.getItem('tradingApp_selectedTimeframe');
+            const savedMarketType = localStorage.getItem('tradingApp_selectedMarketType');
+            const savedMarket = localStorage.getItem('tradingApp_selectedMarket');
+            const savedIncludeOptionsAnalysis = localStorage.getItem('tradingApp_includeOptionsAnalysis');
+            const savedIncludeCallOptions = localStorage.getItem('tradingApp_includeCallOptions');
+            const savedIncludePutOptions = localStorage.getItem('tradingApp_includePutOptions');
+            const savedIncludeOrderAnalysis = localStorage.getItem('tradingApp_includeOrderAnalysis');
 
             if (savedSymbols) {
                 console.log('📂 Loading selectedSymbols from localStorage:', savedSymbols);
@@ -238,7 +238,7 @@ function App() {
             if (savedIndicators) setSelectedIndicators(JSON.parse(savedIndicators));
             if (savedNonTechnicalIndicators) setSelectedNonTechnicalIndicators(JSON.parse(savedNonTechnicalIndicators));
             if (savedTimeframe) setSelectedTimeframe(savedTimeframe);
-            if (savedMarketType) setSelectedMarketType(savedMarketType as MarketType);
+            if (savedMarketType) setSelectedMarketType(JSON.parse(savedMarketType) as MarketType);
             if (savedMarket) setSelectedMarket(savedMarket);
             if (savedIncludeOptionsAnalysis) setIncludeOptionsAnalysis(JSON.parse(savedIncludeOptionsAnalysis));
             if (savedIncludeCallOptions) setIncludeCallOptions(JSON.parse(savedIncludeCallOptions));
