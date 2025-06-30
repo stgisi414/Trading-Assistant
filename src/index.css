@@ -5,31 +5,12 @@
 
 /* Custom embossed text effect for Signatex branding */
 .signatex-embossed {
+    all: unset;
     background: linear-gradient(135deg, #3b82f6, #8b5cf6, #3b82f6);
     background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    font-family: inherit;
-    font-size: inherit;
-    font-weight: inherit;
-    font-style: inherit;
-    font-variant: inherit;
-    line-height: inherit;
-    text-decoration: inherit;
-    text-transform: inherit;
-    letter-spacing: inherit;
-    word-spacing: inherit;
-    text-indent: inherit;
-    text-align: inherit;
-    white-space: inherit;
     display: inline;
-    margin: 0 !important;
-    padding: 0 !important;
-    border: none;
-    outline: none;
-    vertical-align: baseline;
-    text-shadow: none;
-    box-shadow: none;
 }
 
 /* Animated shooting streaks background */
