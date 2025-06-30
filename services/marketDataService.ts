@@ -39,7 +39,12 @@ const generateMockData = (symbol: string, timeframe: string = '1d'): HistoricalD
         if (timeframe.includes('m')) {
             const minutes = parseInt(timeframe) || 5;
             intervalMs = minutes * 60 * 1000;
-            dataPoints = Math.min(200, Math.max(50, 120 * (minutes <= 15 ? 4 : 2))); // More data for shorter timeframes
+            // Ensure we have enough data points for 30m timeframe
+            if (minutes === 30) {
+                dataPoints = Math.min(200, 96); // 2 days worth of 30m candles
+            } else {
+                dataPoints = Math.min(200, Math.max(50, 120 * (minutes <= 15 ? 4 : 2)));
+            }
             volatilityFactor = 0.003 * Math.sqrt(minutes / 5);
         } else if (timeframe.includes('h')) {
             const hours = parseInt(timeframe) || 1;
@@ -158,6 +163,7 @@ const getTimeframeEndpoint = (timeframe: string): string => {
 const getTimeframeInterval = (timeframe: string): string => {
     // Map timeframe to FMP interval format
     const intervalMap: Record<string, string> = {
+        '1m': '1min',
         '5m': '5min',
         '15m': '15min',
         '30m': '30min',
@@ -368,7 +374,14 @@ export const fetchHistoricalData = async (
                         openInterest: Number(d.openInterest || Math.floor(Math.random() * 500000) + 100000)
                     })).filter(d => d.close > 0).reverse();
 
-                    console.log(`Successfully fetched ${historicalData.length} real data points for ${symbol}`);
+                    console.log(`Successfully fetched ${historicalData.length} real data points for ${symbol} (${timeframe})`);
+                } else {
+                    console.warn(`No data returned from FMP API for ${symbol} (${timeframe}). Response:`, data);
+                }
+            } else {
+                console.warn(`FMP API returned ${response.status}: ${response.statusText} for ${symbol} (${timeframe})`);
+                if (response.status === 403) {
+                    console.warn(`API access denied - this may indicate the ${timeframe} timeframe requires a paid FMP plan`);
                 }
             }
         } catch (error) {
