@@ -359,7 +359,7 @@ export const InputSection: React.FC<InputSectionProps> = ({
             )}
 
             <div className="mt-8">
-                <div className="flex gap-3">
+                <div className="flex gap-3 justify-center"></div>
                     <button
                         onClick={onProfitMaxClick}
                         disabled={isLoading}
