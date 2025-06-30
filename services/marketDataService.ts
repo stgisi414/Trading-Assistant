@@ -238,7 +238,7 @@ export const fetchCompanyProfile = async (symbol: string): Promise<any> => {
             throw new Error(`Failed to fetch company profile: ${response.statusText}`);
         }
         const data = await response.json();
-        
+
         if (!data || data.length === 0) {
             throw new Error(`No company profile data available for ${symbol}`);
         }
@@ -310,33 +310,47 @@ export const fetchHistoricalData = async (
 ): Promise<HistoricalDataPoint[]> => {
     // First, try to fetch real historical data
     let historicalData: HistoricalDataPoint[] = [];
-    
+
     if (FMP_API_KEY) {
         try {
             const endpoint = getTimeframeEndpoint(timeframe);
-            let url = `${FMP_BASE_URL}/${endpoint}/${symbol}`;
+            let url;
 
             if (endpoint === 'historical-chart') {
-                // For intraday data
+                // For intraday data - use the format: /historical-chart/interval/symbol
                 const interval = getTimeframeInterval(timeframe);
-                url += `/${interval}`;
+                url = `${FMP_BASE_URL}/${endpoint}/${interval}/${symbol}`;
+
+                // Build query parameters properly
+                const params = new URLSearchParams();
+                params.append('apikey', FMP_API_KEY);
+
                 if (from && to) {
                     // Only fetch up to today for real data
                     const today = new Date().toISOString().split('T')[0];
                     const endDate = to && to <= today ? to : today;
-                    url += `?from=${from}&to=${endDate}`;
+                    params.append('from', from);
+                    params.append('to', endDate);
                 }
+
+                url += `?${params.toString()}`;
             } else {
                 // For daily and longer timeframes
+                url = `${FMP_BASE_URL}/${endpoint}/${symbol}`;
+
+                const params = new URLSearchParams();
+                params.append('apikey', FMP_API_KEY);
+
                 if (from && to) {
                     // Only fetch up to today for real data
                     const today = new Date().toISOString().split('T')[0];
                     const endDate = to && to <= today ? to : today;
-                    url += `?from=${from}&to=${endDate}`;
+                    params.append('from', from);
+                    params.append('to', endDate);
                 }
-            }
 
-            url += `${url.includes('?') ? '&' : '?'}apikey=${FMP_API_KEY}`;
+                url += `?${params.toString()}`;
+            }
 
             // Add timeout for faster fallback
             const controller = new AbortController();
@@ -387,10 +401,10 @@ export const fetchHistoricalData = async (
                 } else if (response.status === 429) {
                     console.warn(`❌ API rate limit exceeded for ${timeframe}`);
                 }
-                
+
                 // Log the full URL for debugging
                 console.log(`🔍 Debug URL: ${url.replace(FMP_API_KEY, 'API_KEY_HIDDEN')}`);
-                
+
                 // For 30m specifically, provide more context
                 if (timeframe === '30m') {
                     console.warn(`⚠️  30-minute data typically requires FMP's Essential plan or higher`);
@@ -414,7 +428,7 @@ export const fetchHistoricalData = async (
     // If we have a future end date and predictive parameters, extend with predictions
     if (to && predictiveParams) {
         const { extendHistoricalDataWithPrediction } = await import('./predictiveAnalysisService.ts');
-        
+
         const extended = extendHistoricalDataWithPrediction(
             historicalData,
             from || new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
