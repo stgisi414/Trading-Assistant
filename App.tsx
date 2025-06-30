@@ -961,6 +961,7 @@ function App() {
                                 analyses={analyses}
                                 theme={theme}
                                 isLoading={isLoading}
+                                currentInputs={getCurrentUserData()}
                             />
                         </main>
 
@@ -1010,11 +1011,28 @@ function App() {
                 onLoadAnalysis={(analysis) => {
                     // Load the analysis settings and results
                     if (analysis.settings) {
+                        console.log('Loading analysis settings:', analysis.settings);
                         applyUserData(analysis.settings);
                     }
                     if (analysis.results) {
-                        setAnalyses(analysis.results);
+                        console.log('Loading analysis results:', analysis.results.length, 'analyses');
+                        // Convert saved results back to the expected format
+                        const convertedResults = analysis.results.map((result: any) => ({
+                            symbol: result.symbol,
+                            isLoading: false,
+                            error: result.error,
+                            historicalData: result.historicalData || [],
+                            analysisResult: result.analysisResult,
+                            patternDetails: result.patternDetails
+                        }));
+                        setAnalyses(convertedResults);
+                        
+                        // Show success message
+                        setTimeout(() => {
+                            alert(`Successfully loaded analysis with ${convertedResults.length} symbols`);
+                        }, 100);
                     }
+                    setIsHistoryModalOpen(false);
                 }}
             />
 

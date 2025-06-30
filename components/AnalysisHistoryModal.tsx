@@ -98,63 +98,116 @@ export const AnalysisHistoryModal: React.FC<AnalysisHistoryModalProps> = ({
             </div>
           ) : (
             <div className="space-y-4">
-              {analyses.map((analysis) => (
-                <div
-                  key={analysis.id}
-                  className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
-                >
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center space-x-2 mb-2">
-                        <h3 className="font-medium text-gray-900 dark:text-white">
-                          {analysis.symbols.join(', ')} Analysis
-                        </h3>
-                        <span className="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-xs rounded-full">
-                          {analysis.symbols.length} symbol{analysis.symbols.length !== 1 ? 's' : ''}
-                        </span>
-                      </div>
-                      
-                      <div className="text-sm text-gray-600 dark:text-gray-400 mb-2">
-                        <div>
-                          <strong>Date:</strong> {new Date(analysis.timestamp.seconds ? analysis.timestamp.seconds * 1000 : analysis.timestamp).toLocaleString()}
-                        </div>
-                        <div>
-                          <strong>Timeframe:</strong> {analysis.settings?.selectedTimeframe || 'N/A'}
-                        </div>
-                        <div>
-                          <strong>Market:</strong> {analysis.settings?.selectedMarketType || 'N/A'}
-                        </div>
-                      </div>
+              {analyses.map((analysis) => {
+                // Get analysis summary
+                const getAnalysisSummary = (analysis: any) => {
+                  const results = analysis.results || [];
+                  const totalResults = results.length;
+                  const successfulResults = results.filter((r: any) => r.analysisResult).length;
+                  const buyRecommendations = results.filter((r: any) => 
+                    r.analysisResult?.recommendation?.toLowerCase().includes('buy')
+                  ).length;
+                  const sellRecommendations = results.filter((r: any) => 
+                    r.analysisResult?.recommendation?.toLowerCase().includes('sell')
+                  ).length;
+                  
+                  return {
+                    totalResults,
+                    successfulResults,
+                    buyRecommendations,
+                    sellRecommendations,
+                    avgConfidence: results.reduce((acc: number, r: any) => 
+                      acc + (r.analysisResult?.confidence || 0), 0) / Math.max(successfulResults, 1)
+                  };
+                };
 
-                      <div className="flex flex-wrap gap-1 mb-2">
-                        {(analysis.settings?.selectedIndicators || []).map((indicator: string) => (
-                          <span
-                            key={indicator}
-                            className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-xs rounded"
-                          >
-                            {indicator}
+                const summary = getAnalysisSummary(analysis);
+                
+                return (
+                  <div
+                    key={analysis.id}
+                    className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+                  >
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-2 mb-2">
+                          <h3 className="font-medium text-gray-900 dark:text-white">
+                            {analysis.symbols.join(', ')} Analysis
+                          </h3>
+                          <span className="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-xs rounded-full">
+                            {analysis.symbols.length} symbol{analysis.symbols.length !== 1 ? 's' : ''}
                           </span>
-                        ))}
-                      </div>
-                    </div>
+                        </div>
+                        
+                        <div className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                          <div>
+                            <strong>Date:</strong> {new Date(analysis.timestamp.seconds ? analysis.timestamp.seconds * 1000 : analysis.timestamp).toLocaleString()}
+                          </div>
+                          <div>
+                            <strong>Timeframe:</strong> {analysis.settings?.selectedTimeframe || 'N/A'}
+                          </div>
+                          <div>
+                            <strong>Market:</strong> {analysis.settings?.selectedMarketType || 'N/A'}
+                          </div>
+                          <div>
+                            <strong>Wallet:</strong> ${analysis.settings?.walletAmount || 'N/A'}
+                          </div>
+                        </div>
 
-                    <div className="flex items-center space-x-2">
-                      <button
-                        onClick={() => handleLoadAnalysis(analysis)}
-                        className="px-3 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 transition-colors"
-                      >
-                        Load
-                      </button>
-                      <button
-                        onClick={() => handleDeleteAnalysis(analysis.id)}
-                        className="px-3 py-1 bg-red-600 text-white text-sm rounded hover:bg-red-700 transition-colors"
-                      >
-                        Delete
-                      </button>
+                        {/* Analysis Summary */}
+                        <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-3 mb-2">
+                          <div className="grid grid-cols-2 gap-2 text-sm">
+                            <div>
+                              <span className="text-gray-500 dark:text-gray-400">Results:</span>
+                              <span className="ml-1 font-medium">{summary.successfulResults}/{summary.totalResults}</span>
+                            </div>
+                            <div>
+                              <span className="text-gray-500 dark:text-gray-400">Avg Confidence:</span>
+                              <span className="ml-1 font-medium">{summary.avgConfidence.toFixed(0)}%</span>
+                            </div>
+                            <div>
+                              <span className="text-green-600 dark:text-green-400">Buy:</span>
+                              <span className="ml-1 font-medium">{summary.buyRecommendations}</span>
+                            </div>
+                            <div>
+                              <span className="text-red-600 dark:text-red-400">Sell:</span>
+                              <span className="ml-1 font-medium">{summary.sellRecommendations}</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="flex flex-wrap gap-1 mb-2">
+                          {(analysis.settings?.selectedIndicators || []).map((indicator: string) => (
+                            <span
+                              key={indicator}
+                              className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-xs rounded"
+                            >
+                              {indicator}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <button
+                          onClick={() => handleLoadAnalysis(analysis)}
+                          className="px-3 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 transition-colors"
+                          title="Load this analysis into the main app"
+                        >
+                          Load
+                        </button>
+                        <button
+                          onClick={() => handleDeleteAnalysis(analysis.id)}
+                          className="px-3 py-1 bg-red-600 text-white text-sm rounded hover:bg-red-700 transition-colors"
+                          title="Delete this analysis"
+                        >
+                          Delete
+                        </button>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>
