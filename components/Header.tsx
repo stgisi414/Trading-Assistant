@@ -104,7 +104,7 @@ export const Header: React.FC<HeaderProps> = ({
                 <div className="relative z-10">
                     <div className="flex items-center justify-between">
                         <div>
-                            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 bg-clip-text text-transparent mb-2 flex items-center gap-3">
+                            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 bg-clip-text text-transparent mb-2 flex items-center gap-3" style={{ letterSpacing: '-0.05em' }}>
                                 <span className="material-symbols-outlined text-4xl md:text-5xl text-indigo-600 dark:text-indigo-400">
                                     finance
                                 </span>

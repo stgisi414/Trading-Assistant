@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { proFlowService, type ProFlowMode } from '../services/proFlowService.ts';
 
@@ -109,7 +108,7 @@ export const ProFlowControls: React.FC<ProFlowControlsProps> = ({ onShowToast, a
                                 {status.isPaused ? 'Paused' : 'Running'} {status.currentStep + 1}/{status.totalSteps}
                             </span>
                             <span className="px-2 py-1 text-xs bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 rounded-full font-medium">
-                                {status.mode === 'auto' ? '🤖 Auto' : '👤 Manual'}
+                                {status.currentStepName}
                             </span>
                         </div>
                     )}
@@ -131,32 +130,59 @@ export const ProFlowControls: React.FC<ProFlowControlsProps> = ({ onShowToast, a
                     </p>
 
                     {/* Mode Selection */}
-                    <div className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-lg">
-                        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Mode:</span>
-                        <div className="flex gap-2">
-                            <button
-                                onClick={() => handleModeChange('auto')}
-                                disabled={status.isRunning}
-                                className={`px-3 py-1 text-xs rounded-full font-medium transition-all ${
-                                    selectedMode === 'auto'
-                                        ? 'bg-blue-600 text-white'
-                                        : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
-                                } disabled:opacity-50 disabled:cursor-not-allowed`}
-                            >
-                                🤖 Auto
-                            </button>
-                            <button
-                                onClick={() => handleModeChange('manual')}
-                                disabled={status.isRunning}
-                                className={`px-3 py-1 text-xs rounded-full font-medium transition-all ${
-                                    selectedMode === 'manual'
-                                        ? 'bg-orange-600 text-white'
-                                        : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
-                                } disabled:opacity-50 disabled:cursor-not-allowed`}
-                            >
-                                👤 Manual
-                            </button>
-                        </div>
+                    <div className="flex flex-col items-center gap-3">
+                    {/* Mode Selection */}
+                    <div className="flex gap-2">
+                        <button
+                            onClick={() => setSelectedMode('auto')}
+                            className={`px-3 py-1 text-sm rounded-lg font-medium transition-all ${
+                                selectedMode === 'auto'
+                                    ? 'bg-purple-600 text-white'
+                                    : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
+                            }`}
+                            disabled={status.isRunning}
+                        >
+                            Auto
+                        </button>
+                        <button
+                            onClick={() => setSelectedMode('manual')}
+                            className={`px-3 py-1 text-sm rounded-lg font-medium transition-all ${
+                                selectedMode === 'manual'
+                                    ? 'bg-purple-600 text-white'
+                                    : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
+                            }`}
+                            disabled={status.isRunning}
+                        >
+                            Manual
+                        </button>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-2">
+                        <button
+                            onClick={handleStartProFlow}
+                            disabled={status.isRunning}
+                            className="px-4 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 disabled:from-gray-400 disabled:to-gray-500 text-white rounded-lg font-medium transition-all duration-200 disabled:cursor-not-allowed text-sm"
+                        >
+                            {status.isRunning ? 'Running...' : `🚀 Start ${selectedMode === 'auto' ? 'Auto' : 'Manual'}`}
+                        </button>
+
+                        <button
+                            onClick={handleStopProFlow}
+                            disabled={!status.isRunning}
+                            className="px-4 py-2 bg-red-600 hover:bg-red-700 disabled:bg-gray-400 text-white rounded-lg font-medium transition-all duration-200 disabled:cursor-not-allowed text-sm"
+                        >
+                            🛑 Stop
+                        </button>
+                    </div>
+
+                    {status.isRunning && status.isPaused && (
+                        <button
+                            onClick={handleContinueProFlow}
+                            className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-all duration-200 text-sm"
+                        >
+                            ▶️ Continue
+                        </button>
+                    )}
                     </div>
 
                     {/* Flow Prompt Section */}
@@ -230,22 +256,6 @@ export const ProFlowControls: React.FC<ProFlowControlsProps> = ({ onShowToast, a
                     )}
 
                     <div className="grid grid-cols-2 gap-2">
-                        <button
-                            onClick={handleStartProFlow}
-                            disabled={status.isRunning}
-                            className="px-4 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 disabled:from-gray-400 disabled:to-gray-500 text-white rounded-lg font-medium transition-all duration-200 disabled:cursor-not-allowed text-sm"
-                        >
-                            {status.isRunning ? 'Running...' : `🚀 Start ${selectedMode === 'auto' ? 'Auto' : 'Manual'}`}
-                        </button>
-                        
-                        <button
-                            onClick={handleStopProFlow}
-                            disabled={!status.isRunning}
-                            className="px-4 py-2 bg-red-600 hover:bg-red-700 disabled:bg-gray-400 text-white rounded-lg font-medium transition-all duration-200 disabled:cursor-not-allowed text-sm"
-                        >
-                            🛑 Stop
-                        </button>
-
                         <button
                             onClick={handleQuickDemo}
                             disabled={status.isRunning}
