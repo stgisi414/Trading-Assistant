@@ -868,14 +868,6 @@ function App() {
     return (
         <>
             <LoadingOverlay isVisible={isInitialLoading} />
-            <div className="p-8">
-              <h1 className="text-2xl font-bold mb-4">Component-Based Styles Test</h1>
-              <div className="flex space-x-4">
-                <Button>Primary Button</Button>
-                <Button intent="secondary">Secondary Button</Button>
-                <Button size="small">Small Button</Button>
-              </div>
-            </div>
             <div className="bg-background text-foreground min-h-screen p-2 sm:p-4 md:p-6 lg:p-8 relative overflow-hidden">
             {/* Animated shooting streaks background */}
             <div className="shooting-streaks">
