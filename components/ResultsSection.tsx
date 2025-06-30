@@ -57,7 +57,7 @@ export const ResultsSection: React.FC<ResultsSectionProps> = ({
                 <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent dark:from-white/10 dark:to-transparent"></div>
                 <div className="relative z-10">
                     <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-gray-400/20 to-gray-600/20 rounded-full flex items-center justify-center">
-                        <img src="https://cdn.hugeicons.com/icons/money-bag-02-bulk-rounded.svg" className="w-5 h-5 filter brightness-0 invert" />
+                        <img src="https://cdn.hugeicons.com/icons/analytics-02-stroke-rounded.svg" className="w-8 h-8 text-gray-400 dark:text-gray-500" alt="Analytics" />
                     </div>
                     <p className="text-gray-500 dark:text-gray-400 text-lg">Enter asset details above and click "Analyze" to see results.</p>
                 </div>
@@ -75,14 +75,12 @@ export const ResultsSection: React.FC<ResultsSectionProps> = ({
             <div className="relative z-10 analysis-nested-mobile">
                 <div className="flex items-center justify-between mb-6">
                     <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
-                        <span className="material-symbols-outlined text-3xl text-green-600 dark:text-green-400">
-                            trending_up
-                        </span>
+                        <img src="https://cdn.hugeicons.com/icons/analytics-up-stroke-rounded.svg" className="w-8 h-8 text-green-600 dark:text-green-400" alt="Analytics" />
                         Analysis Results
                     </h2>
 
                     {/* Save Analysis Button */}
-                    {user && !savedAnalysisId && (
+                    {user && hasAnalyses && currentInputs && !savedAnalysisId && (
                         <button
                             onClick={handleSaveAnalysis}
                             disabled={isSaving}
@@ -95,20 +93,23 @@ export const ResultsSection: React.FC<ResultsSectionProps> = ({
                                 </>
                             ) : (
                                 <>
-                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3-3m0 0l-3 3m3-3v12" />
-                                    </svg>
+                                    <img src="https://cdn.hugeicons.com/icons/cloud-upload-stroke-rounded.svg" className="w-4 h-4 filter brightness-0 invert" alt="Save" />
                                     <span>Save Analysis</span>
                                 </>
                             )}
                         </button>
                     )}
 
+                    {!user && hasAnalyses && (
+                        <div className="flex items-center gap-2 px-4 py-2 bg-amber-100 dark:bg-amber-900/20 text-amber-800 dark:text-amber-400 rounded-lg">
+                            <img src="https://cdn.hugeicons.com/icons/login-03-stroke-rounded.svg" className="w-4 h-4 text-amber-600 dark:text-amber-400" alt="Login" />
+                            <span>Sign in to save analysis</span>
+                        </div>
+                    )}
+
                     {savedAnalysisId && (
                         <div className="flex items-center gap-2 px-4 py-2 bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-400 rounded-lg">
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                            </svg>
+                            <img src="https://cdn.hugeicons.com/icons/tick-02-stroke-rounded.svg" className="w-4 h-4 text-green-600 dark:text-green-400" alt="Saved" />
                             <span>Analysis Saved</span>
                         </div>
                     )}
