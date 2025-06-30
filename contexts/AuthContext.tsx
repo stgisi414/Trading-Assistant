@@ -14,6 +14,9 @@ interface AuthContextType {
   saveAnalysis: (results: any[], settings: CloudUserData) => Promise<string>;
   loadAnalysisHistory: () => Promise<any[]>;
   deleteAnalysis: (analysisId: string) => Promise<void>;
+  sendMessage: (channel: string, content: string) => Promise<string>;
+  loadMessages: (channel: string) => Promise<any[]>;
+  subscribeToMessages: (channel: string, callback: (messages: any[]) => void) => () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -135,6 +138,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
+  const sendMessage = async (channel: string, content: string) => {
+    return await firebaseService.sendMessage(channel, content);
+  };
+
+  const loadMessages = async (channel: string) => {
+    return await firebaseService.loadMessages(channel);
+  };
+
+  const subscribeToMessages = (channel: string, callback: (messages: any[]) => void) => {
+    return firebaseService.subscribeToMessages(channel, callback);
+  };
+
   const value: AuthContextType = {
     user,
     userProfile,
@@ -146,7 +161,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     loadDataFromCloud,
     saveAnalysis,
     loadAnalysisHistory,
-    deleteAnalysis
+    deleteAnalysis,
+    sendMessage,
+    loadMessages,
+    subscribeToMessages
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

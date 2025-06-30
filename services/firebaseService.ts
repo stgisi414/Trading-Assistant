@@ -337,6 +337,72 @@ export class FirebaseService {
     }
   }
 
+  // Chatroom methods
+  async sendMessage(channel: string, content: string): Promise<string> {
+    if (!this.currentUser) throw new Error('User not authenticated');
+
+    const messageId = `msg_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    const messageRef = doc(db, 'chatrooms', channel, 'messages', messageId);
+
+    const messageData = {
+      id: messageId,
+      userId: this.currentUser.uid,
+      userName: this.currentUser.displayName || 'Anonymous',
+      userPhoto: this.currentUser.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(this.currentUser.displayName || 'User')}&background=3b82f6&color=fff`,
+      content: content.trim(),
+      timestamp: new Date(),
+      channel: channel,
+      expiresAt: new Date(Date.now() + 48 * 60 * 60 * 1000) // 48 hours from now
+    };
+
+    await setDoc(messageRef, messageData);
+    return messageId;
+  }
+
+  async loadMessages(channel: string): Promise<any[]> {
+    const messagesRef = collection(db, 'chatrooms', channel, 'messages');
+    const cutoffTime = new Date(Date.now() - 48 * 60 * 60 * 1000); // 48 hours ago
+    
+    const q = query(
+      messagesRef, 
+      orderBy('timestamp', 'desc'), 
+      limit(100)
+    );
+    
+    const querySnapshot = await getDocs(q);
+    
+    // Filter out expired messages and return in chronological order
+    return querySnapshot.docs
+      .map(doc => doc.data())
+      .filter(message => message.timestamp.toDate() > cutoffTime)
+      .reverse(); // Show oldest first
+  }
+
+  // Subscribe to real-time messages for a channel
+  subscribeToMessages(channel: string, callback: (messages: any[]) => void): () => void {
+    const messagesRef = collection(db, 'chatrooms', channel, 'messages');
+    const cutoffTime = new Date(Date.now() - 48 * 60 * 60 * 1000);
+    
+    const q = query(
+      messagesRef,
+      orderBy('timestamp', 'asc'),
+      limit(100)
+    );
+
+    // Note: In a real implementation, you'd use onSnapshot from Firebase
+    // For now, we'll simulate real-time updates with polling
+    const intervalId = setInterval(async () => {
+      try {
+        const messages = await this.loadMessages(channel);
+        callback(messages);
+      } catch (error) {
+        console.error('Error loading messages:', error);
+      }
+    }, 2000); // Poll every 2 seconds
+
+    return () => clearInterval(intervalId);
+  }
+
   // Paper trading methods (placeholder for future implementation)
   async savePaperTrade(tradeData: any): Promise<string> {
     if (!this.currentUser) throw new Error('User not authenticated');
