@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext.tsx';
 
@@ -84,7 +83,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ onSyncData, onViewHist
                 </div>
               </div>
             </div>
-            
+
             {/* Usage Stats */}
             <div className="mt-3 p-2 bg-gray-50 dark:bg-gray-700 rounded-lg">
               <div className="flex justify-between items-center mb-1">
@@ -123,7 +122,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ onSyncData, onViewHist
               </svg>
               <span>Sync Data</span>
             </button>
-            
+
             <button
               onClick={() => {
                 onViewHistory();
@@ -138,7 +137,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ onSyncData, onViewHist
             </button>
 
             <div className="border-t border-gray-200 dark:border-gray-700 my-2"></div>
-            
+
             <button
               onClick={handleSignOut}
               className="w-full px-4 py-2 text-left text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center space-x-2"
