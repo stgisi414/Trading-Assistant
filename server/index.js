@@ -5,6 +5,14 @@ const nodemailer = require('nodemailer');
 require('dotenv').config();
 
 const app = express();
+
+app.use(express.static(path.join(__dirname, '../dist')));
+
+// Handles any requests that don't match the ones above
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../dist', 'index.html'));
+});
+
 const PORT = process.env.PORT || 5000;
 
 // Middleware

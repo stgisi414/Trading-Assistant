@@ -1,11 +1,6 @@
 /* Import Google Fonts first */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
-/* Tailwind CSS directives */
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
 /* Custom embossed text effect for Signatex branding */
 .signatex-embossed {
     all: unset;
@@ -178,34 +173,34 @@ body {
 
 /* Mobile-first button optimizations */
 .btn-mobile {
-  @apply px-2 py-2 text-sm;
-}
+  @reference px-2 py-2 text-sm;
+} 
 
 @media (min-width: 640px) {
   .btn-mobile {
-    @apply px-4 py-3 text-base;
+    @reference px-4 py-3 text-base;
   }
 }
 
 /* Icon-only buttons for mobile */
 .btn-icon-mobile {
-  @apply p-2 w-10 h-10 flex items-center justify-center;
+  @reference p-2 w-10 h-10 flex items-center justify-center;
 }
 
 @media (min-width: 640px) {
   .btn-icon-mobile {
-    @apply px-4 py-3 w-auto h-auto;
+    @reference px-4 py-3 w-auto h-auto;
   }
 }
 
 /* Hide text on mobile, show on desktop */
 .text-mobile-hidden {
-  @apply hidden;
+  @reference hidden;
 }
 
 @media (min-width: 640px) {
   .text-mobile-hidden {
-    @apply inline;
+    @reference inline;
   }
 }
 
@@ -222,29 +217,29 @@ body {
 
 /* Remove nested padding on mobile */
 .mobile-no-padding {
-  @apply p-0;
+  @reference p-0;
 }
 
 @media (min-width: 640px) {
   .mobile-no-padding {
-    @apply p-3;
+    @reference p-3;
   }
 }
 
 /* Reduce card padding on mobile */
 .card-mobile-padding {
-  @apply p-2;
+  @reference p-2;
 }
 
 @media (min-width: 640px) {
   .card-mobile-padding {
-    @apply p-4;
+    @reference p-4;
   }
 }
 
 @media (min-width: 768px) {
   .card-mobile-padding {
-    @apply p-6;
+    @reference p-6;
   }
 }
 
@@ -256,7 +251,7 @@ body {
 
 @media (min-width: 640px) {
   .analysis-results-mobile {
-    @apply px-6;
+    @reference px-6;
   }
 }
 
@@ -268,6 +263,6 @@ body {
 
 @media (min-width: 640px) {
   .analysis-nested-mobile {
-    @apply px-3;
+    @reference px-3;
   }
 }
