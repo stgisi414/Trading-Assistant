@@ -1,6 +1,6 @@
 import { GoogleGenAI, GenerateContentResponse } from "@google/genai";
-import type { AnalysisResult, HistoricalDataPoint, NewsArticle } from '../types.ts';
-import { Position } from '../types.ts';
+import type { AnalysisResult, HistoricalDataPoint, NewsArticle, Position, OpenInterestAnalysis, OptionsAnalysis, OptionRecommendation, OrderAnalysis, LimitOrder } from '../types.ts';
+import { calculateTechnicalIndicators, type TechnicalIndicatorValues } from './technicalIndicators.ts';
 import { searchNews } from './newsSearchService.ts';
 import { searchSymbolLogo, searchReasoningIllustration } from './imageSearchService.ts';
 
@@ -38,7 +38,8 @@ function createEnhancedGeminiPrompt(
     walletAmount: number, 
     selectedIndicators: string[], 
     historicalData: HistoricalDataPoint[],
-    newsArticles: NewsArticle[]
+    newsArticles: NewsArticle[],
+    technicalIndicatorValues: TechnicalIndicatorValues
 ): string {
     // Ensure historicalData is always an array and has valid data
     const dataArray = Array.isArray(historicalData) ? historicalData : [];
@@ -65,6 +66,16 @@ function createEnhancedGeminiPrompt(
     **Recent News Articles:**
     ${newsString}
 
+    **Calculated Technical Indicator Values:**
+    - SMA: ${technicalIndicatorValues.sma?.toFixed(2) || 'N/A'}
+    - EMA: ${technicalIndicatorValues.ema?.toFixed(2) || 'N/A'}
+    - RSI: ${technicalIndicatorValues.rsi?.toFixed(2) || 'N/A'}
+    - MACD: ${technicalIndicatorValues.macd?.toFixed(2) || 'N/A'}
+    - Bollinger Bands (Upper): ${technicalIndicatorValues.bollingerBandsUpper?.toFixed(2) || 'N/A'}
+    - Bollinger Bands (Lower): ${technicalIndicatorValues.bollingerBandsLower?.toFixed(2) || 'N/A'}
+    - Stochastic Oscillator: ${technicalIndicatorValues.stochasticOscillator?.toFixed(2) || 'N/A'}
+    - ADX: ${technicalIndicatorValues.adx?.toFixed(2) || 'N/A'}
+
     **Your Analysis Task:**
     Based on your comprehensive analysis of the historical data, selected indicators, and recent news sentiment, provide the following information in a clear, structured format.
 
@@ -88,25 +99,25 @@ function createEnhancedGeminiPrompt(
 
     **Executive Summary:**
     Start with an overview of your recommendation and confidence level.
-    
+
     **Individual Technical Indicator Analysis:**
     For each selected indicator (${selectedIndicators.join(", ")}), provide a dedicated subsection:
     - Current reading/signal for ${assetSymbol}
     - What this indicator measures and its significance
     - How this specific reading impacts your recommendation
-    
+
     **Combined Technical Analysis:**
     Explain how these indicators work together and any confirmations or contradictions between them.
-    
+
     **Price Action Analysis:**
     Reference specific historical price movements from the data provided, including dates and price levels that support your analysis.
-    
+
     **News Sentiment Analysis:**
     Analyze the recent news sentiment and how specific news articles impact the market outlook for ${assetSymbol}.
-    
+
     **Position Sizing & Risk Management:**
     Explain position sizing recommendations based on the $${walletAmount.toLocaleString()} wallet amount and risk management considerations.
-    
+
     **Additional Market Considerations:**
     Provide any additional considerations, potential risks, or market conditions that could affect this position.]
     **END_RESPONSE**
@@ -115,16 +126,16 @@ function createEnhancedGeminiPrompt(
 
 function parseGeminiResponse(responseText: string): Omit<AnalysisResult, 'news'> {
     console.log("Raw Gemini response:", responseText);
-    
+
     // Try multiple parsing approaches
     const positionMatch = responseText.match(/Recommended Position:\s*(BUY|SELL|HOLD)/i) ||
                          responseText.match(/Position:\s*(BUY|SELL|HOLD)/i) ||
                          responseText.match(/(BUY|SELL|HOLD)/i);
-    
+
     const confidenceMatch = responseText.match(/Confidence Level:\s*([\d\.]+%?)/i) ||
                            responseText.match(/Confidence:\s*([\d\.]+%?)/i) ||
                            responseText.match(/([\d\.]+)%/);
-    
+
     const reasoningMatch = responseText.match(/Detailed Reasoning:\s*([\s\S]*?)(?:\*\*END_RESPONSE\*\*|$)/i) ||
                           responseText.match(/Reasoning:\s*([\s\S]*?)(?:\*\*END_RESPONSE\*\*|$)/i) ||
                           responseText.match(/Analysis:\s*([\s\S]*?)(?:\*\*END_RESPONSE\*\*|$)/i);
@@ -209,6 +220,10 @@ export const getTradingPosition = async (
             ? newsArticles.map((article, index) => `${index + 1}. ${article.title}\n   Source: ${article.source || 'Unknown'}\n   Summary: ${article.snippet || 'No summary available'}\n   URL: ${article.uri}`).join('\n\n')
             : 'No recent news articles found.';
 
+         // Calculate technical indicators
+        const technicalIndicatorValues = calculateTechnicalIndicators(lastTenDataPoints, selectedIndicators);
+
+
         let prompt = `You are an expert financial analyst. Provide a comprehensive trading recommendation for ${assetSymbol}.
 
 ANALYSIS DATA:
@@ -280,9 +295,18 @@ Format the options analysis as a JSON object with this structure:
 }`;
         }
 
+        const enhancedPrompt = createEnhancedGeminiPrompt(
+            assetSymbol,
+            walletAmount,
+            selectedIndicators,
+            historicalData,
+            newsArticles,
+            technicalIndicatorValues
+        );
+
         const response: GenerateContentResponse = await ai.models.generateContent({
             model: 'gemini-1.5-flash',
-            contents: prompt,
+            contents: enhancedPrompt,
             config: {
                 temperature: 0.3,
             }
@@ -299,15 +323,15 @@ Format the options analysis as a JSON object with this structure:
         // Search for symbol logo and reasoning illustrations
         let symbolLogo: any[] = [];
         let reasoningIllustrations: any[] = [];
-        
+
         try {
             // Search for company logo
             symbolLogo = await searchSymbolLogo(assetSymbol);
-            
+
             // Search for reasoning illustrations based on the analysis
             const analysisKeywords = `${assetSymbol} ${parsedResult.position.toLowerCase()} analysis`;
             reasoningIllustrations = await searchReasoningIllustration(analysisKeywords, 'technical analysis');
-            
+
             console.log(`Found ${symbolLogo.length} logo images and ${reasoningIllustrations.length} reasoning illustrations`);
         } catch (imageError) {
             console.warn("Failed to fetch images for analysis:", imageError);
