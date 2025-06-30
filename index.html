@@ -1,93 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Signatex - Gemini Powered Trading Assistant</title>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Signatex - AI-Powered Trading Assistant</title>
+
+    <!-- Meta tags for SEO and social sharing -->
+    <meta name="description" content="Advanced AI-powered trading assistant leveraging Google's Gemini for comprehensive market analysis, technical indicators, and trading insights." />
+    <meta name="keywords" content="trading, AI, market analysis, technical analysis, stock analysis, gemini AI, trading assistant" />
+    <meta name="author" content="Signatex" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://signatex.co/" />
+    <meta property="og:title" content="Signatex - AI-Powered Trading Assistant" />
+    <meta property="og:description" content="Advanced AI-powered trading assistant leveraging Google's Gemini for comprehensive market analysis and trading insights." />
+    <meta property="og:image" content="/icon-512.png" />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://signatex.co/" />
+    <meta property="twitter:title" content="Signatex - AI-Powered Trading Assistant" />
+    <meta property="twitter:description" content="Advanced AI-powered trading assistant leveraging Google's Gemini for comprehensive market analysis and trading insights." />
+    <meta property="twitter:image" content="/icon-512.png" />
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#3B82F6" />
+
+    <!-- Apple Touch Icons -->
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
-    
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    fontFamily: {
-                        'inter': ['Inter', 'sans-serif'],
-                    },
-                    animation: {
-                        'gradient-x': 'gradient-x 15s ease infinite',
-                        'gradient-y': 'gradient-y 15s ease infinite',
-                        'gradient-xy': 'gradient-xy 15s ease infinite',
-                        'float': 'float 6s ease-in-out infinite',
-                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-                        'shimmer': 'shimmer 2s infinite',
-                        'glow': 'glow 2s ease-in-out infinite alternate',
-                    },
-                    keyframes: {
-                        'gradient-y': {
-                            '0%, 100%': {
-                                'background-size': '400% 400%',
-                                'background-position': 'center top'
-                            },
-                            '50%': {
-                                'background-size': '200% 200%',
-                                'background-position': 'center center'
-                            }
-                        },
-                        'gradient-x': {
-                            '0%, 100%': {
-                                'background-size': '200% 200%',
-                                'background-position': 'left center'
-                            },
-                            '50%': {
-                                'background-size': '200% 200%',
-                                'background-position': 'right center'
-                            }
-                        },
-                        'gradient-xy': {
-                            '0%, 100%': {
-                                'background-size': '400% 400%',
-                                'background-position': 'left center'
-                            },
-                            '25%': {
-                                'background-size': '400% 400%',
-                                'background-position': 'left top'
-                            },
-                            '50%': {
-                                'background-size': '400% 400%',
-                                'background-position': 'right top'
-                            },
-                            '75%': {
-                                'background-size': '400% 400%',
-                                'background-position': 'right center'
-                            }
-                        },
-                        'float': {
-                            '0%, 100%': { transform: 'translateY(0px)' },
-                            '50%': { transform: 'translateY(-20px)' }
-                        },
-                        'shimmer': {
-                            '0%': { transform: 'translateX(-100%)' },
-                            '100%': { transform: 'translateX(100%)' }
-                        },
-                        'glow': {
-                            '0%': { 'box-shadow': '0 0 20px rgba(99, 102, 241, 0.5)' },
-                            '100%': { 'box-shadow': '0 0 40px rgba(99, 102, 241, 0.8), 0 0 60px rgba(99, 102, 241, 0.4)' }
-                        }
-                    },
-                    backgroundImage: {
-                        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
-                        'gradient-conic': 'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
-                    }
-                }
-            }
-        }
 
-        // Dark mode will be handled by React App component
-    </script>
     <style>
         .glass-effect {
             background: rgba(255, 255, 255, 0.1);
