@@ -3,6 +3,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { GoogleGenAI } from "@google/genai";
 import { ttsService } from '../services/ttsService.ts';
+import { MarketType } from '../types.ts';
 
 interface ChatMessage {
     id: string;

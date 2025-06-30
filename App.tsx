@@ -223,15 +223,15 @@ function App() {
     };
 
     const handleMarketTypeChange = (newMarketType: string) => {
-        setSelectedMarketType(newMarketType as MarketType); // Use your original setter
+        setSelectedMarketType(newMarketType as MarketType);
         const newMarket = MARKET_OPTIONS[newMarketType]?.[0]?.value || "";
-        setSelectedMarket(newMarket); // Use your original setter
-        setSelectedSymbols([]); 
+        setSelectedMarket(newMarket);
+        // setSelectedSymbols([]); // <-- DELETED
     };
 
     const handleMarketChange = (newMarket: string) => {
-        setSelectedMarket(newMarket); // Use your original setter
-        setSelectedSymbols([]); 
+        setSelectedMarket(newMarket);
+        // setSelectedSymbols([]); // <-- DELETED
     };
 
     const calculateStartDateFromTimeframe = (timeframe: string, endDate: string): string => {
