@@ -521,6 +521,27 @@ function App() {
         handleAnalyze
     };
 
+    const handleChatbotInputUpdates = (updates: any) => {
+        if (updates.walletAmount !== undefined) {
+            setWalletAmount(updates.walletAmount);
+        }
+        if (updates.selectedTimeframe !== undefined) {
+            setSelectedTimeframe(updates.selectedTimeframe);
+        }
+        if (updates.selectedIndicators !== undefined) {
+            setSelectedIndicators(updates.selectedIndicators);
+        }
+        if (updates.addSymbols !== undefined) {
+            // Add new symbols to existing ones, avoiding duplicates
+            setSelectedSymbols(prev => {
+                const newSymbols = updates.addSymbols.filter((newSymbol: any) => 
+                    !prev.some(existing => existing.symbol === newSymbol.symbol)
+                );
+                return [...prev, ...newSymbols];
+            });
+        }
+    };
+
     return (
         <div className="bg-background text-foreground min-h-screen p-4 sm:p-6 md:p-8 relative overflow-hidden">
             {/* Animated shooting streaks background */}

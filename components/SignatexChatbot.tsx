@@ -200,14 +200,24 @@ What would you like to explore today? 🚀📈`,
             });
         }
 
-        // Symbol additions
-        const addSymbolMatch = message.match(/(?:add|include).*?(?:symbol|stock|asset)s?\s+([A-Z]{1,5}(?:\s*,?\s*[A-Z]{1,5})*)/i);
-        if (addSymbolMatch) {
-            const symbols = addSymbolMatch[1].split(/[,\s]+/).filter(s => s.length > 0);
+        // Symbol additions - Enhanced to handle AI stocks and company names
+        const addSymbolMatch = message.match(/(?:add|include).*?(?:symbol|stock|asset|ai stocks?)s?\s+([A-Z]{1,5}(?:\s*,?\s*[A-Z]{1,5})*|ai stocks?)/i);
+        if (addSymbolMatch || lowerMessage.includes('ai stocks')) {
+            let symbols: string[] = [];
+            
+            if (lowerMessage.includes('ai stocks')) {
+                // Add popular AI stocks
+                symbols = ['NVDA', 'GOOGL', 'MSFT', 'AMZN', 'META', 'TSLA'];
+            } else if (addSymbolMatch) {
+                symbols = addSymbolMatch[1].split(/[,\s]+/).filter(s => s.length > 0);
+            }
+            
             actions.push({
                 type: 'addSymbols',
                 value: symbols,
-                description: `Add symbols: ${symbols.join(', ')}`
+                description: lowerMessage.includes('ai stocks') ? 
+                    'Add AI stocks: NVDA, GOOGL, MSFT, AMZN, META, TSLA' : 
+                    `Add symbols: ${symbols.join(', ')}`
             });
         }
 
@@ -279,8 +289,40 @@ What would you like to explore today? 🚀📈`,
                     executed = true;
                     break;
                 case 'addSymbols':
-                    // This would need to be handled differently since we need FmpSearchResult objects
-                    // For now, just note the request
+                    // Convert symbol strings to FmpSearchResult objects and add them
+                    if (onUpdateInputs) {
+                        const symbolsToAdd = action.value.map((symbol: string) => {
+                            // Map common symbols to their company names
+                            const symbolNames: Record<string, string> = {
+                                'NVDA': 'NVIDIA Corporation',
+                                'GOOGL': 'Alphabet Inc.',
+                                'MSFT': 'Microsoft Corporation',
+                                'AMZN': 'Amazon.com Inc.',
+                                'META': 'Meta Platforms Inc.',
+                                'TSLA': 'Tesla Inc.',
+                                'AAPL': 'Apple Inc.',
+                                'NFLX': 'Netflix Inc.',
+                                'CRM': 'Salesforce Inc.',
+                                'ORCL': 'Oracle Corporation',
+                                'IBM': 'International Business Machines',
+                                'AMD': 'Advanced Micro Devices',
+                                'INTC': 'Intel Corporation',
+                                'ADBE': 'Adobe Inc.',
+                                'NOW': 'ServiceNow Inc.',
+                                'PLTR': 'Palantir Technologies',
+                                'AI': 'C3.ai Inc.',
+                                'SNOW': 'Snowflake Inc.'
+                            };
+                            
+                            return {
+                                symbol: symbol,
+                                name: symbolNames[symbol] || `${symbol} Corporation`
+                            };
+                        });
+                        
+                        onUpdateInputs({ addSymbols: symbolsToAdd });
+                        executed = true;
+                    }
                     break;
                 case 'updateTimeframe':
                     updates.selectedTimeframe = action.value;
