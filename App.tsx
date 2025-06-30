@@ -1096,20 +1096,11 @@ function App() {
     );
 }
 
-// Wrapper component with AuthProvider
-function AppWithAuth() {
+// Export the main App component wrapped with AuthProvider
+export default function AppWithAuth() {
     return (
         <AuthProvider>
-            <AppContent />
+            <App />
         </AuthProvider>
     );
 }
-
-// Rename the main App component
-function AppContent() {
-    // Move all the existing App content here
-    // (All the existing App component code goes here)
-    return <App />;
-}
-
-export default AppWithAuth;
