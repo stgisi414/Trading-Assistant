@@ -3,6 +3,7 @@ import type { NewsArticle } from '../types.ts';
 
 interface NewsSectionProps {
     news: NewsArticle[];
+    theme?: string;
 }
 
 export const NewsSection: React.FC<NewsSectionProps> = ({ news, theme }) => {

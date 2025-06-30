@@ -155,6 +155,13 @@ export const PositionResult: React.FC<PositionResultProps> = ({ result, theme })
                 </div>
             )}
 
+            {/* News Section */}
+            {result.news && result.news.length > 0 && (
+                <div className="mb-6">
+                    <NewsSection news={result.news} />
+                </div>
+            )}
+
             {/* No News Message */}
             {(!result.news || result.news.length === 0) && (
                 <div className="mb-4 p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-lg">

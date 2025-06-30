@@ -3,6 +3,7 @@ import { searchSymbols } from '../services/marketDataService.ts';
 import type { FmpSearchResult } from '../types.ts';
 import { Spinner } from './Spinner.tsx';
 import { MARKET_OPTIONS } from '../constants';
+import { generateUniqueId } from '../utils/formUtils.ts';
 
 interface SymbolSearchInputProps {
     selectedSymbols: FmpSearchResult[];
@@ -19,6 +20,7 @@ export const SymbolSearchInput: React.FC<SymbolSearchInputProps> = ({ selectedSy
     const [isSearching, setIsSearching] = useState(false);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
+    const inputId = React.useMemo(() => generateUniqueId('assetSymbol'), []);
 
     const getSymbolsForMarket = useCallback(() => {
         if (marketType && market && MARKET_OPTIONS[marketType]) {
@@ -87,7 +89,7 @@ export const SymbolSearchInput: React.FC<SymbolSearchInputProps> = ({ selectedSy
     return (
         <div className="flex flex-col gap-4">
             <div>
-                <label htmlFor="assetSymbol" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label htmlFor={inputId} className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Asset Symbols
                     {marketType === 'STOCKS' ? ' (e.g., AAPL, TSLA)' : ''}
                 </label>
@@ -105,7 +107,7 @@ export const SymbolSearchInput: React.FC<SymbolSearchInputProps> = ({ selectedSy
                 <div ref={containerRef} className="relative">
                     <input
                         type="text"
-                        id="assetSymbol"
+                        id={inputId}
                         value={query}
                         onChange={(e) => setQuery(e.target.value.toUpperCase())}
                         onFocus={() => query && setIsDropdownOpen(true)}
