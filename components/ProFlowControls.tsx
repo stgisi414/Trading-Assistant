@@ -19,6 +19,8 @@ export const ProFlowControls: React.FC<ProFlowControlsProps> = ({ onShowToast, a
     const [status, setStatus] = useState(proFlowService.getStatus());
     const [isExpanded, setIsExpanded] = useState(false);
     const [selectedMode, setSelectedMode] = useState<ProFlowMode>('auto');
+    const [flowPrompt, setFlowPrompt] = useState('');
+    const [isGeneratingPrompt, setIsGeneratingPrompt] = useState(false);
 
     useEffect(() => {
         // Set up ProFlow service callbacks
@@ -56,6 +58,29 @@ export const ProFlowControls: React.FC<ProFlowControlsProps> = ({ onShowToast, a
 
     const handleContinue = () => {
         proFlowService.continueFromManualPause();
+    };
+
+    const handleFlowPromptChange = (value: string) => {
+        setFlowPrompt(value);
+        proFlowService.setFlowPrompt(value);
+    };
+
+    const handleImprovePrompt = async () => {
+        setIsGeneratingPrompt(true);
+        try {
+            const improvedPrompt = await proFlowService.improveFlowPrompt(flowPrompt);
+            setFlowPrompt(improvedPrompt);
+            proFlowService.setFlowPrompt(improvedPrompt);
+        } catch (error) {
+            console.error('Error improving prompt:', error);
+            onShowToast({
+                id: Date.now().toString(),
+                message: '❌ Error improving prompt. Please try again.',
+                type: 'error'
+            });
+        } finally {
+            setIsGeneratingPrompt(false);
+        }
     };
 
     return (
@@ -126,6 +151,50 @@ export const ProFlowControls: React.FC<ProFlowControlsProps> = ({ onShowToast, a
                                 👤 Manual
                             </button>
                         </div>
+                    </div>
+
+                    {/* Flow Prompt Section */}
+                    <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                🎯 Flow Guidance
+                            </label>
+                            <button
+                                onClick={handleImprovePrompt}
+                                disabled={status.isRunning || isGeneratingPrompt}
+                                className="flex items-center gap-1 px-2 py-1 text-xs bg-purple-100 dark:bg-purple-900/50 text-purple-700 dark:text-purple-300 rounded-full hover:bg-purple-200 dark:hover:bg-purple-800/50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                title={flowPrompt.trim() ? 'Improve existing prompt' : 'Generate prompt suggestion'}
+                            >
+                                {isGeneratingPrompt ? (
+                                    <div className="w-3 h-3 border border-purple-500 border-t-transparent rounded-full animate-spin"></div>
+                                ) : (
+                                    <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M7 14c0-.55.45-1 1-1s1 .45 1 1-.45 1-1 1-1-.45-1-1zm7.5-3.5c0-.28-.22-.5-.5-.5s-.5.22-.5.5.22.5.5.5.5-.22.5-.5zm-1.5 5c-.28 0-.5-.22-.5-.5s.22-.5.5-.5.5.22.5.5-.22.5-.5.5zm-6-6c-.28 0-.5-.22-.5-.5s.22-.5.5-.5.5.22.5.5-.22.5-.5.5zm9.5 1.5c0 .28-.22.5-.5.5s-.5-.22-.5-.5.22-.5.5-.5.5.22.5.5zm-2.5-5c-.28 0-.5-.22-.5-.5s.22-.5.5-.5.5.22.5.5-.22.5-.5.5zm-3 11c-.28 0-.5-.22-.5-.5s.22-.5.5-.5.5.22.5.5-.22.5-.5.5zm5-5c-.28 0-.5-.22-.5-.5s.22-.5.5-.5.5.22.5.5-.22.5-.5.5z"/>
+                                    </svg>
+                                )}
+                                ✨ {flowPrompt.trim() ? 'Improve' : 'Generate'}
+                            </button>
+                        </div>
+                        <div className="relative">
+                            <textarea
+                                value={flowPrompt}
+                                onChange={(e) => handleFlowPromptChange(e.target.value)}
+                                disabled={status.isRunning}
+                                placeholder="Optional: Describe your trading strategy focus (e.g., 'Focus on dividend stocks with strong fundamentals' or 'Analyze crypto with technical indicators'). Leave empty for default flow."
+                                className="w-full p-3 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:border-purple-500 dark:focus:border-purple-400 focus:ring-2 focus:ring-purple-200 dark:focus:ring-purple-800 resize-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                rows={3}
+                            />
+                            {flowPrompt.trim() && (
+                                <div className="absolute bottom-2 right-2">
+                                    <span className="text-xs text-green-600 dark:text-green-400 bg-green-100 dark:bg-green-900/50 px-2 py-1 rounded-full">
+                                        ✓ Custom guidance active
+                                    </span>
+                                </div>
+                            )}
+                        </div>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                            ProFlow will adapt its symbol selection and parameters based on your guidance. Use the ✨ wand to get suggestions or improve your prompt.
+                        </p>
                     </div>
 
                     {status.isRunning && (

@@ -18,6 +18,11 @@ export interface ProFlowToast {
 
 export type ProFlowMode = 'auto' | 'manual';
 
+export interface FlowPromptConfig {
+    prompt: string;
+    isCustom: boolean;
+}
+
 export class ProFlowService {
     private isRunning = false;
     private currentStep = 0;
@@ -26,6 +31,7 @@ export class ProFlowService {
     private isPaused = false;
     private toastCallback?: (toast: ProFlowToast) => void;
     private confirmationCallback?: () => void;
+    private flowPrompt: FlowPromptConfig = { prompt: '', isCustom: false };
     private appCallbacks: {
         setSelectedSymbols?: (symbols: FmpSearchResult[]) => void;
         setWalletAmount?: (amount: string) => void;
@@ -67,6 +73,70 @@ export class ProFlowService {
         }
     }
 
+    setFlowPrompt(prompt: string, isCustom: boolean = true) {
+        this.flowPrompt = { prompt, isCustom };
+        if (prompt.trim()) {
+            this.showToast('🎯 Custom flow prompt set! ProFlow will adapt to your instructions.', 'success');
+        }
+    }
+
+    getFlowPrompt(): FlowPromptConfig {
+        return this.flowPrompt;
+    }
+
+    async generateFlowPrompt(): Promise<string> {
+        const suggestions = [
+            "Focus on cryptocurrency analysis with emphasis on technical indicators and market sentiment for swing trading opportunities",
+            "Prioritize dividend-paying stocks with strong fundamentals for long-term investment strategies",
+            "Analyze high-volatility tech stocks with options strategies for day trading setups",
+            "Look for value stocks in underperforming sectors with potential for recovery",
+            "Focus on ESG-compliant investments with sustainable growth patterns",
+            "Identify momentum stocks with strong earnings growth and institutional buying",
+            "Analyze commodities and futures for inflation hedge strategies",
+            "Focus on small-cap growth stocks with high revenue growth potential"
+        ];
+        
+        const randomSuggestion = suggestions[Math.floor(Math.random() * suggestions.length)];
+        this.showToast('✨ Generated flow prompt suggestion! You can modify it as needed.', 'success');
+        return randomSuggestion;
+    }
+
+    async improveFlowPrompt(currentPrompt: string): Promise<string> {
+        if (!currentPrompt.trim()) {
+            return await this.generateFlowPrompt();
+        }
+
+        // Simple improvement logic - in a real implementation, this could use AI
+        const improvements = {
+            'stocks': 'equity securities with strong fundamentals',
+            'crypto': 'cryptocurrency assets with high liquidity',
+            'trading': 'strategic trading with risk management',
+            'analysis': 'comprehensive market analysis',
+            'buy': 'strategic long positions',
+            'sell': 'profit-taking opportunities'
+        };
+
+        let improvedPrompt = currentPrompt;
+        Object.entries(improvements).forEach(([key, value]) => {
+            const regex = new RegExp(`\\b${key}\\b`, 'gi');
+            if (regex.test(improvedPrompt) && !improvedPrompt.includes(value)) {
+                improvedPrompt = improvedPrompt.replace(regex, value);
+            }
+        });
+
+        // Add structure if missing
+        if (!improvedPrompt.includes('focus') && !improvedPrompt.includes('prioritize')) {
+            improvedPrompt = `Focus on ${improvedPrompt.charAt(0).toLowerCase() + improvedPrompt.slice(1)}`;
+        }
+
+        if (!improvedPrompt.includes('strategy') && !improvedPrompt.includes('approach')) {
+            improvedPrompt += ' with a data-driven investment approach';
+        }
+
+        this.showToast('🧠 Prompt improved with enhanced terminology and structure!', 'success');
+        return improvedPrompt;
+    }
+
     private showToast(message: string, type: ProFlowToast['type'] = 'info', duration = 3000) {
         if (this.toastCallback) {
             let toastCounter = 0;
@@ -89,7 +159,10 @@ export class ProFlowService {
                 name: 'Welcome to ProFlow',
                 description: 'Starting intelligent automation',
                 action: async () => {
-                    this.showToast('🚀 ProFlow activated! Preparing to demonstrate Signatex capabilities...', 'info', 4000);
+                    const promptMessage = this.flowPrompt.prompt 
+                        ? `🚀 ProFlow activated with custom guidance: "${this.flowPrompt.prompt.substring(0, 50)}${this.flowPrompt.prompt.length > 50 ? '...' : ''}"`
+                        : '🚀 ProFlow activated! Preparing to demonstrate Signatex capabilities...';
+                    this.showToast(promptMessage, 'info', 4000);
                 },
                 delay: 2000
             },
@@ -118,12 +191,38 @@ export class ProFlowService {
                 name: 'Add Popular Symbols',
                 description: 'Adding high-volume trading symbols',
                 action: async () => {
-                    const symbols = [
+                    let symbols = [
                         { symbol: 'AAPL', name: 'Apple Inc.' },
                         { symbol: 'TSLA', name: 'Tesla, Inc.' },
                         { symbol: 'MSFT', name: 'Microsoft Corporation' }
                     ];
-                    this.showToast('📈 Adding popular tech stocks: AAPL, TSLA, MSFT...', 'success');
+
+                    // Adapt symbols based on flow prompt
+                    if (this.flowPrompt.prompt) {
+                        const prompt = this.flowPrompt.prompt.toLowerCase();
+                        if (prompt.includes('crypto')) {
+                            symbols = [
+                                { symbol: 'BTC-USD', name: 'Bitcoin USD' },
+                                { symbol: 'ETH-USD', name: 'Ethereum USD' },
+                                { symbol: 'ADA-USD', name: 'Cardano USD' }
+                            ];
+                        } else if (prompt.includes('dividend')) {
+                            symbols = [
+                                { symbol: 'JNJ', name: 'Johnson & Johnson' },
+                                { symbol: 'KO', name: 'Coca-Cola Company' },
+                                { symbol: 'PG', name: 'Procter & Gamble' }
+                            ];
+                        } else if (prompt.includes('small-cap') || prompt.includes('growth')) {
+                            symbols = [
+                                { symbol: 'ROKU', name: 'Roku Inc.' },
+                                { symbol: 'PLTR', name: 'Palantir Technologies' },
+                                { symbol: 'SNAP', name: 'Snap Inc.' }
+                            ];
+                        }
+                    }
+
+                    const symbolNames = symbols.map(s => s.symbol).join(', ');
+                    this.showToast(`📈 Adding symbols based on your preferences: ${symbolNames}...`, 'success');
                     this.appCallbacks.setSelectedSymbols?.(symbols);
                 },
                 delay: 2000
@@ -247,7 +346,8 @@ export class ProFlowService {
             totalSteps: this.steps.length,
             currentStepName: this.steps[this.currentStep]?.name || 'Idle',
             mode: this.mode,
-            isPaused: this.isPaused
+            isPaused: this.isPaused,
+            flowPrompt: this.flowPrompt
         };
     }
 
