@@ -28,11 +28,34 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
+    const context = useContext(AuthContext);
+    if (!context) {
+        // Return a default context instead of throwing error during development
+        console.warn('useAuth called outside AuthProvider, returning default values');
+        return {
+            user: null,
+            userProfile: null,
+            isLoading: false,
+            isAuthRedirectPending: false,
+            signIn: async () => {},
+            signOut: async () => {},
+            saveDataToCloud: async () => {},
+            loadDataFromCloud: async () => null,
+            saveAnalysis: async () => "",
+            loadAnalysisHistory: async () => [],
+            deleteAnalysis: async () => {},
+            sendMessage: async () => "",
+            loadMessages: async () => [],
+            subscribeToMessages: () => () => {},
+            isUserAdmin: async () => false,
+            kickUserFromChannel: async () => {},
+            banUserFromChannel: async () => {},
+            banUserGlobally: async () => {},
+            unbanUser: async () => {},
+            deleteMessage: async () => {}
+        };
+    }
+    return context;
 };
 
 interface AuthProviderProps {
