@@ -1,18 +1,104 @@
-
 import React, { useState } from 'react';
 import type { AnalysisResult } from '../types.ts';
 import { Position } from '../types.ts';
 import { NewsSection } from './NewsSection.tsx';
 import { ImageGallery } from './ImageGallery.tsx';
+import { OptionsAnalysisSection } from './OptionsAnalysisSection.tsx';
+import { OrderAnalysisSection } from './OrderAnalysisSection.tsx';
+import { OpenInterestSection } from './OpenInterestSection.tsx';
+import { ttsService } from '../services/ttsService.ts';
 
 interface PositionResultProps {
     result: AnalysisResult;
     theme: 'light' | 'dark';
 }
 
-export const PositionResult: React.FC<PositionResultProps> = ({ result, theme }) => {
+const PositionResult: React.FC<PositionResultProps> = ({ 
+    result, 
+    theme
+}) => {
     const [showFullReasoning, setShowFullReasoning] = useState(false);
-    
+    const [isPlayingAudio, setIsPlayingAudio] = useState(false);
+    const [audioCache, setAudioCache] = useState<Map<string, string>>(new Map());
+    const currentAudioRef = React.useRef<HTMLAudioElement | null>(null);
+
+    // TTS Functions
+    const synthesizeAndPlayAnalysis = async () => {
+        if (!ttsService.isAvailable()) {
+            console.warn('TTS service not available');
+            return;
+        }
+
+        try {
+            setIsPlayingAudio(true);
+            const analysisId = `analysis-${result.position}-${result.confidence}`;
+
+            // Check cache first
+            let audioDataUrl = audioCache.get(analysisId);
+
+            if (!audioDataUrl) {
+                // Create a comprehensive text summary for TTS
+                const ttsText = `
+                Trading Analysis Report.
+                Recommended Position: ${result.position}.
+                Confidence Level: ${result.confidence}.
+                Detailed Analysis: ${result.reasoning}
+                `;
+
+                // Synthesize speech
+                audioDataUrl = await ttsService.synthesizeSpeech({
+                    text: ttsText,
+                    languageCode: 'en-US',
+                    voiceName: 'en-US-Studio-O',
+                    ssmlGender: 'FEMALE',
+                    speakingRate: 1.0,
+                    pitch: 0.0
+                });
+
+                if (audioDataUrl) {
+                    // Cache the audio
+                    setAudioCache(prev => new Map(prev).set(analysisId, audioDataUrl!));
+                }
+            }
+
+            if (audioDataUrl) {
+                // Stop any currently playing audio
+                if (currentAudioRef.current) {
+                    currentAudioRef.current.pause();
+                    currentAudioRef.current = null;
+                }
+
+                // Create and play new audio
+                const audio = new Audio(audioDataUrl);
+                currentAudioRef.current = audio;
+
+                audio.onended = () => {
+                    setIsPlayingAudio(false);
+                    currentAudioRef.current = null;
+                };
+
+                audio.onerror = () => {
+                    setIsPlayingAudio(false);
+                    currentAudioRef.current = null;
+                    console.error('Audio playback failed');
+                };
+
+                await audio.play();
+            }
+        } catch (error) {
+            console.error('TTS error:', error);
+            setIsPlayingAudio(false);
+        }
+    };
+
+    const stopAudio = () => {
+        if (currentAudioRef.current) {
+            currentAudioRef.current.pause();
+            currentAudioRef.current = null;
+        }
+        setIsPlayingAudio(false);
+    };
+
     const getPositionColor = (position: Position) => {
         switch (position) {
             case Position.LONG:
@@ -51,6 +137,44 @@ export const PositionResult: React.FC<PositionResultProps> = ({ result, theme })
                 <h3 className="text-xl font-bold text-gray-800 dark:text-gray-200">
                     {result.symbol}
                 </h3>
+                 <div className="flex items-center space-x-3">
+                    {/* TTS Controls */}
+                    {ttsService.isAvailable() && (
+                        <div className="flex gap-2">
+                            {isPlayingAudio ? (
+                                <button
+                                    onClick={stopAudio}
+                                    className="bg-red-500 hover:bg-red-600 text-white p-2 rounded-lg shadow transition-colors flex items-center gap-2"
+                                    title="Stop audio analysis"
+                                >
+                                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M6 6h12v12H6z"/>
+                                    </svg>
+                                    Stop Audio
+                                </button>
+                            ) : (
+                                <button
+                                    onClick={synthesizeAndPlayAnalysis}
+                                    className="bg-blue-500 hover:bg-blue-600 text-white p-2 rounded-lg shadow transition-colors flex items-center gap-2"
+                                    title="Play audio analysis"
+                                >
+                                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M8 5v14l11-7z"/>
+                                    </svg>
+                                    Play Analysis
+                                </button>
+                            )}
+                            {audioCache.has(`analysis-${result.position}-${result.confidence}`) && (
+                                <div className="bg-green-500 text-white p-2 rounded-lg shadow flex items-center gap-2" title="Audio cached">
+                                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                                    </svg>
+                                    Cached
+                                </div>
+                            )}
+                        </div>
+                    )}
+                 </div>
                 <div className={`text-lg font-semibold ${getPositionColor(result.position)}`}>
                     {getPositionIcon(result.position)} {result.position}
                 </div>
@@ -166,3 +290,5 @@ export const PositionResult: React.FC<PositionResultProps> = ({ result, theme })
         </div>
     );
 };
+
+export default PositionResult;

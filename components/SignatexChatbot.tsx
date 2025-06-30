@@ -99,7 +99,7 @@ ${ttsService.isAvailable() ?
 
 ---
 
-## 💬 Try these natural commands:
+### 💬 Try these natural commands:
 
 > 💡 **For Beginners:**
 > - *"I'm a beginner, what indicators should I use?"*
@@ -114,6 +114,12 @@ ${ttsService.isAvailable() ?
 > - *"Add AAPL and TSLA to my symbols"*
 > - *"Analyze the current market sentiment"*
 > - *"What patterns do you see in my results?"*
+
+> 🧠 **Advanced Analysis:**
+> - *"Add news sentiment analysis"*
+> - *"Include social media sentiment"*
+> - *"Enable options analysis"*
+> - *"Include stop loss analysis"*
 
 > ⏱️ **Timeframes & Styles:**
 > - *"Switch to 1-day timeframe"*  
@@ -145,7 +151,7 @@ What would you like to explore today? 🚀📈`,
     // Initialize speech recognition
     useEffect(() => {
         const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-        
+
         if (SpeechRecognition) {
             setSpeechSupported(true);
             recognitionRef.current = new SpeechRecognition();
@@ -204,7 +210,7 @@ What would you like to explore today? 🚀📈`,
         // Symbol detection for add commands
         if (lowerMessage.includes('add') || lowerMessage.includes('include')) {
             let symbols: string[] = [];
-            
+
             // Direct symbol matches (GOOG, MSFT, AAPL, etc.)
             const directSymbolMatches = message.match(/\b([A-Z]{2,5})\b/g);
             if (directSymbolMatches) {
@@ -361,7 +367,7 @@ What would you like to explore today? 🚀📈`,
                     // Convert symbol strings to FmpSearchResult objects and add them
                     if (onUpdateInputs) {
                         console.log('🤖 Chatbot: Processing addSymbols action', action);
-                        
+
                         const symbolNames: Record<string, string> = {
                             'NVDA': 'NVIDIA Corporation',
                             'GOOGL': 'Alphabet Inc.',
@@ -391,18 +397,18 @@ What would you like to explore today? 🚀📈`,
                             'SLB': 'Schlumberger Limited',
                             'MPC': 'Marathon Petroleum Corporation'
                         };
-                        
+
                         const symbolsToAdd = action.value.map((symbol: string) => ({
                             symbol: symbol,
                             name: symbolNames[symbol] || `${symbol} Corporation`
                         }));
-                        
+
                         console.log('🤖 Chatbot: Symbols to add:', symbolsToAdd);
                         console.log('🤖 Chatbot: Calling onUpdateInputs with addSymbols');
-                        
+
                         onUpdateInputs({ addSymbols: symbolsToAdd });
                         executed = true;
-                        
+
                         console.log('🤖 Chatbot: addSymbols action executed successfully');
                     } else {
                         console.error('🤖 Chatbot: onUpdateInputs not available for addSymbols');
@@ -444,12 +450,12 @@ What would you like to explore today? 🚀📈`,
                             'MATIC': 'Polygon',
                             'UNI': 'Uniswap'
                         };
-                        
+
                         const symbolsToAdd = action.value.map((symbol: string) => ({
                             symbol: symbol,
                             name: cryptoNames[symbol] || `${symbol} Token`
                         }));
-                        
+
                         console.log('🤖 Chatbot: Adding crypto symbols:', symbolsToAdd);
                         onUpdateInputs({ addSymbols: symbolsToAdd });
                         executed = true;
@@ -501,7 +507,10 @@ What would you like to explore today? 🚀📈`,
                 profitMaxActive: !!profitMaxResult,
                 proFlowRunning: proFlowStatus?.isRunning || false,
                 actionsDetected: actions,
-                conversationHistory: messages.slice(-3)
+                conversationHistory: messages.slice(-3),
+                selectedNonTechnicalIndicators: currentInputs?.selectedNonTechnicalIndicators,
+                includeOptionsAnalysis: currentInputs?.includeOptionsAnalysis,
+                includeOrderAnalysis: currentInputs?.includeOrderAnalysis
             };
 
             const prompt = `🤖 You are the Signatex AI Trading Assistant, powered by Gemini AI. You are integrated into a comprehensive trading analysis platform called Signatex.
@@ -512,6 +521,9 @@ What would you like to explore today? 🚀📈`,
 - 📈 Active Indicators: ${currentInputs?.selectedIndicators?.join(', ') || 'None'}
 - ⏰ Timeframe: ${currentInputs?.selectedTimeframe || 'Not set'}
 - 🏪 Market Type: ${currentInputs?.selectedMarketType || 'Not set'}
+- 📰 Non-Technical Indicators: ${currentInputs?.selectedNonTechnicalIndicators?.join(', ') || 'None'}
+- ⚙️ Options Analysis: ${currentInputs?.includeOptionsAnalysis ? 'Enabled ✅' : 'Disabled ❌'}
+- 🛑 Stop Limit Order Check: ${currentInputs?.includeOrderAnalysis ? 'Enabled ✅' : 'Disabled ❌'}
 - 📊 Analysis Results: ${context.hasResults ? 'Available ✅' : 'None ❌'}
 - 🎛️ ProfitMax Status: ${context.profitMaxActive ? 'Optimized ✅' : 'Not run ⏳'}
 - ⚡ ProFlow Status: ${context.proFlowRunning ? 'Running 🔄' : 'Idle 😴'}
@@ -557,7 +569,7 @@ What would you like to explore today? 🚀📈`,
     const generateMarketTypeErrorResponse = (errorAction: any, userMessage: string): string => {
         const currentMarket = errorAction.currentMarketType;
         const targetAssetType = errorAction.value;
-        
+
         return `## ❌ Market Type Mismatch! 
 
 ### 🚨 **Cannot Add ${targetAssetType.toUpperCase()} Symbols**
@@ -601,7 +613,7 @@ Just say: **"Switch to stocks market and add AI stocks"** and I'll handle both s
 
     const generateFallbackResponse = (userMessage: string, actions: any[]): string => {
         const lowerMessage = userMessage.toLowerCase();
-        
+
         // Check for market type validation errors first
         const marketTypeError = actions.find(a => a.type === 'marketTypeError');
         if (marketTypeError) {
@@ -612,7 +624,7 @@ Just say: **"Switch to stocks market and add AI stocks"** and I'll handle both s
         if (actions.length > 0) {
             const actionDescriptions = actions.map(a => a.description).join(', ');
             const hasSymbolAddition = actions.some(a => a.type === 'addSymbols');
-            
+
             if (hasSymbolAddition) {
                 return `## ✅ Symbols Added Successfully! 🎉
 
@@ -622,7 +634,7 @@ Your symbols should now appear in the **Asset Symbols** section above. You can n
 
 **Ready to analyze? 📊**`;
             }
-            
+
             return `## ✅ Configuration Updated! 🎉
 
 > 🔧 **${actionDescriptions}**
@@ -1082,7 +1094,7 @@ I'm ready for fresh insights and still fully synced with your Signatex setup!
                             rows={2}
                             disabled={isThinking}
                         />
-                        
+
                         {/* Microphone Button */}
                         {speechSupported && (
                             <button
@@ -1108,7 +1120,7 @@ I'm ready for fresh insights and still fully synced with your Signatex setup!
                                 )}
                             </button>
                         )}
-                        
+
                         <button
                             onClick={handleSendMessage}
                             disabled={!inputMessage.trim() || isThinking}
@@ -1119,7 +1131,7 @@ I'm ready for fresh insights and still fully synced with your Signatex setup!
                             </svg>
                         </button>
                     </div>
-                    
+
                     {/* Speech Recognition Status */}
                     {speechSupported && isListening && (
                         <div className="mt-2 flex items-center gap-2 text-sm text-red-600 dark:text-red-400">
@@ -1132,7 +1144,7 @@ I'm ready for fresh insights and still fully synced with your Signatex setup!
                             </div>
                         </div>
                     )}
-                    
+
                     {!speechSupported && (
                         <div className="mt-2 text-xs text-gray-500 dark:text-gray-400">
                             Voice input not supported in this browser
