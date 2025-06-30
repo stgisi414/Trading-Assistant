@@ -1,6 +1,6 @@
 import React from 'react';
 import type { AssetAnalysis } from '../types.ts';
-import { PositionResult } from './PositionResult.tsx';
+import PositionResult from './PositionResult.tsx';
 import { PriceChart } from './PriceChart.tsx';
 import { NewsSection } from './NewsSection.tsx';
 import { Spinner } from './Spinner.tsx';
