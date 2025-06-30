@@ -321,22 +321,22 @@ export const ChatroomModal: React.FC<ChatroomModalProps> = ({ isOpen, onClose })
           {/* Chat Area */}
           <div className="flex-1 flex flex-col">
             {/* Channel Header */}
-            <div className="p-4 border-b border-gray-200 dark:border-gray-700">
-              <div className="flex items-center justify-between">
+            <div className="p-4 border-b border-gray-200 dark:border-gray-700 min-h-[80px]">
+              <div className="flex items-center justify-between h-full">
                 <div className="flex items-center space-x-3">
                   {(() => {
                     const channel = TRADING_CHANNELS.find(c => c.id === activeChannel);
                     const Icon = channel?.icon || MessageCircle;
                     return (
                       <>
-                        <div className={`p-2 rounded-lg ${channel?.color || 'bg-gray-500'}`}>
+                        <div className={`p-2 rounded-lg ${channel?.color || 'bg-gray-500'} flex-shrink-0`}>
                           <Icon className="w-5 h-5 text-white" />
                         </div>
-                        <div>
-                          <h3 className="font-semibold text-gray-900 dark:text-white">
+                        <div className="min-w-0 flex-1">
+                          <h3 className="font-semibold text-gray-900 dark:text-white text-base">
                             {channel?.name || 'Unknown Channel'}
                           </h3>
-                          <p className="text-sm text-gray-500 dark:text-gray-400">
+                          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                             {channel?.description || 'Trading discussion'}
                           </p>
                         </div>
@@ -345,7 +345,7 @@ export const ChatroomModal: React.FC<ChatroomModalProps> = ({ isOpen, onClose })
                   })()}
                 </div>
                 {isAdmin && (
-                  <div className="flex items-center space-x-2 bg-red-100 dark:bg-red-900 px-3 py-1 rounded-full">
+                  <div className="flex items-center space-x-2 bg-red-100 dark:bg-red-900 px-3 py-1 rounded-full flex-shrink-0">
                     <Shield className="w-4 h-4 text-red-600 dark:text-red-400" />
                     <span className="text-xs font-medium text-red-600 dark:text-red-400">Admin</span>
                   </div>
