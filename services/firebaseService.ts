@@ -30,7 +30,8 @@ try {
 // Admin configuration - Add UIDs of users who should have admin privileges
 const ADMIN_UIDS = [
   // Add admin user IDs here
-  // Example: 'your-firebase-uid-here'
+  // Example: 'abc123def456ghi789' (this is what a Firebase UID looks like)
+  // Replace with your actual Firebase UID after signing in
 ];
 
 // Google Auth Provider
