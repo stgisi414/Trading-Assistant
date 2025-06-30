@@ -103,5 +103,6 @@ app.get('/api/health', (req, res) => {
 
 // Start server
 app.listen(PORT, '0.0.0.0', () => {
-  console.log(`Email service running on port ${PORT}`);
+  console.log(`Email service running on http://0.0.0.0:${PORT}`);
+  console.log(`Health check available at http://0.0.0.0:${PORT}/api/health`);
 });
