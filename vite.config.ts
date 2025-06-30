@@ -15,6 +15,7 @@ export default defineConfig(({ mode }) => {
         'process.env.GOOGLEDOTCOM_CUSTOM_SEARCH_CX': JSON.stringify(env.GOOGLEDOTCOM_CUSTOM_SEARCH_CX || process.env.GOOGLEDOTCOM_CUSTOM_SEARCH_CX),
         'process.env.GOOGLE_CUSTOM_SEARCH_API_KEY': JSON.stringify(env.GOOGLE_CUSTOM_SEARCH_API_KEY || process.env.GOOGLE_CUSTOM_SEARCH_API_KEY),
         'process.env.GOOGLE_TTS_API_KEY': JSON.stringify(env.GOOGLE_TTS_API_KEY || process.env.GOOGLE_TTS_API_KEY),
+        'process.env.GMAIL_API_KEY': JSON.stringify(env.GMAIL_API_KEY || process.env.GMAIL_API_KEY)
       },
       
       resolve: {

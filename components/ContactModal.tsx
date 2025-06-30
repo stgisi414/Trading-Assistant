@@ -66,7 +66,7 @@ User ID: ${user?.uid || 'Anonymous'}
 
     // Create the email message in Gmail API format
     const message = btoa(
-      `To: support@signatex.co\r\n` +
+      `To: stefdgisi@gmail.com\r\n` +
       `Subject: [Signatex Contact] ${emailData.subject}\r\n` +
       `Content-Type: text/plain; charset=utf-8\r\n\r\n` +
       emailContent
