@@ -1,10 +1,12 @@
 import type { HistoricalDataPoint, FmpSearchResult } from '../types.ts';
 
-const FMP_API_KEY = process.env.FMP_API_KEY;
+const FMP_API_KEY = import.meta.env.VITE_FMP_API_KEY || process.env.FMP_API_KEY;
 const FMP_BASE_URL = 'https://financialmodelingprep.com/api/v3';
 
 if (!FMP_API_KEY) {
-    console.warn("FMP_API_KEY environment variable not set. Please get a free API key from financialmodelingprep.com for live data. Falling back to mock data.");
+    console.warn("FMP_API_KEY environment variable not set. Please add your API key to Replit Secrets. Falling back to mock data.");
+} else {
+    console.log("✅ FMP API key found, using real market data");
 }
 
 const generateMockData = (symbol: string, timeframe: string = '1d'): HistoricalDataPoint[] => {
