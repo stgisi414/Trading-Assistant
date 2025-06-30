@@ -12,7 +12,7 @@ language = "nodejs"
 [deployment]
 deploymentTarget = "cloudrun"
 build = ["npm", "run", "build"]
-run = ["sh", "-c", "npm run preview"]
+run = ["sh", "-c", "npm run preview & cd server && npm start & wait"]
 
 [[ports]]
 localPort = 5000
