@@ -3,6 +3,7 @@ import type { IndicatorOption, TimeframeOption, MarketOption } from '../types.ts
 import { MarketType } from '../types.ts';
 import { SymbolSearchInput } from './SymbolSearchInput.tsx';
 import { Spinner } from './Spinner.tsx';
+import { analyzeIndicatorConfluence, type ConfluenceAnalysis } from '../services/confluenceAnalysisService.ts';
 
 interface InputSectionProps {
     selectedSymbols: FmpSearchResult[];
@@ -73,6 +74,18 @@ export const InputSection: React.FC<InputSectionProps> = ({
     const handleRemoveSymbol = (symbolToRemove: string) => {
         onRemoveSymbol(symbolToRemove);
     };
+
+    // Confluence analysis
+    const [confluenceAnalysis, setConfluenceAnalysis] = React.useState<ConfluenceAnalysis | null>(null);
+
+    React.useEffect(() => {
+        if (selectedIndicators.length > 0) {
+            const analysis = analyzeIndicatorConfluence(selectedIndicators);
+            setConfluenceAnalysis(analysis);
+        } else {
+            setConfluenceAnalysis(null);
+        }
+    }, [selectedIndicators]);
 
     const inputClasses = `w-full p-3 bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-gray-200 placeholder-gray-400 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition [color-scheme:light] dark:[color-scheme:dark]`;
     const labelClasses = "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1";
@@ -274,6 +287,76 @@ export const InputSection: React.FC<InputSectionProps> = ({
                     </div>
                 </div>
             </div>
+
+             {/* Confluence Analysis Display */}
+             {confluenceAnalysis && selectedIndicators.length > 0 && (
+                <div className="space-y-4">
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                        📊 Indicator Confluence Analysis
+                    </h3>
+                    <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-xl p-4 border border-blue-200 dark:border-blue-700">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {/* Overall Score */}
+                            <div className="text-center">
+                                <div className="text-3xl font-bold text-blue-600 dark:text-blue-400">
+                                    {confluenceAnalysis.overallScore.toFixed(0)}%
+                                </div>
+                                <div className={`text-sm font-medium ${
+                                    confluenceAnalysis.equilibriumStatus === 'Optimal' ? 'text-green-600 dark:text-green-400' :
+                                    confluenceAnalysis.equilibriumStatus === 'Good' ? 'text-blue-600 dark:text-blue-400' :
+                                    confluenceAnalysis.equilibriumStatus === 'Imbalanced' ? 'text-yellow-600 dark:text-yellow-400' :
+                                    'text-red-600 dark:text-red-400'
+                                }`}>
+                                    {confluenceAnalysis.equilibriumStatus} Equilibrium
+                                </div>
+                            </div>
+
+                            {/* Category Breakdown */}
+                            <div className="space-y-2">
+                                <div className="text-xs text-gray-600 dark:text-gray-400">Category Coverage:</div>
+                                {Object.entries(confluenceAnalysis.categoryScores).map(([category, score]) => (
+                                    <div key={category} className="flex items-center justify-between text-xs">
+                                        <span className="capitalize text-gray-700 dark:text-gray-300">
+                                            {category === 'trend' ? '📈 Trend' :
+                                             category === 'momentum' ? '🚀 Momentum' :
+                                             category === 'volatility' ? '📊 Volatility' : '📦 Volume'}
+                                        </span>
+                                        <div className="flex items-center space-x-2">
+                                            <div className="w-16 bg-gray-200 dark:bg-gray-600 rounded-full h-1.5">
+                                                <div 
+                                                    className={`h-1.5 rounded-full ${
+                                                        score >= 80 ? 'bg-green-500' :
+                                                        score >= 60 ? 'bg-blue-500' :
+                                                        score >= 40 ? 'bg-yellow-500' : 'bg-red-500'
+                                                    }`}
+                                                    style={{ width: `${score}%` }}
+                                                ></div>
+                                                <span className="text-xs font-medium">{score.toFixed(0)}%</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Recommendations */}
+                        {confluenceAnalysis.recommendations.length > 0 && (
+                            <div className="mt-4 pt-3 border-t border-blue-200 dark:border-blue-700">
+                                <div className="text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    💡 Optimization Suggestions:
+                                </div>
+                                <div className="space-y-1">
+                                    {confluenceAnalysis.recommendations.slice(0, 2).map((rec, index) => (
+                                        <div key={index} className="text-xs text-gray-600 dark:text-gray-400">
+                                            • {rec}
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            )}
 
             <div className="mt-8">
                 <div className="flex gap-3">

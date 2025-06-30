@@ -51,77 +51,103 @@ function createEnhancedGeminiPrompt(
         ? newsArticles.map(article => `Title: ${article.title}\nSource: ${article.source || 'Unknown'}\nSummary: ${article.snippet || 'No summary available'}\nURL: ${article.uri}`).join("\n\n")
         : "No recent news articles found.";
 
+    // Enhanced structured prompting for indicator confluence
+    const indicatorCategories = {
+        trend: ['SMA', 'EMA', 'MACD', 'ADX'].filter(i => selectedIndicators.includes(i)),
+        momentum: ['RSI', 'StochasticOscillator'].filter(i => selectedIndicators.includes(i)),
+        volatility: ['BollingerBands', 'Volatility'].filter(i => selectedIndicators.includes(i)),
+        volume: ['Volume'].filter(i => selectedIndicators.includes(i))
+    };
+
+    const confluenceStructure = `
+    **INDICATOR CONFLUENCE ANALYSIS FRAMEWORK:**
+    Your analysis MUST establish equilibrium through systematic confluence evaluation:
+
+    1. TREND INDICATORS (${indicatorCategories.trend.join(', ') || 'None'}): Primary directional bias
+    2. MOMENTUM INDICATORS (${indicatorCategories.momentum.join(', ') || 'None'}): Entry/exit timing
+    3. VOLATILITY INDICATORS (${indicatorCategories.volatility.join(', ') || 'None'}): Risk assessment
+    4. VOLUME INDICATORS (${indicatorCategories.volume.join(', ') || 'None'}): Conviction validation
+
+    **CONFLUENCE SCORING METHODOLOGY:**
+    - Assign each indicator category a score: BULLISH (+2), NEUTRAL (0), BEARISH (-2)
+    - Calculate Confluence Score: Sum of all category scores
+    - Confluence Equilibrium: Score between -1 and +1 indicates HOLD
+    - Strong Confluence: Score ≥ +4 indicates BUY, Score ≤ -4 indicates SELL
+    - Moderate Confluence: Score 2-3 indicates weak BUY, Score -2 to -3 indicates weak SELL
+    `;
+
     return `
-    You are an expert financial analyst. Your task is to provide a comprehensive trading recommendation for the asset ${assetSymbol}.
+    You are an expert quantitative analyst specializing in multi-indicator confluence analysis. Your task is to provide a systematic, equilibrium-based trading recommendation for ${assetSymbol}.
 
-    Analyze the following data to recommend a trading position (BUY, SELL, or HOLD).
+    ${confluenceStructure}
 
-    **User's Context:**
-    - Trading Wallet Amount: $${walletAmount.toLocaleString()}
-    - Selected Technical Indicators for Analysis: ${selectedIndicators.join(", ")}
-    - Additional Analysis Factors: Consider market sentiment, social media trends, sector analysis, and fundamental factors
+    **MARKET DATA CONTEXT:**
+    - Asset Symbol: ${assetSymbol}
+    - Trading Capital: $${walletAmount.toLocaleString()}
+    - Active Indicators: ${selectedIndicators.join(", ")}
+    - Analysis Timeframe: Based on historical data patterns
 
-    **Recent Historical Price Data for ${assetSymbol} (Date: Closing Price):**
-    [${historicalDataString}]
+    **PRICE DATA SERIES:**
+    ${historicalDataString}
 
-    **Recent News Articles:**
+    **NEWS SENTIMENT DATA:**
     ${newsString}
 
-    **Calculated Technical Indicator Values:**
-    - SMA: ${technicalIndicatorValues.sma ? technicalIndicatorValues.sma.map(s => `${s.period}-period: ${s.value.toFixed(2)} (${s.trend})`).join(', ') : 'N/A'}
-    - EMA: ${technicalIndicatorValues.ema ? technicalIndicatorValues.ema.map(e => `${e.period}-period: ${e.value.toFixed(2)} (${e.trend})`).join(', ') : 'N/A'}
-    - RSI: ${technicalIndicatorValues.rsi ? `${technicalIndicatorValues.rsi.value.toFixed(2)} (${technicalIndicatorValues.rsi.signal})` : 'N/A'}
-    - MACD: ${technicalIndicatorValues.macd ? `MACD: ${technicalIndicatorValues.macd.macd.toFixed(2)}, Signal: ${technicalIndicatorValues.macd.signal.toFixed(2)}, Histogram: ${technicalIndicatorValues.macd.histogram.toFixed(2)} (${technicalIndicatorValues.macd.trend})` : 'N/A'}
-    - Bollinger Bands: ${technicalIndicatorValues.bollingerBands ? `Upper: ${technicalIndicatorValues.bollingerBands.upper.toFixed(2)}, Middle: ${technicalIndicatorValues.bollingerBands.middle.toFixed(2)}, Lower: ${technicalIndicatorValues.bollingerBands.lower.toFixed(2)} (${technicalIndicatorValues.bollingerBands.position})` : 'N/A'}
-    - Stochastic Oscillator: ${technicalIndicatorValues.stochasticOscillator ? `%K: ${technicalIndicatorValues.stochasticOscillator.k.toFixed(2)}, %D: ${technicalIndicatorValues.stochasticOscillator.d.toFixed(2)} (${technicalIndicatorValues.stochasticOscillator.signal})` : 'N/A'}
-    - ADX: ${technicalIndicatorValues.adx ? `${technicalIndicatorValues.adx.value.toFixed(2)} (${technicalIndicatorValues.adx.trend})` : 'N/A'}
-    - Volume: ${technicalIndicatorValues.volume ? `Current: ${technicalIndicatorValues.volume.current.toLocaleString()}, Average: ${technicalIndicatorValues.volume.average.toLocaleString()} (${technicalIndicatorValues.volume.trend})` : 'N/A'}
-    - Volatility: ${technicalIndicatorValues.volatility ? `${technicalIndicatorValues.volatility.value.toFixed(2)}% (${technicalIndicatorValues.volatility.level})` : 'N/A'}
+    **TECHNICAL INDICATOR READINGS:**
+    - SMA Signals: ${technicalIndicatorValues.sma ? technicalIndicatorValues.sma.map(s => `${s.period}p: $${s.value.toFixed(2)} (${s.trend})`).join(', ') : 'Not calculated'}
+    - EMA Signals: ${technicalIndicatorValues.ema ? technicalIndicatorValues.ema.map(e => `${e.period}p: $${e.value.toFixed(2)} (${e.trend})`).join(', ') : 'Not calculated'}
+    - RSI Reading: ${technicalIndicatorValues.rsi ? `${technicalIndicatorValues.rsi.value.toFixed(2)} (${technicalIndicatorValues.rsi.signal})` : 'Not calculated'}
+    - MACD Analysis: ${technicalIndicatorValues.macd ? `Line: ${technicalIndicatorValues.macd.macd.toFixed(2)}, Signal: ${technicalIndicatorValues.macd.signal.toFixed(2)}, Histogram: ${technicalIndicatorValues.macd.histogram.toFixed(2)} (${technicalIndicatorValues.macd.trend})` : 'Not calculated'}
+    - Bollinger Position: ${technicalIndicatorValues.bollingerBands ? `Price vs Bands: ${technicalIndicatorValues.bollingerBands.position}, Upper: $${technicalIndicatorValues.bollingerBands.upper.toFixed(2)}, Lower: $${technicalIndicatorValues.bollingerBands.lower.toFixed(2)}` : 'Not calculated'}
+    - Stochastic Status: ${technicalIndicatorValues.stochasticOscillator ? `%K: ${technicalIndicatorValues.stochasticOscillator.k.toFixed(2)}, %D: ${technicalIndicatorValues.stochasticOscillator.d.toFixed(2)} (${technicalIndicatorValues.stochasticOscillator.signal})` : 'Not calculated'}
+    - ADX Strength: ${technicalIndicatorValues.adx ? `${technicalIndicatorValues.adx.value.toFixed(2)} (${technicalIndicatorValues.adx.trend})` : 'Not calculated'}
+    - Volume Profile: ${technicalIndicatorValues.volume ? `Current: ${technicalIndicatorValues.volume.current.toLocaleString()}, Average: ${technicalIndicatorValues.volume.average.toLocaleString()} (${technicalIndicatorValues.volume.trend})` : 'Not calculated'}
+    - Volatility Measure: ${technicalIndicatorValues.volatility ? `${technicalIndicatorValues.volatility.value.toFixed(2)}% (${technicalIndicatorValues.volatility.level})` : 'Not calculated'}
 
-    **Your Analysis Task:**
-    Based on your comprehensive analysis of the historical data, selected indicators, and recent news sentiment, provide the following information in a clear, structured format.
-
-    **IMPORTANT REQUIREMENTS:**
-    1. Analyze ALL selected technical indicators: ${selectedIndicators.join(", ")}
-    2. For EACH indicator, create a dedicated section explaining:
-       - Current indicator value/signal for ${assetSymbol}
-       - What this indicator measures and why it's important
-       - How this specific reading impacts your recommendation
-    3. Show how the indicators work together to support your recommendation
-    4. Reference specific price movements and dates from the historical data
-    5. Cite relevant news articles and explain their market impact
-    6. Provide detailed reasoning with multiple clearly labeled sections
-
-    **Do not use markdown formatting like bold or italics for the labels.**
+    **STRUCTURED ANALYSIS REQUIREMENTS:**
 
     **START_RESPONSE**
-    Recommended Position: [Strictly one of: BUY, SELL, HOLD]
-    Confidence Level: [A percentage, e.g., 85%]
-    Detailed Reasoning: [Provide a comprehensive multi-section explanation for your recommendation. 
+    Recommended Position: [BUY/SELL/HOLD]
+    Confidence Level: [Percentage based on confluence strength]
+    Confluence Score: [Numerical score from methodology above]
+    
+    Detailed Reasoning:
 
-    **Executive Summary:**
-    Start with an overview of your recommendation and confidence level.
+    **CONFLUENCE EQUILIBRIUM ANALYSIS:**
 
-    **Individual Technical Indicator Analysis:**
-    For each selected indicator (${selectedIndicators.join(", ")}), provide a dedicated subsection:
-    - Current reading/signal for ${assetSymbol}
-    - What this indicator measures and its significance
-    - How this specific reading impacts your recommendation
+    **Phase 1: Indicator Category Scoring**
+    - Trend Category Score: [+2/0/-2] based on ${indicatorCategories.trend.join(', ') || 'N/A'}
+    - Momentum Category Score: [+2/0/-2] based on ${indicatorCategories.momentum.join(', ') || 'N/A'}
+    - Volatility Category Score: [+2/0/-2] based on ${indicatorCategories.volatility.join(', ') || 'N/A'}
+    - Volume Category Score: [+2/0/-2] based on ${indicatorCategories.volume.join(', ') || 'N/A'}
 
-    **Combined Technical Analysis:**
-    Explain how these indicators work together and any confirmations or contradictions between them.
+    **Phase 2: Individual Indicator Deep Dive**
+    For each selected indicator (${selectedIndicators.join(", ")}):
+    - Current signal state and numerical reading
+    - Timeframe reliability and signal strength
+    - Confluence contribution to overall equilibrium
+    - Potential divergences or confirmations with other indicators
 
-    **Price Action Analysis:**
-    Reference specific historical price movements from the data provided, including dates and price levels that support your analysis.
+    **Phase 3: Multi-Timeframe Confluence Validation**
+    - Short-term momentum vs long-term trend alignment
+    - Volume confirmation of price movements
+    - Volatility expansion/contraction patterns
+    - Support/resistance level interactions
 
-    **News Sentiment Analysis:**
-    Analyze the recent news sentiment and how specific news articles impact the market outlook for ${assetSymbol}.
+    **Phase 4: Risk-Adjusted Position Synthesis**
+    - Confluence-based position sizing for $${walletAmount.toLocaleString()} capital
+    - Entry/exit optimization based on indicator alignment
+    - Risk management parameters derived from volatility measures
+    - Scenario analysis for confluence breakdown points
 
-    **Position Sizing & Risk Management:**
-    Explain position sizing recommendations based on the $${walletAmount.toLocaleString()} wallet amount and risk management considerations.
+    **Phase 5: Market Context Integration**
+    - News sentiment impact on technical confluence
+    - Sector/market correlation effects
+    - Economic calendar considerations
+    - Liquidity and volume profile assessment
 
-    **Additional Market Considerations:**
-    Provide any additional considerations, potential risks, or market conditions that could affect this position.]
+    **FINAL EQUILIBRIUM VERDICT:**
+    Comprehensive conclusion integrating all confluence factors with specific price targets and risk parameters.
     **END_RESPONSE**
     `;
 }

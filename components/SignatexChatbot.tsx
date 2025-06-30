@@ -795,6 +795,24 @@ I can handle everything from beginner setups to advanced multi-asset portfolio o
                 return generateMarketTypeErrorResponse(marketTypeError, userMessage);
             }
 
+            // Enhanced confluence-based context analysis
+            const indicatorCategories = {
+                trend: ['SMA', 'EMA', 'MACD', 'ADX'].filter(i => currentInputs?.selectedIndicators?.includes(i) || []),
+                momentum: ['RSI', 'StochasticOscillator'].filter(i => currentInputs?.selectedIndicators?.includes(i) || []),
+                volatility: ['BollingerBands', 'Volatility'].filter(i => currentInputs?.selectedIndicators?.includes(i) || []),
+                volume: ['Volume'].filter(i => currentInputs?.selectedIndicators?.includes(i) || [])
+            };
+
+            const confluenceBalance = {
+                trendCoverage: indicatorCategories.trend.length > 0,
+                momentumCoverage: indicatorCategories.momentum.length > 0,
+                volatilityCoverage: indicatorCategories.volatility.length > 0,
+                volumeCoverage: indicatorCategories.volume.length > 0
+            };
+
+            const balanceScore = Object.values(confluenceBalance).filter(Boolean).length;
+            const equilibriumStatus = balanceScore >= 3 ? 'Optimal' : balanceScore >= 2 ? 'Good' : 'Needs Balance';
+
             // Create comprehensive context for Gemini
             const context = {
                 userMessage,
@@ -807,44 +825,56 @@ I can handle everything from beginner setups to advanced multi-asset portfolio o
                 conversationHistory: messages.slice(-3),
                 selectedNonTechnicalIndicators: currentInputs?.selectedNonTechnicalIndicators,
                 includeOptionsAnalysis: currentInputs?.includeOptionsAnalysis,
-                includeOrderAnalysis: currentInputs?.includeOrderAnalysis
+                includeOrderAnalysis: currentInputs?.includeOrderAnalysis,
+                confluenceAnalysis: {
+                    indicatorCategories,
+                    confluenceBalance,
+                    equilibriumStatus,
+                    balanceScore
+                }
             };
 
-            const prompt = `🤖 You are the Signatex AI Trading Assistant, powered by Gemini AI. You are integrated into a comprehensive trading analysis platform called Signatex.
+            const prompt = `🤖 You are the Signatex AI Trading Assistant, powered by Gemini AI with advanced indicator confluence analysis capabilities.
 
-📊 CURRENT USER CONTEXT:
-- 🎯 Selected Symbols: ${currentInputs?.selectedSymbols?.join(', ') || 'None'}
-- 💰 Wallet Amount: $${currentInputs?.walletAmount || '0'}
-- 📈 Active Indicators: ${currentInputs?.selectedIndicators?.join(', ') || 'None'}
-- ⏰ Timeframe: ${currentInputs?.selectedTimeframe || 'Not set'}
-- 🏪 Market Type: ${currentInputs?.selectedMarketType || 'Not set'}
-- 📰 Non-Technical Indicators: ${currentInputs?.selectedNonTechnicalIndicators?.join(', ') || 'None'}
-- ⚙️ Options Analysis: ${currentInputs?.includeOptionsAnalysis ? 'Enabled ✅' : 'Disabled ❌'}
-- 🛑 Stop Limit Order Check: ${currentInputs?.includeOrderAnalysis ? 'Enabled ✅' : 'Disabled ❌'}
-- 📊 Analysis Results: ${context.hasResults ? 'Available ✅' : 'None ❌'}
-- 🎛️ ProfitMax Status: ${context.profitMaxActive ? 'Optimized ✅' : 'Not run ⏳'}
-- ⚡ ProFlow Status: ${context.proFlowRunning ? 'Running 🔄' : 'Idle 😴'}
+📊 CURRENT TRADING CONFIGURATION:
+- 🎯 Active Symbols: ${currentInputs?.selectedSymbols?.join(', ') || 'None selected'}
+- 💰 Capital Allocation: $${currentInputs?.walletAmount || '0'}
+- 📈 Technical Indicators: ${currentInputs?.selectedIndicators?.join(', ') || 'None selected'}
+- ⏰ Analysis Timeframe: ${currentInputs?.selectedTimeframe || 'Not configured'}
+- 🏪 Market Focus: ${currentInputs?.selectedMarketType || 'Not selected'}
+- 📰 Fundamental Factors: ${currentInputs?.selectedNonTechnicalIndicators?.join(', ') || 'None'}
+- ⚙️ Options Analysis: ${currentInputs?.includeOptionsAnalysis ? 'Active ✅' : 'Inactive ❌'}
+- 🛑 Order Management: ${currentInputs?.includeOrderAnalysis ? 'Active ✅' : 'Inactive ❌'}
 
-🎯 DETECTED ACTIONS FROM USER MESSAGE: ${JSON.stringify(actions)}
+🔍 INDICATOR CONFLUENCE EQUILIBRIUM ASSESSMENT:
+- 📈 Trend Coverage: ${indicatorCategories.trend.join(', ') || 'Missing'} (${indicatorCategories.trend.length} indicators)
+- 🚀 Momentum Coverage: ${indicatorCategories.momentum.join(', ') || 'Missing'} (${indicatorCategories.momentum.length} indicators)
+- 📊 Volatility Coverage: ${indicatorCategories.volatility.join(', ') || 'Missing'} (${indicatorCategories.volatility.length} indicators)
+- 📦 Volume Coverage: ${indicatorCategories.volume.join(', ') || 'Missing'} (${indicatorCategories.volume.length} indicators)
+- ⚖️ Overall Equilibrium: ${equilibriumStatus} (${balanceScore}/4 categories covered)
 
-💬 USER MESSAGE: "${userMessage}"
+📋 SYSTEM STATUS:
+- 📊 Analysis Results: ${context.hasResults ? 'Available ✅' : 'Pending ⏳'}
+- 🎛️ ProfitMax: ${context.profitMaxActive ? 'Optimized ✅' : 'Not run ⏳'}
+- ⚡ ProFlow: ${context.proFlowRunning ? 'Active 🔄' : 'Standby 😴'}
 
-📋 RESPONSE INSTRUCTIONS:
-1. 🗣️ Respond naturally and conversationally as a trading expert
-2. ✅ If actions were detected and executed, acknowledge them specifically with enthusiasm
-3. 🎓 Provide educational trading insights relevant to the user's question
-4. 🔗 Reference the user's current setup when giving advice
-5. 💪 Be helpful, knowledgeable, and encouraging
-6. 😊 Use emojis frequently but appropriately to make responses engaging
-7. 📚 Format responses using markdown with headers, lists, and emphasis
-8. 🔥 For beginners: recommend SMA, RSI, and Volume with clear explanations
-9. 🚀 For advanced setups: suggest MACD, Bollinger Bands, Stochastic, etc.
-10. 💡 Always explain WHY you're making specific recommendations
-11. 📝 Keep responses focused but informative (aim for 200-400 words)
-12. 🎨 Use sections with headers (##) and bullet points for clarity
-13. 💫 End with an encouraging question or call-to-action
+🎯 USER COMMAND ANALYSIS: ${JSON.stringify(actions)}
+💬 USER INPUT: "${userMessage}"
 
-🎯 Generate a helpful, personalized response with plenty of emojis and markdown formatting:`;
+📋 ENHANCED RESPONSE FRAMEWORK:
+1. 🧠 Apply confluence-based reasoning to all recommendations
+2. ⚖️ Always assess indicator equilibrium when suggesting changes
+3. 🎯 Prioritize balanced indicator selection across all four categories
+4. 📊 Explain how different indicator types complement each other
+5. 🔧 Suggest improvements for better confluence when imbalanced
+6. 🎓 Educate on the importance of multi-dimensional analysis
+7. 💡 Provide specific examples of how confluence improves accuracy
+8. 📈 Reference optimal indicator combinations for different strategies
+9. 🚨 Warn about potential blind spots in current configuration
+10. 🎪 Use engaging visuals and emojis for better understanding
+
+🎯 CONFLUENCE-OPTIMIZED RESPONSE GENERATION:
+Generate a response that maintains analytical equilibrium while being educational and actionable. Focus on indicator confluence principles and systematic analysis optimization.`;
 
             const response = await ai.models.generateContent({
                 model: 'gemini-1.5-flash',
