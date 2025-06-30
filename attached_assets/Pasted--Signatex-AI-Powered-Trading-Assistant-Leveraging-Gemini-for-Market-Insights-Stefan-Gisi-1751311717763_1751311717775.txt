@@ -1,0 +1,240 @@
+
+
+Signatex
+AI-Powered Trading Assistant
+
+Leveraging Gemini for Market Insights
+
+
+Stefan Gisi
+Stefan Gisi
+1/50 analyses
+
+Ask Signatex
+
+Debug Console
+
+ProFlow AI
+Signatex ProFlow
+▼
+Market Type
+
+US Markets
+Market
+
+United States (NASDAQ/NYSE)
+Asset Symbols (e.g., AAPL, TSLA)
+Search any US stock symbol (NASDAQ/NYSE).
+
+Type to search stocks...
+ORCL
+×
+ORCL
+Oracle Corporation
+Trading Wallet Amount ($)
+2000
+Technical Indicators (multi-select)
+Simple Moving Average (SMA)Exponential Moving Average (EMA)Relative Strength Index (RSI)Moving Average Convergence Divergence (MACD)Bollinger BandsStochastic OscillatorAverage Directional Index (ADX)VolumeVolatilityHead and Shoulders Top PatternHead and Shoulders Bottom (Inverse H&S)Double Top PatternDouble Bottom PatternOpen Interest
+Non-Technical Indicators (multi-select)
+Price-to-Earnings Ratio (P/E)Price/Earnings to Growth (PEG)Price-to-Book Ratio (P/B)Debt-to-Equity RatioReturn on Equity (ROE)Revenue Growth RateEarnings Growth RateFree Cash FlowAnalyst Ratings & Price TargetsInsider Trading ActivitySocial Media SentimentEconomic IndicatorsSector Relative Performance
+Start Date
+
+07/02/2025
+End Date
+
+07/03/2025
+Timeframe
+
+30 Minutes
+Analysis Options
+
+Include Options Analysis
+
+Call Options
+
+Put Options
+
+Include Stop & Limit Order Analysis
+📊 Indicator Confluence Analysis
+12%
+Critical Equilibrium
+Category Coverage:
+📈 Trend
+50%
+🚀 Momentum
+50%
+📊 Volatility
+100%
+📦 Volume
+100%
+💡 Optimization Suggestions:
+• Select indicators that complement each other for better signal confirmation
+Signatex ProfitMax
+
+Analyze
+Clear Results
+AnalyticsAnalysis Results
+Save
+Save Analysis
+ORCL
+Oracle Corporation logo
+Oracle Corporation
+NYSE
+Technology
+Market Cap
+$621.23B
+Employees
+159.0K
+Industry
+Software - Infrastructure
+IPO Date
+1986
+CEOChief Executive Officer
+Safra Ada Catz
+
+WebsiteWebsite
+https://www.oracle.com
+PhonePhone
+737 867 1000
+
+AddressHeadquarters
+2300 Oracle Way
+
+Austin, TX, 78741
+
+US
+
+DescriptionCompany Overview
+Oracle Corporation offers products and services that address enterprise information technology environments worldwide. Its Oracle cloud software as a service offering include various cloud software applications, including Oracle Fusion cloud enterprise resource planning (ERP), Oracle Fusion cloud enterprise performance management, Oracle Fusion cloud supply chain and manufacturing management, Oracle Fusion cloud human capital management, Oracle Advertising, and NetSuite applications suite, as well as Oracle Fusion Sales, Service, and Marketing. The company also offers cloud-based industry solutions for various industries; Oracle application licenses; and Oracle license support services. In addition, it provides cloud and license business' infrastructure technologies, such as the Oracle Database, an enterprise database; Java, a software development language; and middleware, including development tools and others. The company's cloud and license business' infrastructure technologies also comprise cloud-based compute, storage, and networking capabilities; and Oracle autonomous database, MySQL HeatWave, Internet-of-Things, digital assistant, and blockchain. Further, it provides hardware products and other hardware-related software offerings, including Oracle engineered systems, enterprise servers, storage solutions, industry-specific hardware, virtualization software, operating systems, management software, and related hardware services; and consulting and customer services. The company markets and sells its cloud, license, hardware, support, and services offerings directly to businesses in various industries, government agencies, and educational institutions, as well as through indirect channels. Oracle Corporation was founded in 1977 and is headquartered in Austin, Texas.
+
+Play Analysis
+💰 BUY
+image
+Company Logo
+Oracle stock slides after 1Q results fail to top expectations, but ...
+open_in_new
+Oracle stock slides after 1Q results fail to top expectations, but ...
+G
+Oracle Has a Bright Future after Partnering with US Government ...
+open_in_new
+Oracle Has a Bright Future after Partnering with US Government ...
+G
+Oracle Partners with New York Stock Exchange
+open_in_new
+Oracle Partners with New York Stock Exchange
+G
+Confidence Score
+75%
+Analysis Reasoning
+Show More
+**
+
+CONFLUENCE EQUILIBRIUM ANALYSIS:
+
+Phase 1: Indicator Category Scoring
+
+Trend Category Score: +2 (All SMAs are bullish, indicating a strong uptrend)
+Momentum Category Score: 0 (RSI at 50...
+image
+Analysis Illustrations
+Indian Stock Market Trading | Investing: Technical Analysis | Udemy
+open_in_new
+Indian Stock Market Trading | Investing: Technical Analysis | Udemy
+G
+A comprehensive image of environmental toxic heavy metals in red ...
+open_in_new
+A comprehensive image of environmental toxic heavy metals in red ...
+G
+Technical Analysis & Trading , Stocks, Forex | Udemy
+open_in_new
+Technical Analysis & Trading , Stocks, Forex | Udemy
+G
+Relevant News (Powered by Google Custom Search)
+B400.US | Barron's 400 Index Stock Prices and Charts - WSJ
+Source: www.wsj.com
+
+19 hours ago ... ORCL · Oracle Corp. 220.29, 10.05, 4.78%. SMCI · Super Micro Computer Inc. 49.43 ... Stocks: Real-time U.S. stock quotes reflect trades reported through ...
+
+VGT Quote - Vanguard Information Technology ETF Fund - Bloomberg
+Source: www.bloomberg.com
+
+19 hours ago ... Stock Bulls Drive S&P 500 to Brink of Record High: Markets Wrap. updated Jun ... Oracle CorpORCL:US, 8.8362M, 1.4627B, 1.70%. View more. Popular Securities.
+
+AVGO Stock Quote Price and Forecast | CNN
+Source: www.cnn.com
+
+19 hours ago ... ... stock statistics. 1-day range. 266.88271.85. 52-week range. 128.50271.85. Market cap ... (ORCL) by TipRanks Jun 09, 2025 3:50am ET Analysts Offer Insights on ...
+
+https://www.bloomberg.com/feeds/sitemap_news.xml
+Source: www.bloomberg.com
+
+19 hours ago ... ... ORCL</news:stock_tickers> </news:news> <image:image> <image:loc>https ... stock-regulator-draws-jokes-and-hopes-with-logo-revamp</loc> <news:news> ...
+
+Business News - Latest Headlines on CNN Business | CNN Business
+Source: www.cnn.com
+
+19 hours ago ... Most stock quote data provided by BATS. US market indices are shown in real time, except for the S&P 500 which is refreshed every two minutes. All times are ET.
+
+Finance and Markets - WSJ.com
+Source: www.wsj.com
+
+19 hours ago ... The Stock-Market Rally Is Moving Beyond Big Tech and Investors Are Thrilled ... 5.07%. ORCL. 219.88. 9.63. 4.58%. Laggards. Symbol. Price. Change. % Change. FTV.
+
+Stock Upgrades and Downgrades
+Source: www.wsj.com
+
+19 hours ago ... Latest data on stock upgrades and downgrades by The Wall Street Journal ... ORCL, Stifel, Hold>>Buy, $250. Vor Biopharma. Vor Biopharma. VOR, H.C. Wainwright ...
+
+OKLO Stock Quote Price and Forecast | CNN
+Source: www.cnn.com
+
+19 hours ago ... ... Oracle jumps 7% after Q4 earnings beat by TipRanks Jun 11, 2025 4:10pm ET ... Earnings per share. - 0.07. 300.00%. Net profit margin. n/a. n/a. Free cash ...
+
+Technology - Bloomberg
+Source: www.bloomberg.com
+
+19 hours ago ... Oracle Said To Be Weighing Bid For TikTok's U.S. Business. Oracle Inks Cloud ... Meta Ahead Of Earnings Figures. Meta Taps Four OpenAI Researchers for ...
+
+Watch Oracle Inks Cloud Deal Worth $30B A Year - Bloomberg
+Source: www.bloomberg.com
+
+1 hour ago ... Oracle Corp. said it has ... Tick Tock was the big customer for Oracle Cloud and obviously that's a bit of a controversial on their own set earnings calls.
+
+Watch Scott Bessent Confident on Tax Bill as Deadline Looms ...
+Source: www.bloomberg.com
+
+60 minutes ago ... ... Oracle, to having a great start to this week. ... You need to look at what is the underlying earnings growth and what's the breadth of that earnings growth.
+
+Tech, Media & Telecom Roundup: Market Talk - WSJ
+Source: www.wsj.com
+
+3 hours ago ... ... Oracle's revenue should be able to grow meaningfully faster than its ... earnings. Disney is continuing to improve its margins in its direct-to ...
+
+Historical Price Chart
+Chart Type:
+
+Line
+
+Show Volume
+Technical Indicators
+
+SMA 9
+
+SMA 20
+
+SMA 50
+
+SMA 200
+
+EMA 12
+
+EMA 26
+
+VWAP
+
+Bollinger
+🔧 Symbol Addition Debugger
+Enable to track symbol addition/removal operations in real-time
+
+Enable Debug Mode
+© 2025 Signatex.co. All rights reserved.
