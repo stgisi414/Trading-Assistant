@@ -149,3 +149,39 @@ export interface AssetAnalysis {
     error?: string;
     patternDetails?: PatternDetails[];
 }
+
+// Authentication and Cloud Storage Types
+export interface AuthUser {
+    uid: string;
+    email: string;
+    displayName: string;
+    photoURL?: string;
+}
+
+export interface UserSubscription {
+    tier: 'free' | 'premium';
+    analysisLimit: number;
+    analysisCount: number;
+    paperTradingEnabled: boolean;
+    expiresAt?: Date;
+}
+
+export interface PaperTrade {
+    id: string;
+    userId: string;
+    symbol: string;
+    action: 'BUY' | 'SELL';
+    quantity: number;
+    price: number;
+    timestamp: Date;
+    status: 'pending' | 'executed' | 'cancelled';
+    reasoning?: string;
+    stopLoss?: number;
+    takeProfit?: number;
+}
+
+export interface CloudSyncStatus {
+    lastSynced: Date;
+    isOnline: boolean;
+    pendingChanges: number;
+}

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { SignatexChatbot } from './SignatexChatbot.tsx';
 import { Moon, Sun, MessageCircle } from 'lucide-react';
+import { useAuth } from './contexts/AuthContext'; // Assuming you have an AuthContext
 
 interface ThemeToggleProps {
     theme: 'light' | 'dark';
@@ -51,10 +52,24 @@ interface HeaderProps {
     };
     onUpdateInputs?: (updates: any) => void;
     handleChatbotInputUpdates?: (updates: any) => void;
+    onSignInClick: () => void;
+    userProfile: React.ReactNode;
 }
 
-export const Header: React.FC<HeaderProps> = ({ theme, onToggleTheme, currentInputs, analysisResults, profitMaxResult, proFlowStatus, onUpdateInputs, handleChatbotInputUpdates }) => {
+export const Header: React.FC<HeaderProps> = ({ 
+    theme, 
+    onToggleTheme,
+    currentInputs,
+    analysisResults,
+    profitMaxResult,
+    proFlowStatus,
+    onUpdateInputs,
+    onSignInClick,
+    userProfile,
+    handleChatbotInputUpdates
+}) => {
     const [isChatbotOpen, setIsChatbotOpen] = useState(false);
+    const { user } = useAuth();
 
     return (
         <>
@@ -74,17 +89,40 @@ export const Header: React.FC<HeaderProps> = ({ theme, onToggleTheme, currentInp
                             </p>
                         </div>
 
+                        <div className="flex items-center gap-3">
+                    <button
+                        onClick={onToggleTheme}
+                        className="p-3 rounded-xl bg-card/80 backdrop-blur-sm border border-border hover:bg-accent transition-all duration-300 text-foreground"
+                        title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
+                    >
+                        {theme === 'light' ? (
+                            <Moon className="w-5 h-5" />
+                        ) : (
+                            <Sun className="w-5 h-5 text-gray-300" />
+                        )}
+                    </button>
+
+                    <button
+                        onClick={() => setIsChatbotOpen(true)}
+                        className="flex items-center gap-2 px-4 py-3 rounded-xl bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 font-medium transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
+                        title="Open Signatex Assistant"
+                    >
+                        <MessageCircle className="w-5 h-5" />
+                        <span className="hidden sm:inline">Ask <span className="signatex-embossed">S</span>ignatex</span>
+                    </button>
+
+                    {/* Authentication Section */}
+                    {user ? (
+                        userProfile
+                    ) : (
                         <button
-                            onClick={onToggleTheme}
-                            className="p-3 rounded-xl bg-card/80 backdrop-blur-sm border border-border hover:bg-accent transition-all duration-300 text-foreground"
-                            title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
+                            onClick={onSignInClick}
+                            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all duration-300 hover:scale-105 text-sm font-medium"
                         >
-                            {theme === 'light' ? (
-                                <Moon className="w-5 h-5" />
-                            ) : (
-                                <Sun className="w-5 h-5 text-gray-300" />
-                            )}
+                            Sign In
                         </button>
+                    )}
+                </div>
                     </div>
                     <div className="flex justify-center gap-4">
                         <button
@@ -95,7 +133,7 @@ export const Header: React.FC<HeaderProps> = ({ theme, onToggleTheme, currentInp
                             <MessageCircle className="w-5 h-5" />
                             <span className="hidden sm:inline">Ask <span className="signatex-embossed">S</span>ignatex</span>
                         </button>
-                        
+
                         <button
                             onClick={() => window.dispatchEvent(new CustomEvent('toggleDebugPage'))}
                             className="flex items-center gap-2 px-4 py-3 rounded-xl bg-yellow-600 text-white hover:bg-yellow-700 font-medium transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
@@ -132,6 +170,7 @@ export const Header: React.FC<HeaderProps> = ({ theme, onToggleTheme, currentInp
                 profitMaxResult={profitMaxResult}
                 proFlowStatus={proFlowStatus}
                 onUpdateInputs={onUpdateInputs}
+                handleChatbotInputUpdates={handleChatbotInputUpdates}
             />
         </>
     );

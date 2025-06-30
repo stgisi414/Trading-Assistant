@@ -7,6 +7,10 @@ import { ProfitMaxResultsModal } from "./components/ProfitMaxResultsModal.tsx";
 import { DebugPage } from './components/DebugPage.tsx';
 import { ProFlowControls } from './components/ProFlowControls.tsx';
 import { ProFlowToastContainer } from './components/ProFlowToast.tsx';
+import { AuthProvider, useAuth } from './contexts/AuthContext.tsx';
+import { AuthModal } from './components/AuthModal.tsx';
+import { UserProfile } from './components/UserProfile.tsx';
+import { AnalysisHistoryModal } from './components/AnalysisHistoryModal.tsx';
 import type { ProFlowToast } from './services/proFlowService.ts';
 import { getTradingPosition } from "./services/geminiService.ts";
 import { fetchHistoricalData } from "./services/marketDataService.ts";
@@ -21,6 +25,7 @@ FmpSearchResult,
 } from "./types.ts";
 import { MarketType } from "./types.ts";
 import type { OptimizationResult } from "./services/profitMaxService.ts";
+import type { CloudUserData } from './services/firebaseService.ts';
 import {
     INDICATOR_OPTIONS,
     NON_TECHNICAL_INDICATOR_OPTIONS,
@@ -144,6 +149,11 @@ function App() {
     const [profitMaxResults, setProfitMaxResults] = useState<any>(null);
     const [showDebugPage, setShowDebugPage] = useState(false);
     const [isInitialLoading, setIsInitialLoading] = useState(true);
+    
+    // Authentication state
+    const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+    const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
+    const [cloudSyncStatus, setCloudSyncStatus] = useState<'idle' | 'syncing' | 'success' | 'error'>('idle');
 
     // ProFlow state
     const [proFlowToasts, setProFlowToasts] = useState<ProFlowToast[]>([]);
@@ -707,6 +717,39 @@ function App() {
         localStorage.removeItem('tradingApp_analyses');
     };
 
+    // Authentication and cloud sync functions
+    const getCurrentUserData = (): CloudUserData => ({
+        selectedSymbols,
+        walletAmount,
+        selectedIndicators,
+        selectedNonTechnicalIndicators,
+        selectedTimeframe,
+        selectedMarketType,
+        selectedMarket,
+        includeOptionsAnalysis,
+        includeCallOptions,
+        includePutOptions,
+        includeOrderAnalysis,
+        dates,
+        theme
+    });
+
+    const applyUserData = (data: CloudUserData) => {
+        if (data.selectedSymbols) setSelectedSymbols(data.selectedSymbols);
+        if (data.walletAmount) setWalletAmount(data.walletAmount);
+        if (data.selectedIndicators) setSelectedIndicators(data.selectedIndicators);
+        if (data.selectedNonTechnicalIndicators) setSelectedNonTechnicalIndicators(data.selectedNonTechnicalIndicators);
+        if (data.selectedTimeframe) setSelectedTimeframe(data.selectedTimeframe);
+        if (data.selectedMarketType) setSelectedMarketType(data.selectedMarketType);
+        if (data.selectedMarket) setSelectedMarket(data.selectedMarket);
+        if (data.includeOptionsAnalysis !== undefined) setIncludeOptionsAnalysis(data.includeOptionsAnalysis);
+        if (data.includeCallOptions !== undefined) setIncludeCallOptions(data.includeCallOptions);
+        if (data.includePutOptions !== undefined) setIncludePutOptions(data.includePutOptions);
+        if (data.includeOrderAnalysis !== undefined) setIncludeOrderAnalysis(data.includeOrderAnalysis);
+        if (data.dates) setDates(data.dates);
+        if (data.theme) setTheme(data.theme);
+    };
+
     const handleChatbotInputUpdates = (updates: any) => {
         console.log('🤖 App.tsx: handleChatbotInputUpdates called with:', updates);
         console.log('🤖 App.tsx: Current selectedSymbols before update:', selectedSymbols);
@@ -823,6 +866,12 @@ function App() {
                     profitMaxResult={profitMaxResult}
                     proFlowStatus={proFlowStatus}
                     onUpdateInputs={handleChatbotInputUpdates}
+                    // Add authentication props
+                    onSignInClick={() => setIsAuthModalOpen(true)}
+                    userProfile={<UserProfile 
+                        onSyncData={() => {}} 
+                        onViewHistory={() => setIsHistoryModalOpen(true)} 
+                    />}
                 />
 
                 
@@ -945,6 +994,30 @@ function App() {
                 result={profitMaxResult}
             />
 
+            {/* Authentication Modals */}
+            <AuthModal
+                isOpen={isAuthModalOpen}
+                onClose={() => setIsAuthModalOpen(false)}
+                onSuccess={() => {
+                    setCloudSyncStatus('success');
+                    setTimeout(() => setCloudSyncStatus('idle'), 3000);
+                }}
+            />
+
+            <AnalysisHistoryModal
+                isOpen={isHistoryModalOpen}
+                onClose={() => setIsHistoryModalOpen(false)}
+                onLoadAnalysis={(analysis) => {
+                    // Load the analysis settings and results
+                    if (analysis.settings) {
+                        applyUserData(analysis.settings);
+                    }
+                    if (analysis.results) {
+                        setAnalyses(analysis.results);
+                    }
+                }}
+            />
+
             {/* ProFlow Toast Notifications */}
             <ProFlowToastContainer
                 toasts={proFlowToasts}
@@ -955,4 +1028,20 @@ function App() {
     );
 }
 
-export default App;
+// Wrapper component with AuthProvider
+function AppWithAuth() {
+    return (
+        <AuthProvider>
+            <AppContent />
+        </AuthProvider>
+    );
+}
+
+// Rename the main App component
+function AppContent() {
+    // Move all the existing App content here
+    // (All the existing App component code goes here)
+    return <App />;
+}
+
+export default AppWithAuth;
