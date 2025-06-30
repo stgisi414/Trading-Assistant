@@ -200,6 +200,92 @@ export const fetchOptionsData = async (symbol: string): Promise<any> => {
     }
 };
 
+export const fetchCompanyProfile = async (symbol: string): Promise<any> => {
+    if (!FMP_API_KEY) {
+        // Return mock company profile when no API key
+        return {
+            symbol: symbol,
+            companyName: `${symbol} Corporation`,
+            ceo: "John Smith",
+            website: `https://www.${symbol.toLowerCase()}.com`,
+            address: "123 Business Ave",
+            city: "New York",
+            state: "NY",
+            zip: "10001",
+            country: "US",
+            phone: "(555) 123-4567",
+            exchange: "NASDAQ",
+            currency: "USD",
+            industry: "Technology",
+            sector: "Technology",
+            employees: 50000,
+            marketCap: 1000000000,
+            description: `${symbol} is a leading technology company focused on innovation and growth.`,
+            image: `https://financialmodelingprep.com/image-stock/${symbol}.png`,
+            ipoDate: "2010-01-01"
+        };
+    }
+
+    try {
+        const response = await fetch(`${FMP_BASE_URL}/profile/${symbol}?apikey=${FMP_API_KEY}`);
+        if (!response.ok) {
+            throw new Error(`Failed to fetch company profile: ${response.statusText}`);
+        }
+        const data = await response.json();
+        
+        if (!data || data.length === 0) {
+            throw new Error(`No company profile data available for ${symbol}`);
+        }
+
+        const profile = data[0]; // FMP returns an array with one object
+        return {
+            symbol: profile.symbol || symbol,
+            companyName: profile.companyName || symbol,
+            ceo: profile.ceo || "Not Available",
+            website: profile.website || "",
+            address: profile.address || "",
+            city: profile.city || "",
+            state: profile.state || "",
+            zip: profile.zip || "",
+            country: profile.country || "",
+            phone: profile.phone || "",
+            exchange: profile.exchangeShortName || profile.exchange || "",
+            currency: profile.currency || "USD",
+            industry: profile.industry || "",
+            sector: profile.sector || "",
+            employees: profile.fullTimeEmployees || 0,
+            marketCap: profile.mktCap || 0,
+            description: profile.description || "",
+            image: profile.image || `https://financialmodelingprep.com/image-stock/${symbol}.png`,
+            ipoDate: profile.ipoDate || ""
+        };
+    } catch (error) {
+        console.error(`Error fetching company profile for ${symbol}:`, error);
+        // Return mock data on error
+        return {
+            symbol: symbol,
+            companyName: `${symbol} Corporation`,
+            ceo: "Information Not Available",
+            website: "",
+            address: "",
+            city: "",
+            state: "",
+            zip: "",
+            country: "",
+            phone: "",
+            exchange: "",
+            currency: "USD",
+            industry: "",
+            sector: "",
+            employees: 0,
+            marketCap: 0,
+            description: "Company profile information is currently unavailable.",
+            image: `https://financialmodelingprep.com/image-stock/${symbol}.png`,
+            ipoDate: ""
+        };
+    }
+};
+
 export const fetchHistoricalData = async (symbol: string, timeframe: string, from?: string, to?: string): Promise<HistoricalDataPoint[]> => {
     if(!FMP_API_KEY) {
         throw new Error(`No FMP API key configured. Please set FMP_API_KEY environment variable to fetch real market data for ${symbol}`);

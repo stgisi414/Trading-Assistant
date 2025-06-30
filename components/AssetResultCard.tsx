@@ -9,6 +9,7 @@ import { PatternAnalysisSection } from './PatternAnalysisSection';
 import { OptionsAnalysisSection } from './OptionsAnalysisSection.tsx';
 import { OrderAnalysisSection } from './OrderAnalysisSection.tsx';
 import { OpenInterestSection } from './OpenInterestSection.tsx';
+import { CompanyProfileComponent } from './CompanyProfile.tsx';
 
 interface AssetResultCardProps {
     analysis: AssetAnalysis;
@@ -34,6 +35,11 @@ export const AssetResultCard: React.FC<AssetResultCardProps> = ({ analysis, them
         if (analysisResult) {
             return (
                 <div className="flex flex-col gap-6">
+                    {/* Company Profile */}
+                    {analysis.companyProfile && (
+                        <CompanyProfileComponent profile={analysis.companyProfile} theme={theme} />
+                    )}
+                    
                     {/* Analysis Results - includes logos and illustrations */}
                     {analysis.analysisResult && (
                         <PositionResult result={analysis.analysisResult} theme={theme} />

@@ -13,7 +13,7 @@ import { UserProfile } from './components/UserProfile.tsx';
 import { AnalysisHistoryModal } from './components/AnalysisHistoryModal.tsx';
 import type { ProFlowToast } from './services/proFlowService.ts';
 import { getTradingPosition } from "./services/geminiService.ts";
-import { fetchHistoricalData } from "./services/marketDataService.ts";
+import { fetchHistoricalData, searchSymbols, fetchCompanyProfile } from "./services/marketDataService.ts";
 import { analyzeChartPatterns } from "./services/patternAnalysisService.ts";
 import { proFlowService } from "./services/proFlowService.ts";
 import type {
@@ -556,28 +556,49 @@ function App() {
         setIsLoading(true);
         setError(null);
 
-        const initialAnalyses: AssetAnalysis[] = selectedSymbols.map(
-            (symbol) => ({
-                symbol: symbol,
-                isLoading: true,
-                error: undefined,
-                historicalData: [],
-                analysisResult: null,
-            }),
-        );
-        setAnalyses(initialAnalyses);
+        // Create analysis for each symbol
+        const newAnalyses = selectedSymbols.map(symbol => ({
+            symbol,
+            isLoading: true,
+            error: null,
+            analysisResult: null,
+            historicalData: [],
+            companyProfile: null
+        } as AssetAnalysis));
+        setAnalyses(newAnalyses);
 
         try {
             const analysisPromises = selectedSymbols.map(
                 async (symbol, index) => {
                     try {
-                        // Fetch historical data
-                        const historicalData = await fetchHistoricalData(
-                            symbol.symbol,
-                            selectedTimeframe,
-                            dates.startDate,
-                            dates.endDate,
-                        );
+                        // Fetch company profile
+                        let companyProfile = null;
+                        try {
+                            console.log(`Fetching company profile for ${symbol.symbol}...`);
+                            companyProfile = await fetchCompanyProfile(symbol.symbol);
+                        } catch (profileError) {
+                            console.warn(`Failed to fetch company profile for ${symbol.symbol}:`, profileError);
+                        }
+
+                        // Fetch historical data with FMP fallback
+                        let historicalData: HistoricalData = [];
+                        try {
+                            console.log(`Fetching real data for ${symbol.symbol} with timeframe ${selectedTimeframe}...`);
+                            historicalData = await fetchHistoricalData(
+                                symbol.symbol,
+                                selectedTimeframe,
+                                dates.startDate,
+                                dates.endDate,
+                            );
+                        } catch (fmpError) {
+                            console.warn(`FMP data fetch failed for ${symbol.symbol}:`, fmpError);
+                            console.log(`Falling back to mock data for ${symbol.symbol}...`);
+                            const { generateMockData } = await import("./services/mockDataService.ts");
+                            historicalData = generateMockData(
+                                symbol.symbol,
+                                selectedTimeframe,
+                            );
+                        }
 
                         // Always update with historical data, even if it's mock data
                         setAnalyses((prev) =>
@@ -649,19 +670,11 @@ function App() {
                             selectedIndicators,
                         );
 
-                        setAnalyses((prev) =>
-                            prev.map((a) =>
-                                a.symbol.symbol === symbol.symbol
-                                    ? {
-                                          ...a,
-                                          isLoading: false,
-                                          analysisResult: result,
-                                          patternDetails: patterns,
-                                          error: undefined,
-                                      }
-                                    : a,
-                            ),
-                        );
+                        setAnalyses(prev => prev.map(a => 
+                            a.symbol.symbol === symbol.symbol 
+                                ? { ...a, isLoading: false, analysisResult: result, historicalData, patternDetails: patterns, companyProfile }
+                                : a
+                        ));
                     } catch (err) {
                         console.error(`Analysis failed for ${symbol.symbol}:`, err);
                         const errorMessage =
