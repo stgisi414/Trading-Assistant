@@ -39,10 +39,19 @@ export class TTSService {
         } = options;
 
         // Clean text for TTS (remove markdown and emojis)
-        const cleanText = this.cleanTextForTTS(text);
+        let cleanText = this.cleanTextForTTS(text);
 
         if (!cleanText.trim()) {
             return null;
+        }
+
+        // Check byte length and truncate if necessary (5000 byte limit)
+        const maxBytes = 4500; // Leave some buffer for safety
+        const textBytes = new TextEncoder().encode(cleanText).length;
+        
+        if (textBytes > maxBytes) {
+            console.warn(`Text too long for TTS (${textBytes} bytes), truncating to ${maxBytes} bytes`);
+            cleanText = this.truncateTextToBytes(cleanText, maxBytes);
         }
 
         try {
@@ -92,6 +101,45 @@ export class TTSService {
     }
 
     /**
+     * Truncate text to fit within byte limit while preserving word boundaries
+     */
+    private truncateTextToBytes(text: string, maxBytes: number): string {
+        const encoder = new TextEncoder();
+        let truncated = text;
+        
+        // If text is too long, truncate by sentences first
+        const sentences = text.split(/[.!?]+/);
+        let result = '';
+        
+        for (const sentence of sentences) {
+            const testResult = result + sentence + '.';
+            if (encoder.encode(testResult).length > maxBytes) {
+                break;
+            }
+            result = testResult;
+        }
+        
+        // If we still have some text, return it
+        if (result.trim()) {
+            return result.trim() + ' [Content truncated for audio]';
+        }
+        
+        // Fallback: truncate by words
+        const words = text.split(' ');
+        result = '';
+        
+        for (const word of words) {
+            const testResult = result + ' ' + word;
+            if (encoder.encode(testResult).length > maxBytes) {
+                break;
+            }
+            result = testResult;
+        }
+        
+        return result.trim() + ' [Content truncated for audio]';
+    }
+
+    /**
      * Clean text for TTS by removing markdown, emojis, and formatting
      */
     private cleanTextForTTS(text: string): string {
@@ -135,6 +183,15 @@ export class TTSService {
             
             audio.play().catch(reject);
         });
+    }
+
+    /**
+     * Check if text is within TTS length limits
+     */
+    isTextTooLong(text: string): boolean {
+        const cleanText = this.cleanTextForTTS(text);
+        const textBytes = new TextEncoder().encode(cleanText).length;
+        return textBytes > 4500; // 5000 byte limit with buffer
     }
 
     /**

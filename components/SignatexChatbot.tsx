@@ -360,7 +360,7 @@ I can handle everything from beginner setups to advanced multi-asset portfolio o
                 // Check if the current market is correct
                 const needsStocksMarket = lowerMessage.includes('ai stocks') || lowerMessage.includes('tech stocks');
                 const needsCommoditiesMarket = lowerMessage.includes('energy') || lowerMessage.includes('gold') || lowerMessage.includes('agriculture');
-                
+
                 if (needsStocksMarket && currentInputs?.selectedMarketType !== MarketType.STOCKS) {
                      actions.push({
                         type: 'marketTypeError',
@@ -898,7 +898,7 @@ currentMarket === 'FOREX' ?
 - 💱 *"Add major currency pairs"*
 - 🌍 *"Include EUR/USD and GBP/USD"*
 - 📈 *"Add exotic pairs"*` :
-    `Please select appropriate assets for your chosen market type.`}
+    `Please select appropriate assets for your chosen market type.`}```python
 
 ---
 
