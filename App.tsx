@@ -864,7 +864,12 @@ function App() {
     };
 
     // Authentication using useAuth hook
-    const { user, signIn, signOut, signUp, resetPassword, verifyEmail, handleSyncData, handleDeleteAnalysis, loadAnalysisHistory } = useAuth();
+    // Authentication using useAuth hook - with error handling
+    const authContext = useAuth();
+    if (!authContext) {
+        return <div>Loading authentication...</div>;
+    }
+    const { user, signIn, signOut, signUp, resetPassword, verifyEmail, handleSyncData, handleDeleteAnalysis, loadAnalysisHistory } = authContext;
 
     return (
         <>

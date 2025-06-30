@@ -1,60 +1,76 @@
 
-import React from 'react';
-import { AlertTriangle, RefreshCw } from 'lucide-react';
+import React, { Component, ErrorInfo, ReactNode } from 'react';
 
-interface ErrorBoundaryState {
+interface Props {
+  children: ReactNode;
+}
+
+interface State {
   hasError: boolean;
   error?: Error;
-  errorInfo?: React.ErrorInfo;
+  errorInfo?: ErrorInfo;
 }
 
-interface ErrorBoundaryProps {
-  children: React.ReactNode;
-}
-
-export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
-  constructor(props: ErrorBoundaryProps) {
+export class ErrorBoundary extends Component<Props, State> {
+  constructor(props: Props) {
     super(props);
     this.state = { hasError: false };
   }
 
-  static getDerivedStateFromError(error: Error): ErrorBoundaryState {
+  static getDerivedStateFromError(error: Error): State {
     return { hasError: true, error };
   }
 
-  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     console.error('ErrorBoundary caught an error:', error, errorInfo);
-    this.setState({ error, errorInfo });
+    this.setState({
+      error,
+      errorInfo
+    });
   }
 
   render() {
     if (this.state.hasError) {
       return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 p-4">
-          <div className="max-w-md w-full bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 text-center">
-            <AlertTriangle className="w-16 h-16 text-red-500 mx-auto mb-4" />
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
-              Something went wrong
-            </h2>
-            <p className="text-gray-600 dark:text-gray-400 mb-4">
-              The application encountered an unexpected error. Please try refreshing the page.
-            </p>
-            <button
-              onClick={() => window.location.reload()}
-              className="flex items-center space-x-2 mx-auto px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
-            >
-              <RefreshCw className="w-4 h-4" />
-              <span>Refresh Page</span>
-            </button>
-            {process.env.NODE_ENV === 'development' && this.state.error && (
-              <details className="mt-4 text-left">
-                <summary className="cursor-pointer text-sm text-gray-500">Error Details</summary>
-                <pre className="mt-2 text-xs bg-gray-100 dark:bg-gray-700 p-2 rounded overflow-auto">
-                  {this.state.error.toString()}
-                  {this.state.errorInfo?.componentStack}
+        <div className="min-h-screen bg-red-50 dark:bg-red-900/10 flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 max-w-2xl w-full">
+            <h1 className="text-2xl font-bold text-red-600 dark:text-red-400 mb-4">
+              Application Error
+            </h1>
+            <div className="space-y-4">
+              <div>
+                <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2">
+                  Error Details:
+                </h2>
+                <pre className="bg-gray-100 dark:bg-gray-700 p-3 rounded text-sm overflow-auto text-red-600 dark:text-red-400">
+                  {this.state.error?.message}
                 </pre>
-              </details>
-            )}
+              </div>
+              {this.state.errorInfo && (
+                <div>
+                  <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2">
+                    Stack Trace:
+                  </h2>
+                  <pre className="bg-gray-100 dark:bg-gray-700 p-3 rounded text-xs overflow-auto text-gray-600 dark:text-gray-400">
+                    {this.state.errorInfo.componentStack}
+                  </pre>
+                </div>
+              )}
+              <div className="flex gap-2">
+                <button
+                  onClick={() => window.location.reload()}
+                  className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                >
+                  Reload Page
+                </button>
+                <button
+                  onClick={() => this.setState({ hasError: false, error: undefined, errorInfo: undefined })}
+                  className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700"
+                >
+                  Try Again
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       );
