@@ -1,0 +1,220 @@
+Error loading paper trading portfolio: FirebaseError: Missing or insufficient permissions.
+loadPaperTradingPortfolio @ firebaseService.ts:736
+await in loadPaperTradingPortfolio
+getPortfolio @ paperTradingService.ts:64
+loadPortfolioData @ PaperTradingModal.tsx:43
+(anonymous) @ PaperTradingModal.tsx:33
+react-stack-bottom-frame @ react-dom_client.js?v=4cf8da1b:17478
+runWithFiberInDEV @ react-dom_client.js?v=4cf8da1b:1485
+commitHookEffectListMount @ react-dom_client.js?v=4cf8da1b:8460
+commitHookPassiveMountEffects @ react-dom_client.js?v=4cf8da1b:8518
+commitPassiveMountOnFiber @ react-dom_client.js?v=4cf8da1b:9887
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=4cf8da1b:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=4cf8da1b:9984
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=4cf8da1b:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=4cf8da1b:9881
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=4cf8da1b:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=4cf8da1b:9881
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=4cf8da1b:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=4cf8da1b:9984
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=4cf8da1b:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=4cf8da1b:9881
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=4cf8da1b:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=4cf8da1b:9881
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=4cf8da1b:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=4cf8da1b:9984
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=4cf8da1b:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=4cf8da1b:9899
+flushPassiveEffects @ react-dom_client.js?v=4cf8da1b:11302
+flushPendingEffects @ react-dom_client.js?v=4cf8da1b:11276
+flushSpawnedWork @ react-dom_client.js?v=4cf8da1b:11250
+commitRoot @ react-dom_client.js?v=4cf8da1b:11081
+commitRootWhenReady @ react-dom_client.js?v=4cf8da1b:10512
+performWorkOnRoot @ react-dom_client.js?v=4cf8da1b:10457
+performSyncWorkOnRoot @ react-dom_client.js?v=4cf8da1b:11635
+flushSyncWorkAcrossRoots_impl @ react-dom_client.js?v=4cf8da1b:11536
+processRootScheduleInMicrotask @ react-dom_client.js?v=4cf8da1b:11558
+(anonymous) @ react-dom_client.js?v=4cf8da1b:11649Understand this error
+paperTradingService.ts:99 Error getting portfolio: FirebaseError: Missing or insufficient permissions.
+getPortfolio @ paperTradingService.ts:99
+await in getPortfolio
+loadPortfolioData @ PaperTradingModal.tsx:43
+(anonymous) @ PaperTradingModal.tsx:33
+react-stack-bottom-frame @ react-dom_client.js?v=4cf8da1b:17478
+runWithFiberInDEV @ react-dom_client.js?v=4cf8da1b:1485
+commitHookEffectListMount @ react-dom_client.js?v=4cf8da1b:8460
+commitHookPassiveMountEffects @ react-dom_client.js?v=4cf8da1b:8518
+commitPassiveMountOnFiber @ react-dom_client.js?v=4cf8da1b:9887
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=4cf8da1b:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=4cf8da1b:9984
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=4cf8da1b:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=4cf8da1b:9881
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=4cf8da1b:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=4cf8da1b:9881
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=4cf8da1b:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=4cf8da1b:9984
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=4cf8da1b:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=4cf8da1b:9881
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=4cf8da1b:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=4cf8da1b:9881
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=4cf8da1b:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=4cf8da1b:9984
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=4cf8da1b:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=4cf8da1b:9899
+flushPassiveEffects @ react-dom_client.js?v=4cf8da1b:11302
+flushPendingEffects @ react-dom_client.js?v=4cf8da1b:11276
+flushSpawnedWork @ react-dom_client.js?v=4cf8da1b:11250
+commitRoot @ react-dom_client.js?v=4cf8da1b:11081
+commitRootWhenReady @ react-dom_client.js?v=4cf8da1b:10512
+performWorkOnRoot @ react-dom_client.js?v=4cf8da1b:10457
+performSyncWorkOnRoot @ react-dom_client.js?v=4cf8da1b:11635
+flushSyncWorkAcrossRoots_impl @ react-dom_client.js?v=4cf8da1b:11536
+processRootScheduleInMicrotask @ react-dom_client.js?v=4cf8da1b:11558
+(anonymous) @ react-dom_client.js?v=4cf8da1b:11649Understand this error
+firebaseService.ts:716 
+            
+            
+           POST https://firestore.googleapis.com/google.firestore.v1.Firestore/Write/channel?VER=8&database=projects%2Fsignatex-d1b11%2Fdatabases%2F(default)&gsessionid=AxAbjp9ajK98q5zuBQ6zWDkB55lu2htCLN3qzVeMQJ0&SID=RwbvCg8sC0imt1E_w8AQOw&RID=44925&TYPE=terminate&zx=90tt9gn3e5e6 400 (Bad Request)
+gc @ firebase_firestore.js?v=4cf8da1b:2147
+Y2.close @ firebase_firestore.js?v=4cf8da1b:2491
+(anonymous) @ firebase_firestore.js?v=4cf8da1b:12616
+(anonymous) @ firebase_firestore.js?v=4cf8da1b:12580
+ab @ firebase_firestore.js?v=4cf8da1b:950
+F2 @ firebase_firestore.js?v=4cf8da1b:920
+Z2.ta @ firebase_firestore.js?v=4cf8da1b:2540
+Rb @ firebase_firestore.js?v=4cf8da1b:1419
+M2.Y @ firebase_firestore.js?v=4cf8da1b:1284
+M2.ca @ firebase_firestore.js?v=4cf8da1b:1215
+ab @ firebase_firestore.js?v=4cf8da1b:950
+F2 @ firebase_firestore.js?v=4cf8da1b:920
+Wc @ firebase_firestore.js?v=4cf8da1b:1954
+h.bb @ firebase_firestore.js?v=4cf8da1b:1949
+h.Ea @ firebase_firestore.js?v=4cf8da1b:1946
+Lc @ firebase_firestore.js?v=4cf8da1b:1846
+h.Pa @ firebase_firestore.js?v=4cf8da1b:1813
+Promise.then
+Nc @ firebase_firestore.js?v=4cf8da1b:1804
+h.Pa @ firebase_firestore.js?v=4cf8da1b:1814
+Promise.then
+Nc @ firebase_firestore.js?v=4cf8da1b:1804
+h.Sa @ firebase_firestore.js?v=4cf8da1b:1800
+Promise.then
+h.send @ firebase_firestore.js?v=4cf8da1b:1781
+h.ea @ firebase_firestore.js?v=4cf8da1b:1922
+Jb @ firebase_firestore.js?v=4cf8da1b:1208
+fd @ firebase_firestore.js?v=4cf8da1b:2341
+h.Fa @ firebase_firestore.js?v=4cf8da1b:2308
+Da @ firebase_firestore.js?v=4cf8da1b:669
+Promise.then
+x2 @ firebase_firestore.js?v=4cf8da1b:663
+ec @ firebase_firestore.js?v=4cf8da1b:2294
+Rb @ firebase_firestore.js?v=4cf8da1b:1416
+M2.Y @ firebase_firestore.js?v=4cf8da1b:1284
+M2.ca @ firebase_firestore.js?v=4cf8da1b:1215
+ab @ firebase_firestore.js?v=4cf8da1b:950
+F2 @ firebase_firestore.js?v=4cf8da1b:920
+Wc @ firebase_firestore.js?v=4cf8da1b:1954
+h.bb @ firebase_firestore.js?v=4cf8da1b:1949
+h.Ea @ firebase_firestore.js?v=4cf8da1b:1946
+Lc @ firebase_firestore.js?v=4cf8da1b:1846
+h.Pa @ firebase_firestore.js?v=4cf8da1b:1813
+Promise.then
+Nc @ firebase_firestore.js?v=4cf8da1b:1804
+h.Sa @ firebase_firestore.js?v=4cf8da1b:1800
+Promise.then
+h.send @ firebase_firestore.js?v=4cf8da1b:1781
+h.ea @ firebase_firestore.js?v=4cf8da1b:1922
+Jb @ firebase_firestore.js?v=4cf8da1b:1203
+Hb @ firebase_firestore.js?v=4cf8da1b:1178
+h.Ga @ firebase_firestore.js?v=4cf8da1b:2228
+Da @ firebase_firestore.js?v=4cf8da1b:669
+Promise.then
+x2 @ firebase_firestore.js?v=4cf8da1b:663
+fc @ firebase_firestore.js?v=4cf8da1b:2172
+h.connect @ firebase_firestore.js?v=4cf8da1b:2132
+Y2.m @ firebase_firestore.js?v=4cf8da1b:2488
+Zo @ firebase_firestore.js?v=4cf8da1b:12574
+send @ firebase_firestore.js?v=4cf8da1b:12465
+Q_ @ firebase_firestore.js?v=4cf8da1b:12782
+ia @ firebase_firestore.js?v=4cf8da1b:12985
+__PRIVATE_onWriteStreamOpen @ firebase_firestore.js?v=4cf8da1b:13337
+(anonymous) @ firebase_firestore.js?v=4cf8da1b:12860
+(anonymous) @ firebase_firestore.js?v=4cf8da1b:12884
+(anonymous) @ firebase_firestore.js?v=4cf8da1b:15923
+(anonymous) @ firebase_firestore.js?v=4cf8da1b:15954
+Promise.then
+_c @ firebase_firestore.js?v=4cf8da1b:15954
+enqueue @ firebase_firestore.js?v=4cf8da1b:15923
+enqueueAndForget @ firebase_firestore.js?v=4cf8da1b:15905
+(anonymous) @ firebase_firestore.js?v=4cf8da1b:12884
+(anonymous) @ firebase_firestore.js?v=4cf8da1b:12860
+a_ @ firebase_firestore.js?v=4cf8da1b:12471
+(anonymous) @ firebase_firestore.js?v=4cf8da1b:12622
+setTimeout
+I_ @ firebase_firestore.js?v=4cf8da1b:12621
+H_ @ firebase_firestore.js?v=4cf8da1b:12964
+z_ @ firebase_firestore.js?v=4cf8da1b:12857
+(anonymous) @ firebase_firestore.js?v=4cf8da1b:12847
+Promise.then
+auth @ firebase_firestore.js?v=4cf8da1b:12843
+start @ firebase_firestore.js?v=4cf8da1b:12742
+start @ firebase_firestore.js?v=4cf8da1b:12958
+__PRIVATE_startWriteStream @ firebase_firestore.js?v=4cf8da1b:13334
+__PRIVATE_fillWritePipeline @ firebase_firestore.js?v=4cf8da1b:13320
+await in __PRIVATE_fillWritePipeline
+__PRIVATE_syncEngineWrite @ firebase_firestore.js?v=4cf8da1b:14322
+await in __PRIVATE_syncEngineWrite
+(anonymous) @ firebase_firestore.js?v=4cf8da1b:17687
+await in (anonymous)
+(anonymous) @ firebase_firestore.js?v=4cf8da1b:15923
+(anonymous) @ firebase_firestore.js?v=4cf8da1b:15954
+Promise.then
+_c @ firebase_firestore.js?v=4cf8da1b:15954
+enqueue @ firebase_firestore.js?v=4cf8da1b:15923
+enqueueAndForget @ firebase_firestore.js?v=4cf8da1b:15905
+__PRIVATE_firestoreClientWrite @ firebase_firestore.js?v=4cf8da1b:17687
+executeWrite @ firebase_firestore.js?v=4cf8da1b:17688
+setDoc @ firebase_firestore.js?v=4cf8da1b:17618
+savePaperTradingPortfolio @ firebaseService.ts:716
+initializePortfolio @ paperTradingService.ts:57
+getPortfolio @ paperTradingService.ts:66
+await in getPortfolio
+loadPortfolioData @ PaperTradingModal.tsx:43
+(anonymous) @ PaperTradingModal.tsx:33
+react-stack-bottom-frame @ react-dom_client.js?v=4cf8da1b:17478
+runWithFiberInDEV @ react-dom_client.js?v=4cf8da1b:1485
+commitHookEffectListMount @ react-dom_client.js?v=4cf8da1b:8460
+commitHookPassiveMountEffects @ react-dom_client.js?v=4cf8da1b:8518
+commitPassiveMountOnFiber @ react-dom_client.js?v=4cf8da1b:9887
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=4cf8da1b:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=4cf8da1b:9984
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=4cf8da1b:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=4cf8da1b:9881
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=4cf8da1b:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=4cf8da1b:9881
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=4cf8da1b:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=4cf8da1b:9984
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=4cf8da1b:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=4cf8da1b:9881
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=4cf8da1b:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=4cf8da1b:9881
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=4cf8da1b:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=4cf8da1b:9984
+recursivelyTraversePassiveMountEffects @ react-dom_client.js?v=4cf8da1b:9868
+commitPassiveMountOnFiber @ react-dom_client.js?v=4cf8da1b:9899
+flushPassiveEffects @ react-dom_client.js?v=4cf8da1b:11302
+flushPendingEffects @ react-dom_client.js?v=4cf8da1b:11276
+flushSpawnedWork @ react-dom_client.js?v=4cf8da1b:11250
+commitRoot @ react-dom_client.js?v=4cf8da1b:11081
+commitRootWhenReady @ react-dom_client.js?v=4cf8da1b:10512
+performWorkOnRoot @ react-dom_client.js?v=4cf8da1b:10457
+performSyncWorkOnRoot @ react-dom_client.js?v=4cf8da1b:11635
+flushSyncWorkAcrossRoots_impl @ react-dom_client.js?v=4cf8da1b:11536
+processRootScheduleInMicrotask @ react-dom_client.js?v=4cf8da1b:11558
+(anonymous) @ react-dom_client.js?v=4cf8da1b:11649Understand this error
+PaperTradingModal.tsx:49 Error loading portfolio data: FirebaseError: Missing or insufficient permissions.
+loadPortfolioData @ PaperTradingModal.tsx:49Understand this error
+firebaseService.ts:716 
+            
+            
+           POST https://firestore.googleapis.com/google.firestore.v1.Firestore/Write/channel?VER=8&database=projects%2Fsignatex-d1b11%2Fdatabases%2F(default)&gsessionid=qdVeNxZpFpyFFnuIxzsr00eYBTXlPrS2esNN_ebn1MI&SID=csck9Ql6B3doDDasGSadkg&RID=54080&TYPE=terminate&zx=bt68e3hyl3zw 400 (Bad Request)
