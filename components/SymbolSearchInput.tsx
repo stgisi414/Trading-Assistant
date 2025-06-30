@@ -151,7 +151,11 @@ export const SymbolSearchInput: React.FC<SymbolSearchInputProps> = ({ selectedSy
             </div>
             <div className="flex flex-wrap gap-2 min-h-[30px]">
                 {selectedSymbols.map(symbolObj => (
-                    <div key={symbolObj.symbol} className="flex items-center gap-2 bg-indigo-100 dark:bg-indigo-500/30 text-indigo-800 dark:text-indigo-200 text-sm font-medium pl-3 pr-2 py-1 rounded-full animate-in fade-in">
+                    <div 
+                        key={symbolObj.symbol} 
+                        className="flex items-center gap-2 bg-indigo-100 dark:bg-indigo-500/30 text-indigo-800 dark:text-indigo-200 text-sm font-medium pl-3 pr-2 py-1 rounded-full animate-in fade-in relative group cursor-help"
+                        title={`${symbolObj.symbol} - ${symbolObj.name}`}
+                    >
                         <span>{symbolObj.symbol}</span>
                         <button
                             onClick={() => onRemoveSymbol(symbolObj.symbol)}
@@ -161,6 +165,13 @@ export const SymbolSearchInput: React.FC<SymbolSearchInputProps> = ({ selectedSy
                         >
                             &times;
                         </button>
+                        {/* Custom Tooltip */}
+                        <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 dark:bg-gray-700 text-white text-xs rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
+                            <div className="font-semibold">{symbolObj.symbol}</div>
+                            <div className="text-gray-300 dark:text-gray-400">{symbolObj.name}</div>
+                            {/* Tooltip Arrow */}
+                            <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900 dark:border-t-gray-700"></div>
+                        </div>
                     </div>
                 ))}
             </div>

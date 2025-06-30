@@ -15,7 +15,7 @@ import { proFlowService } from "./services/proFlowService.ts";
 import type {
     HistoricalData,
     AnalysisResult,
-    FmpSearchResult,
+FmpSearchResult,
     AppState,
     AssetAnalysis,
 } from "./types.ts";
@@ -130,13 +130,15 @@ function App() {
         root.classList.add(theme);
     }, [theme]);
 
-    // Save input data to localStorage whenever it changes
+    // Save selected symbols to localStorage whenever they change
     useEffect(() => {
         console.log('🔧 Saving selectedSymbols to localStorage:', selectedSymbols);
-        localStorage.setItem(
-            "tradingApp_selectedSymbols",
-            JSON.stringify(selectedSymbols),
-        );
+        // Ensure we're saving complete objects with both symbol and name
+        const symbolsToSave = selectedSymbols.map(s => ({
+            symbol: s.symbol,
+            name: s.name || `${s.symbol} Corporation`
+        }));
+        localStorage.setItem('selectedSymbols', JSON.stringify(symbolsToSave));
         console.log('🔧 localStorage updated for selectedSymbols');
     }, [selectedSymbols]);
 
@@ -205,6 +207,46 @@ function App() {
         localStorage.setItem("tradingApp_selectedMarket", selectedMarket);
     }, [selectedMarket]);
 
+    // Load data from localStorage on component mount
+    useEffect(() => {
+        try {
+            const savedSymbols = localStorage.getItem('selectedSymbols');
+            const savedWalletAmount = localStorage.getItem('walletAmount');
+            const savedIndicators = localStorage.getItem('selectedIndicators');
+            const savedNonTechnicalIndicators = localStorage.getItem('selectedNonTechnicalIndicators');
+            const savedTimeframe = localStorage.getItem('selectedTimeframe');
+            const savedMarketType = localStorage.getItem('selectedMarketType');
+            const savedMarket = localStorage.getItem('selectedMarket');
+            const savedIncludeOptionsAnalysis = localStorage.getItem('includeOptionsAnalysis');
+            const savedIncludeCallOptions = localStorage.getItem('includeCallOptions');
+            const savedIncludePutOptions = localStorage.getItem('includePutOptions');
+            const savedIncludeOrderAnalysis = localStorage.getItem('includeOrderAnalysis');
+
+            if (savedSymbols) {
+                console.log('📂 Loading selectedSymbols from localStorage:', savedSymbols);
+                const parsedSymbols = JSON.parse(savedSymbols);
+                // Ensure each symbol has both symbol and name properties
+                const validatedSymbols = parsedSymbols.map((s: any) => ({
+                    symbol: s.symbol || s,
+                    name: s.name || `${s.symbol || s} Corporation`
+                }));
+                setSelectedSymbols(validatedSymbols);
+            }
+            if (savedWalletAmount) setWalletAmount(savedWalletAmount);
+            if (savedIndicators) setSelectedIndicators(JSON.parse(savedIndicators));
+            if (savedNonTechnicalIndicators) setSelectedNonTechnicalIndicators(JSON.parse(savedNonTechnicalIndicators));
+            if (savedTimeframe) setSelectedTimeframe(savedTimeframe);
+            if (savedMarketType) setSelectedMarketType(savedMarketType as MarketType);
+            if (savedMarket) setSelectedMarket(savedMarket);
+            if (savedIncludeOptionsAnalysis) setIncludeOptionsAnalysis(JSON.parse(savedIncludeOptionsAnalysis));
+            if (savedIncludeCallOptions) setIncludeCallOptions(JSON.parse(savedIncludeCallOptions));
+            if (savedIncludePutOptions) setIncludePutOptions(JSON.parse(savedIncludePutOptions));
+            if (savedIncludeOrderAnalysis) setIncludeOrderAnalysis(JSON.parse(savedIncludeOrderAnalysis));
+        } catch (error) {
+            console.error('❌ Error loading from localStorage:', error);
+        }
+    }, []);
+
     const onAddSymbol = (symbol: FmpSearchResult) => {
         console.log('🔧 onAddSymbol called with:', symbol);
         console.log('🔧 Current selectedSymbols before addition:', selectedSymbols);
@@ -233,7 +275,7 @@ function App() {
     const onRemoveSymbol = (symbol: string) => {
         console.log('🔧 onRemoveSymbol called with:', symbol);
         console.log('🔧 Current selectedSymbols before removal:', selectedSymbols);
-        
+
         const symbolExists = selectedSymbols.find(s => s.symbol === symbol);
         if (!symbolExists) {
             console.log('⚠️ Symbol not found in list, cannot remove:', symbol);
@@ -258,11 +300,11 @@ function App() {
 
     const handleMarketTypeChange = (newMarketType: string) => {
         console.log('🔧 Changing market type from', selectedMarketType, 'to', newMarketType);
-        
+
         setSelectedMarketType(newMarketType as MarketType);
         const newMarket = MARKET_OPTIONS[newMarketType]?.[0]?.value || "";
         setSelectedMarket(newMarket);
-        
+
         // Clear symbols when switching market types since they're incompatible
         console.log('🔧 Clearing symbols due to market type change:', selectedSymbols.map(s => s.symbol));
         setSelectedSymbols([]);
@@ -271,7 +313,7 @@ function App() {
     const handleMarketChange = (newMarket: string) => {
         console.log('🔧 Changing market from', selectedMarket, 'to', newMarket);
         setSelectedMarket(newMarket);
-        
+
         // For some market types like COMMODITIES/CRYPTO/FOREX, different markets have different symbols
         // So we should clear symbols when switching between them
         if (selectedMarketType !== MarketType.STOCKS) {
@@ -407,7 +449,7 @@ function App() {
       useEffect(() => {
         // Don't filter if we have no market symbols defined (means we're in a generic market)
         if (currentMarketSymbols.length === 0) return;
-        
+
         setSelectedSymbols(prevSymbols => {
           const filtered = prevSymbols.filter(symbolObj => currentMarketSymbols.includes(symbolObj.symbol));
           // Only update if there's actually a change to prevent unnecessary re-renders
@@ -599,24 +641,24 @@ function App() {
         console.log('🤖 App.tsx: Current selectedSymbols before update:', selectedSymbols);
         console.log('🤖 App.tsx: Current selectedSymbols length:', selectedSymbols.length);
         console.log('🤖 App.tsx: Current selectedSymbols array:', selectedSymbols.map(s => ({ symbol: s.symbol, name: s.name })));
-        
+
         // Handle addSymbols first and separately
         if (updates.addSymbols) {
             console.log('🤖 App.tsx: Processing addSymbols:', updates.addSymbols);
             console.log('🤖 App.tsx: addSymbols is array:', Array.isArray(updates.addSymbols));
             console.log('🤖 App.tsx: addSymbols length:', updates.addSymbols.length);
             console.log('🤖 App.tsx: About to call onAddSymbol for each symbol');
-            
+
             // Add symbols one by one using the existing onAddSymbol function
             updates.addSymbols.forEach((symbolToAdd: any, index: number) => {
                 console.log(`🤖 App.tsx: Processing symbol ${index + 1}/${updates.addSymbols.length}:`, symbolToAdd);
                 console.log(`🤖 App.tsx: Symbol details:`, { symbol: symbolToAdd.symbol, name: symbolToAdd.name });
                 console.log(`🤖 App.tsx: About to call onAddSymbol...`);
-                
+
                 onAddSymbol(symbolToAdd);
-                
+
                 console.log(`🤖 App.tsx: onAddSymbol called for symbol:`, symbolToAdd.symbol);
-                
+
                 // Check immediately after adding
                 setTimeout(() => {
                     console.log(`🤖 App.tsx: Checking if ${symbolToAdd.symbol} was added...`);
@@ -629,27 +671,27 @@ function App() {
                     }
                 }, 50);
             });
-            
+
             console.log('🤖 App.tsx: Finished processing all addSymbols');
-            
+
             // Check overall state after all symbols processed
             setTimeout(() => {
                 console.log('🤖 App.tsx: Final check - selectedSymbols after all additions:', selectedSymbols);
                 console.log('🤖 App.tsx: Final selectedSymbols count:', selectedSymbols.length);
             }, 100);
         }
-        
+
         // Handle market type changes using proper handlers
         if (updates.selectedMarketType !== undefined) {
             console.log('🤖 Setting market type to:', updates.selectedMarketType);
             handleMarketTypeChange(updates.selectedMarketType);
         }
-        
+
         if (updates.selectedMarket !== undefined) {
             console.log('🤖 Setting market to:', updates.selectedMarket);
             handleMarketChange(updates.selectedMarket);
         }
-        
+
         // Handle other updates
         if (updates.walletAmount !== undefined) {
             console.log('🤖 Setting wallet amount to:', updates.walletAmount);
@@ -806,7 +848,7 @@ function App() {
                                 isLoading={isLoading}
                             />
                         </main>
-                        
+
                         {/* Symbol Addition Debugger */}
                         <SymbolDebugger
                             selectedSymbols={selectedSymbols}
