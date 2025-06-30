@@ -9,11 +9,13 @@
     background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    font-weight: 700;
+    font-weight: inherit;
     display: inline;
-    line-height: 1;
+    line-height: inherit;
     margin: 0;
     padding: 0;
+    vertical-align: baseline;
+    letter-spacing: inherit;
 }
 
 /* Animated shooting streaks background */
