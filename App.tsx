@@ -583,17 +583,22 @@ function App() {
     };
 
     const handleChatbotInputUpdates = (updates: any) => {
-        console.log('🤖 handleChatbotInputUpdates called with:', updates);
+        console.log('🤖 App.tsx: handleChatbotInputUpdates called with:', updates);
+        console.log('🤖 App.tsx: Current selectedSymbols before update:', selectedSymbols);
         
         // Handle addSymbols first and separately
         if (updates.addSymbols) {
-            console.log('🤖 Processing addSymbols:', updates.addSymbols);
+            console.log('🤖 App.tsx: Processing addSymbols:', updates.addSymbols);
+            console.log('🤖 App.tsx: About to call onAddSymbol for each symbol');
             
             // Add symbols one by one using the existing onAddSymbol function
-            updates.addSymbols.forEach((symbolToAdd: any) => {
-                console.log('🤖 Adding individual symbol:', symbolToAdd);
+            updates.addSymbols.forEach((symbolToAdd: any, index: number) => {
+                console.log(`🤖 App.tsx: Adding symbol ${index + 1}/${updates.addSymbols.length}:`, symbolToAdd);
                 onAddSymbol(symbolToAdd);
+                console.log(`🤖 App.tsx: onAddSymbol called for:`, symbolToAdd);
             });
+            
+            console.log('🤖 App.tsx: Finished processing all addSymbols');
         }
         
         // Handle market type changes
