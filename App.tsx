@@ -469,6 +469,16 @@ function App() {
         return () => clearTimeout(timer);
     }, []);
 
+    // Listen for debug toggle events from header
+    useEffect(() => {
+        const handleToggleDebug = () => {
+            setShowDebugPage(!showDebugPage);
+        };
+
+        window.addEventListener('toggleDebugPage', handleToggleDebug);
+        return () => window.removeEventListener('toggleDebugPage', handleToggleDebug);
+    }, [showDebugPage]);
+
     const currentMarketSymbols = useMemo(() => {
         // Depend on your original state variables
         if (!selectedMarketType || !selectedMarket) return []; 
@@ -785,15 +795,7 @@ function App() {
                     onUpdateInputs={handleChatbotInputUpdates}
                 />
 
-                {/* Debug Toggle Button */}
-                <div className="flex justify-end mb-4">
-                    <button
-                        onClick={() => setShowDebugPage(!showDebugPage)}
-                        className="px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors text-sm font-medium"
-                    >
-                        {showDebugPage ? '📊 Back to App' : '🔧 Debug Console'}
-                    </button>
-                </div>
+                
                 {showDebugPage ? (
                     <>
                         <DebugPage />
