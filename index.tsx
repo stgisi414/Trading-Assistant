@@ -1,20 +1,17 @@
-
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App.tsx';
-import { ErrorBoundary } from './components/ErrorBoundary.tsx';
 import './src/index.css';
+import { AppErrorBoundary } from './components/AppErrorBoundary.tsx';
 
-const rootElement = document.getElementById('root');
-if (!rootElement) {
-  throw new Error("Could not find root element to mount to");
+const container = document.getElementById('root');
+if (container) {
+    const root = createRoot(container);
+    root.render(
+        <AppErrorBoundary>
+            <App />
+        </AppErrorBoundary>
+    );
+} else {
+    console.error('Root container not found');
 }
-
-const root = createRoot(rootElement);
-root.render(
-  <React.StrictMode>
-    <ErrorBoundary>
-      <App />
-    </ErrorBoundary>
-  </React.StrictMode>
-);
