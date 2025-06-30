@@ -75,7 +75,7 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme, currentInput
                         </div>
 
                         <button
-                            onClick={onToggleTheme}
+                            onClick={toggleTheme}
                             className="p-3 rounded-xl bg-card/80 backdrop-blur-sm border border-border hover:bg-accent transition-all duration-300 text-foreground"
                             title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
                         >
