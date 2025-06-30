@@ -24,7 +24,7 @@ const ThemeToggle: React.FC<ThemeToggleProps> = ({ theme, toggleTheme }) => (
 
 interface HeaderProps {
     theme: 'light' | 'dark';
-    toggleTheme: () => void;
+    onToggleTheme: () => void;
     currentInputs?: {
         selectedSymbols: string[];
         walletAmount: string;
@@ -53,7 +53,7 @@ interface HeaderProps {
     handleChatbotInputUpdates?: (updates: any) => void;
 }
 
-export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme, currentInputs, analysisResults, profitMaxResult, proFlowStatus, onUpdateInputs, handleChatbotInputUpdates }) => {
+export const Header: React.FC<HeaderProps> = ({ theme, onToggleTheme, currentInputs, analysisResults, profitMaxResult, proFlowStatus, onUpdateInputs, handleChatbotInputUpdates }) => {
     const [isChatbotOpen, setIsChatbotOpen] = useState(false);
 
     return (
@@ -75,7 +75,7 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme, currentInput
                         </div>
 
                         <button
-                            onClick={toggleTheme}
+                            onClick={onToggleTheme}
                             className="p-3 rounded-xl bg-card/80 backdrop-blur-sm border border-border hover:bg-accent transition-all duration-300 text-foreground"
                             title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
                         >
