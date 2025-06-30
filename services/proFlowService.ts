@@ -270,9 +270,10 @@ export class ProFlowService {
                     // Adapt wallet amount based on flow prompt
                     if (this.flowPrompt.prompt) {
                         const prompt = this.flowPrompt.prompt.toLowerCase();
-                        const match = prompt.match(/(\d+)\s*dollar/);
-                        if (match) {
-                            walletAmount = match[1];
+                        // Look for patterns like "$250", "250 dollar", "250 dollars", etc.
+                        const dollarMatch = prompt.match(/\$(\d+)/) || prompt.match(/(\d+)\s*dollars?/);
+                        if (dollarMatch) {
+                            walletAmount = dollarMatch[1];
                             message = `💰 Setting wallet amount to $${parseInt(walletAmount).toLocaleString()} based on your guidance...`;
                         } else if (prompt.includes('small') || prompt.includes('beginner')) {
                             walletAmount = '10000';
