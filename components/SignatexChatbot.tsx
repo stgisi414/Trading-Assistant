@@ -84,52 +84,86 @@ ${ttsService.isAvailable() ?
 
 ## 🧠 What I can help you with:
 
-### 📊 **Trading Setup & Strategy**
-- 🎯 Choose optimal indicators based on your experience level
-- 💰 Suggest wallet amounts and position sizing strategies  
-- ⏰ Recommend timeframes for different trading styles
-- 🔧 Update your input settings through conversation
-- 📈 Explain analysis results and market patterns
+### 📊 **Core Trading Analysis**
+- 🎯 **Technical Indicators**: SMA, EMA, RSI, MACD, Bollinger Bands, Stochastic, ADX, Volume, Volatility
+- 📈 **Pattern Recognition**: Head & Shoulders, Double Top/Bottom patterns
+- 📰 **News Integration**: Real-time market news and sentiment analysis
+- 🔍 **Open Interest Analysis**: Track options market sentiment and positioning
+- 💰 **Position Sizing**: Wallet management and risk calculation
 
-### 🚀 **Advanced Features**
-- 🎛️ Guide you through **ProfitMax** optimization
-- ⚡ Walk you through **ProFlow** automation
-- 📰 Analyze market news and sentiment
-- 🎨 Generate trading insights with visual aids
+### 🏪 **Multi-Market Support**
+- 📈 **Stocks**: US Markets (NASDAQ/NYSE) with company profiles
+- 🪙 **Crypto**: Bitcoin, Ethereum, DeFi tokens, NFT/Metaverse coins
+- 🥇 **Commodities**: Energy (Oil, Gas), Metals (Gold, Silver), Agriculture
+- 💱 **Forex**: Major, Minor, and Exotic currency pairs
+
+### 🎛️ **Advanced Analysis Features**
+- ⚙️ **Options Analysis**: Call/Put recommendations with bid-ask spreads
+- 🛑 **Order Analysis**: Stop-loss and take-profit suggestions
+- 📊 **Non-Technical Indicators**: P/E ratios, fundamentals, analyst ratings
+- 🌐 **Social Sentiment**: Social media and economic indicator analysis
+- 🔄 **Custom Date Ranges**: Flexible timeframe analysis
+
+### 🚀 **Automation & Optimization**
+- 🎛️ **ProfitMax**: AI-powered portfolio optimization
+- ⚡ **ProFlow**: Automated trading workflow with smart improvements
+- 📱 **Cloud Sync**: Firebase integration for analysis history
+- 🔐 **Authentication**: Secure user profiles and subscription management
+
+### 🎨 **Visual & Audio Features**
+- 🖼️ **Image Integration**: Company logos and technical analysis illustrations
+- 🔊 **Text-to-Speech**: Voice playback of analysis results
+- 🎤 **Voice Input**: Speech recognition for hands-free commands
+- 📱 **Responsive Design**: Mobile-optimized interface
 
 ---
 
 ### 💬 Try these natural commands:
 
-> 💡 **For Beginners:**
+> 💡 **Getting Started:**
 > - *"I'm a beginner, what indicators should I use?"*
-> - *"Explain RSI in simple terms"*
+> - *"Set up a day trading configuration"*
 > - *"What's a good starting wallet amount?"*
+> - *"Explain how RSI works"*
 
 > 💰 **Financial Management:**
-> - *"Set my wallet to $25,000"*
+> - *"Set my wallet to $50,000"*
 > - *"Calculate position size for 2% risk"*
+> - *"Show me risk management strategies"*
 
-> 📊 **Symbol & Analysis:**
-> - *"Add AAPL and TSLA to my symbols"*
-> - *"Analyze the current market sentiment"*
-> - *"What patterns do you see in my results?"*
+> 📊 **Symbol & Market Selection:**
+> - *"Add AAPL, TSLA, and NVDA to my symbols"*
+> - *"Switch to crypto market and add Bitcoin"*
+> - *"Include energy commodities"*
+> - *"Add major currency pairs"*
 
 > 🧠 **Advanced Analysis:**
-> - *"Add news sentiment analysis"*
-> - *"Include social media sentiment"*
-> - *"Enable options analysis"*
-> - *"Include stop loss analysis"*
+> - *"Enable options analysis with call recommendations"*
+> - *"Include stop-loss and take-profit analysis"*
+> - *"Add social media sentiment analysis"*
+> - *"Include company fundamentals and P/E ratios"*
 
-> ⏱️ **Timeframes & Styles:**
-> - *"Switch to 1-day timeframe"*  
-> - *"What's the best setup for day trading?"*
-> - *"Configure me for swing trading"*
+> ⏱️ **Timeframes & Patterns:**
+> - *"Switch to 4-hour timeframe"*
+> - *"Look for head and shoulders patterns"*
+> - *"Configure for swing trading setup"*
+> - *"Use custom date range from last month"*
+
+> 🎛️ **Automation Features:**
+> - *"Run ProfitMax optimization"*
+> - *"Start ProFlow automation"*
+> - *"Save my analysis to cloud"*
+> - *"Show my analysis history"*
+
+> 🎨 **Visual & Audio:**
+> - *"Show company logos in results"*
+> - *"Read my analysis results aloud"*
+> - *"Enable voice input for commands"*
 
 ---
 
 ### 🎯 **Ready to optimize your trading?** 
-What would you like to explore today? 🚀📈`,
+I can handle everything from beginner setups to advanced multi-asset portfolio optimization! What would you like to explore today? 🚀📈`,
                 timestamp: new Date()
             }
         ];
@@ -207,6 +241,90 @@ What would you like to explore today? 🚀📈`,
             });
         }
 
+        // Options Analysis Commands
+        if (lowerMessage.includes('enable options') || lowerMessage.includes('include options') || lowerMessage.includes('options analysis')) {
+            actions.push({
+                type: 'enableOptionsAnalysis',
+                value: true,
+                description: 'Enable options analysis'
+            });
+        }
+
+        if (lowerMessage.includes('call options') || lowerMessage.includes('enable calls')) {
+            actions.push({
+                type: 'enableCallOptions',
+                value: true,
+                description: 'Enable call options analysis'
+            });
+        }
+
+        if (lowerMessage.includes('put options') || lowerMessage.includes('enable puts')) {
+            actions.push({
+                type: 'enablePutOptions',
+                value: true,
+                description: 'Enable put options analysis'
+            });
+        }
+
+        // Order Analysis Commands
+        if (lowerMessage.includes('stop loss') || lowerMessage.includes('take profit') || lowerMessage.includes('order analysis')) {
+            actions.push({
+                type: 'enableOrderAnalysis',
+                value: true,
+                description: 'Enable stop-loss and take-profit analysis'
+            });
+        }
+
+        // Non-Technical Indicators
+        if (lowerMessage.includes('fundamentals') || lowerMessage.includes('p/e ratio') || lowerMessage.includes('financial ratios')) {
+            actions.push({
+                type: 'enableFundamentals',
+                value: ['PE_Ratio', 'PEG_Ratio', 'Price_to_Book', 'ROE'],
+                description: 'Enable fundamental analysis indicators'
+            });
+        }
+
+        if (lowerMessage.includes('social sentiment') || lowerMessage.includes('social media')) {
+            actions.push({
+                type: 'enableSocialSentiment',
+                value: ['Social_Sentiment'],
+                description: 'Enable social media sentiment analysis'
+            });
+        }
+
+        if (lowerMessage.includes('analyst ratings') || lowerMessage.includes('price targets')) {
+            actions.push({
+                type: 'enableAnalystRatings',
+                value: ['Analyst_Ratings'],
+                description: 'Enable analyst ratings and price targets'
+            });
+        }
+
+        if (lowerMessage.includes('insider trading') || lowerMessage.includes('insider activity')) {
+            actions.push({
+                type: 'enableInsiderTrading',
+                value: ['Insider_Trading'],
+                description: 'Enable insider trading activity analysis'
+            });
+        }
+
+        // Pattern Recognition
+        if (lowerMessage.includes('head and shoulders') || lowerMessage.includes('pattern recognition')) {
+            actions.push({
+                type: 'enablePatterns',
+                value: ['HeadAndShouldersTop', 'HeadAndShouldersBottom'],
+                description: 'Enable head and shoulders pattern recognition'
+            });
+        }
+
+        if (lowerMessage.includes('double top') || lowerMessage.includes('double bottom')) {
+            actions.push({
+                type: 'enableDoublePatterns',
+                value: ['DoubleTop', 'DoubleBottom'],
+                description: 'Enable double top/bottom pattern recognition'
+            });
+        }
+
         // Symbol detection for add commands
         if (lowerMessage.includes('add') || lowerMessage.includes('include')) {
             let symbols: string[] = [];
@@ -217,32 +335,45 @@ What would you like to explore today? 🚀📈`,
                 symbols = directSymbolMatches.filter(s => s.length >= 2 && s.length <= 5);
             }
 
-            if (lowerMessage.includes('energy')) {
-                // From constants.ts, we have energy symbols
+            // Commodity symbols
+            if (lowerMessage.includes('energy') || lowerMessage.includes('oil') || lowerMessage.includes('gas')) {
                 const energySymbols = MARKET_OPTIONS.COMMODITIES?.find(c => c.value === 'ENERGY')?.symbols?.map(s => s.symbol) || [];
                 symbols.push(...energySymbols);
             }
 
-            if (lowerMessage.includes('ai stocks')) {
-                symbols.push('NVDA', 'GOOGL', 'MSFT', 'AMZN', 'META', 'TSLA');
+            if (lowerMessage.includes('gold') || lowerMessage.includes('silver') || lowerMessage.includes('precious metals')) {
+                const metalSymbols = MARKET_OPTIONS.COMMODITIES?.find(c => c.value === 'METALS')?.symbols?.map(s => s.symbol) || [];
+                symbols.push(...metalSymbols);
+            }
+
+            if (lowerMessage.includes('agriculture') || lowerMessage.includes('corn') || lowerMessage.includes('wheat')) {
+                const agriSymbols = MARKET_OPTIONS.COMMODITIES?.find(c => c.value === 'AGRICULTURE')?.symbols?.map(s => s.symbol) || [];
+                symbols.push(...agriSymbols);
+            }
+
+            // Stock categories
+            if (lowerMessage.includes('ai stocks') || lowerMessage.includes('tech stocks')) {
+                symbols.push('NVDA', 'GOOGL', 'MSFT', 'AMZN', 'META', 'TSLA', 'AAPL');
             }
 
             if (symbols.length > 0) {
                 // Check if the current market is correct
-                if (currentInputs?.selectedMarketType !== MarketType.STOCKS && (lowerMessage.includes('ai stocks') || lowerMessage.includes('tech stocks'))) {
+                const needsStocksMarket = lowerMessage.includes('ai stocks') || lowerMessage.includes('tech stocks');
+                const needsCommoditiesMarket = lowerMessage.includes('energy') || lowerMessage.includes('gold') || lowerMessage.includes('agriculture');
+                
+                if (needsStocksMarket && currentInputs?.selectedMarketType !== MarketType.STOCKS) {
                      actions.push({
                         type: 'marketTypeError',
                         value: 'STOCKS',
                         currentMarketType: currentInputs?.selectedMarketType
                     });
-                } else if (currentInputs?.selectedMarketType !== MarketType.COMMODITIES && lowerMessage.includes('energy')) {
+                } else if (needsCommoditiesMarket && currentInputs?.selectedMarketType !== MarketType.COMMODITIES) {
                      actions.push({
                         type: 'marketTypeError',
                         value: 'COMMODITIES',
                         currentMarketType: currentInputs?.selectedMarketType
                     });
-                }
-                else {
+                } else {
                     actions.push({
                         type: 'addSymbols',
                         value: [...new Set(symbols)], // Remove duplicates
@@ -252,6 +383,23 @@ What would you like to explore today? 🚀📈`,
             }
         }
 
+        // Forex symbols
+        if (lowerMessage.includes('currency pairs') || lowerMessage.includes('forex')) {
+            actions.push({
+                type: 'switchToForex',
+                value: 'FOREX',
+                description: 'Switch to forex market'
+            });
+        }
+
+        if (lowerMessage.includes('eur/usd') || lowerMessage.includes('eurusd')) {
+            actions.push({
+                type: 'addForexSymbols',
+                value: ['EURUSD'],
+                description: 'Add EUR/USD currency pair'
+            });
+        }
+
         // Timeframe changes
         const timeframeMatch = message.match(/(?:set|change|switch).*?(?:timeframe|period).*?(?:to\s+)?([15]?[mhd]|[1-9][mhd]|1[mh]|[1-5]y|custom)/i);
         if (timeframeMatch) {
@@ -259,6 +407,15 @@ What would you like to explore today? 🚀📈`,
                 type: 'updateTimeframe',
                 value: timeframeMatch[1],
                 description: `Change timeframe to ${timeframeMatch[1]}`
+            });
+        }
+
+        // Custom date range
+        if (lowerMessage.includes('custom date') || lowerMessage.includes('date range')) {
+            actions.push({
+                type: 'enableCustomDateRange',
+                value: 'custom',
+                description: 'Enable custom date range selection'
             });
         }
 
@@ -274,7 +431,7 @@ What would you like to explore today? 🚀📈`,
         if (lowerMessage.includes('advanced') || lowerMessage.includes('expert') || lowerMessage.includes('professional')) {
             actions.push({
                 type: 'suggestAdvancedIndicators',
-                value: ['MACD', 'BollingerBands', 'StochasticOscillator', 'FibonacciRetracement'],
+                value: ['MACD', 'BollingerBands', 'StochasticOscillator', 'ADX'],
                 description: 'Suggest advanced indicators'
             });
         }
@@ -295,6 +452,14 @@ What would you like to explore today? 🚀📈`,
                 type: 'switchToStocks',
                 value: 'STOCKS',
                 description: 'Switch to stocks market'
+            });
+        }
+
+        if (lowerMessage.includes('switch to commodities') || lowerMessage.includes('commodities market')) {
+            actions.push({
+                type: 'switchToCommodities',
+                value: 'COMMODITIES',
+                description: 'Switch to commodities market'
             });
         }
 
@@ -323,19 +488,26 @@ What would you like to explore today? 🚀📈`,
             });
         }
 
-        // Day trading setup
+        if (lowerMessage.includes('defi') || lowerMessage.includes('defi tokens')) {
+            actions.push({
+                type: 'addCryptoSymbols',
+                value: ['UNI', 'AAVE', 'COMP', 'MKR'],
+                description: 'Add DeFi tokens'
+            });
+        }
+
+        // Trading setup presets
         if (lowerMessage.includes('day trading') || lowerMessage.includes('scalping')) {
             actions.push({
                 type: 'dayTradingSetup',
                 value: {
                     timeframe: '15m',
-                    indicators: ['EMA', 'RSI', 'Volume', 'VWAP'],
+                    indicators: ['EMA', 'RSI', 'Volume', 'MACD'],
                     description: 'Configure for day trading'
                 }
             });
         }
 
-        // Swing trading setup
         if (lowerMessage.includes('swing trading') || lowerMessage.includes('position trading')) {
             actions.push({
                 type: 'swingTradingSetup',
@@ -344,6 +516,23 @@ What would you like to explore today? 🚀📈`,
                     indicators: ['SMA', 'MACD', 'RSI', 'BollingerBands'],
                     description: 'Configure for swing trading'
                 }
+            });
+        }
+
+        // Automation features
+        if (lowerMessage.includes('profitmax') || lowerMessage.includes('profit max') || lowerMessage.includes('optimization')) {
+            actions.push({
+                type: 'suggestProfitMax',
+                value: true,
+                description: 'Suggest running ProfitMax optimization'
+            });
+        }
+
+        if (lowerMessage.includes('proflow') || lowerMessage.includes('automation') || lowerMessage.includes('auto trade')) {
+            actions.push({
+                type: 'suggestProFlow',
+                value: true,
+                description: 'Suggest using ProFlow automation'
             });
         }
 
@@ -363,12 +552,53 @@ What would you like to explore today? 🚀📈`,
                     updates.walletAmount = action.value;
                     executed = true;
                     break;
+                case 'enableOptionsAnalysis':
+                    updates.includeOptionsAnalysis = action.value;
+                    executed = true;
+                    break;
+                case 'enableCallOptions':
+                    updates.includeCallOptions = action.value;
+                    updates.includeOptionsAnalysis = true; // Auto-enable options analysis
+                    executed = true;
+                    break;
+                case 'enablePutOptions':
+                    updates.includePutOptions = action.value;
+                    updates.includeOptionsAnalysis = true; // Auto-enable options analysis
+                    executed = true;
+                    break;
+                case 'enableOrderAnalysis':
+                    updates.includeOrderAnalysis = action.value;
+                    executed = true;
+                    break;
+                case 'enableFundamentals':
+                case 'enableSocialSentiment':
+                case 'enableAnalystRatings':
+                case 'enableInsiderTrading':
+                    updates.selectedNonTechnicalIndicators = [
+                        ...(currentInputs?.selectedNonTechnicalIndicators || []),
+                        ...action.value
+                    ];
+                    executed = true;
+                    break;
+                case 'enablePatterns':
+                case 'enableDoublePatterns':
+                    updates.selectedIndicators = [
+                        ...(currentInputs?.selectedIndicators || []),
+                        ...action.value
+                    ];
+                    executed = true;
+                    break;
+                case 'enableCustomDateRange':
+                    updates.selectedTimeframe = action.value;
+                    executed = true;
+                    break;
                 case 'addSymbols':
                     // Convert symbol strings to FmpSearchResult objects and add them
                     if (onUpdateInputs) {
                         console.log('🤖 Chatbot: Processing addSymbols action', action);
 
                         const symbolNames: Record<string, string> = {
+                            // Stocks
                             'NVDA': 'NVIDIA Corporation',
                             'GOOGL': 'Alphabet Inc.',
                             'GOOG': 'Alphabet Inc. Class C',
@@ -388,14 +618,30 @@ What would you like to explore today? 🚀📈`,
                             'PLTR': 'Palantir Technologies',
                             'AI': 'C3.ai Inc.',
                             'SNOW': 'Snowflake Inc.',
-                            'XOM': 'Exxon Mobil Corporation',
-                            'CVX': 'Chevron Corporation',
-                            'BP': 'BP plc',
-                            'SHEL': 'Shell plc',
-                            'COP': 'ConocoPhillips',
-                            'EOG': 'EOG Resources Inc.',
-                            'SLB': 'Schlumberger Limited',
-                            'MPC': 'Marathon Petroleum Corporation'
+                            // Energy Commodities
+                            'CL': 'Crude Oil',
+                            'NG': 'Natural Gas',
+                            'HO': 'Heating Oil',
+                            'BRENT': 'Brent Crude',
+                            // Metals
+                            'GC': 'Gold',
+                            'SI': 'Silver',
+                            'PL': 'Platinum',
+                            'PA': 'Palladium',
+                            'HG': 'Copper',
+                            // Agriculture
+                            'C': 'Corn',
+                            'S': 'Soybeans',
+                            'W': 'Wheat',
+                            'KC': 'Coffee',
+                            'CT': 'Cotton',
+                            'SB': 'Sugar',
+                            // Forex
+                            'EURUSD': 'EUR/USD',
+                            'GBPUSD': 'GBP/USD',
+                            'USDJPY': 'USD/JPY',
+                            'USDCAD': 'USD/CAD',
+                            'AUDUSD': 'AUD/USD'
                         };
 
                         const symbolsToAdd = action.value.map((symbol: string) => ({
@@ -404,14 +650,8 @@ What would you like to explore today? 🚀📈`,
                         }));
 
                         console.log('🤖 Chatbot: Symbols to add:', symbolsToAdd);
-                        console.log('🤖 Chatbot: Calling onUpdateInputs with addSymbols');
-
                         onUpdateInputs({ addSymbols: symbolsToAdd });
                         executed = true;
-
-                        console.log('🤖 Chatbot: addSymbols action executed successfully');
-                    } else {
-                        console.error('🤖 Chatbot: onUpdateInputs not available for addSymbols');
                     }
                     break;
                 case 'marketTypeError':
@@ -436,6 +676,24 @@ What would you like to explore today? 🚀📈`,
                         executed = true;
                     }
                     break;
+                case 'switchToCommodities':
+                    if (onUpdateInputs) {
+                        onUpdateInputs({ 
+                            selectedMarketType: 'COMMODITIES',
+                            selectedMarket: 'ENERGY'
+                        });
+                        executed = true;
+                    }
+                    break;
+                case 'switchToForex':
+                    if (onUpdateInputs) {
+                        onUpdateInputs({ 
+                            selectedMarketType: 'FOREX',
+                            selectedMarket: 'MAJOR'
+                        });
+                        executed = true;
+                    }
+                    break;
                 case 'addCryptoSymbols':
                     if (onUpdateInputs) {
                         const cryptoNames: Record<string, string> = {
@@ -448,7 +706,13 @@ What would you like to explore today? 🚀📈`,
                             'AVAX': 'Avalanche',
                             'DOT': 'Polkadot',
                             'MATIC': 'Polygon',
-                            'UNI': 'Uniswap'
+                            'UNI': 'Uniswap',
+                            'AAVE': 'Aave',
+                            'COMP': 'Compound',
+                            'MKR': 'Maker',
+                            'AXS': 'Axie Infinity',
+                            'SAND': 'The Sandbox',
+                            'MANA': 'Decentraland'
                         };
 
                         const symbolsToAdd = action.value.map((symbol: string) => ({
@@ -457,6 +721,33 @@ What would you like to explore today? 🚀📈`,
                         }));
 
                         console.log('🤖 Chatbot: Adding crypto symbols:', symbolsToAdd);
+                        onUpdateInputs({ addSymbols: symbolsToAdd });
+                        executed = true;
+                    }
+                    break;
+                case 'addForexSymbols':
+                    if (onUpdateInputs) {
+                        const forexNames: Record<string, string> = {
+                            'EURUSD': 'EUR/USD',
+                            'GBPUSD': 'GBP/USD',
+                            'USDJPY': 'USD/JPY',
+                            'USDCAD': 'USD/CAD',
+                            'AUDUSD': 'AUD/USD',
+                            'EURGBP': 'EUR/GBP',
+                            'EURJPY': 'EUR/JPY',
+                            'GBPJPY': 'GBP/JPY',
+                            'AUDJPY': 'AUD/JPY',
+                            'USDTRY': 'USD/TRY',
+                            'USDZAR': 'USD/ZAR',
+                            'USDMXN': 'USD/MXN'
+                        };
+
+                        const symbolsToAdd = action.value.map((symbol: string) => ({
+                            symbol: symbol,
+                            name: forexNames[symbol] || `${symbol} Currency Pair`
+                        }));
+
+                        console.log('🤖 Chatbot: Adding forex symbols:', symbolsToAdd);
                         onUpdateInputs({ addSymbols: symbolsToAdd });
                         executed = true;
                     }
@@ -476,10 +767,16 @@ What would you like to explore today? 🚀📈`,
                     updates.selectedIndicators = action.value.indicators;
                     executed = true;
                     break;
+                case 'suggestProfitMax':
+                case 'suggestProFlow':
+                    // These are suggestions that don't directly update inputs
+                    // They will be handled in the response generation
+                    executed = false;
+                    break;
             }
         });
 
-        if (executed) {
+        if (executed && Object.keys(updates).length > 0) {
             onUpdateInputs(updates);
         }
 
