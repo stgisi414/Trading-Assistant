@@ -39,43 +39,28 @@ export const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose }) =
     }));
   };
 
-  const sendEmailViaEmailJS = async (emailData: typeof formData) => {
-    // For now, we'll simulate sending an email
-    // In production, you would set up EmailJS or a backend email service
-    
-    // Simulate API call delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    // Log the contact form submission (in production, this would go to your email service)
-    console.log('Contact Form Submission:', {
-      name: emailData.name,
-      email: emailData.email,
-      subject: emailData.subject,
-      message: emailData.message,
-      timestamp: new Date().toISOString(),
-      userId: user?.uid || 'Anonymous'
+  const sendEmailViaBackend = async (emailData: typeof formData) => {
+    const response = await fetch('/api/send-email', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        name: emailData.name,
+        email: emailData.email,
+        subject: emailData.subject,
+        message: emailData.message,
+        userId: user?.uid || 'Anonymous'
+      })
     });
-    
-    // You can replace this with EmailJS, Formspree, or your own backend
-    // For EmailJS setup, uncomment and configure the following:
-    /*
-    const templateParams = {
-      from_name: emailData.name,
-      from_email: emailData.email,
-      subject: emailData.subject,
-      message: emailData.message,
-      to_email: 'stefdgisi@gmail.com'
-    };
-    
-    const response = await emailjs.send(
-      'YOUR_SERVICE_ID',
-      'YOUR_TEMPLATE_ID', 
-      templateParams,
-      'YOUR_PUBLIC_KEY'
-    );
-    */
-    
-    return { success: true };
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result.error || 'Failed to send email');
+    }
+
+    return result;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -96,7 +81,7 @@ export const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose }) =
         throw new Error('Please enter a valid email address');
       }
 
-      await sendEmailViaEmailJS(formData);
+      await sendEmailViaBackend(formData);
       
       setSubmitStatus('success');
       
