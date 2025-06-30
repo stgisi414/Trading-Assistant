@@ -326,6 +326,8 @@ What would you like to explore today? 🚀📈`,
                 case 'addSymbols':
                     // Convert symbol strings to FmpSearchResult objects and add them
                     if (onUpdateInputs) {
+                        console.log('🤖 Chatbot: Processing addSymbols action', action);
+                        
                         const symbolNames: Record<string, string> = {
                             'NVDA': 'NVIDIA Corporation',
                             'GOOGL': 'Alphabet Inc.',
@@ -361,8 +363,15 @@ What would you like to explore today? 🚀📈`,
                             name: symbolNames[symbol] || `${symbol} Corporation`
                         }));
                         
+                        console.log('🤖 Chatbot: Symbols to add:', symbolsToAdd);
+                        console.log('🤖 Chatbot: Calling onUpdateInputs with addSymbols');
+                        
                         onUpdateInputs({ addSymbols: symbolsToAdd });
                         executed = true;
+                        
+                        console.log('🤖 Chatbot: addSymbols action executed successfully');
+                    } else {
+                        console.error('🤖 Chatbot: onUpdateInputs not available for addSymbols');
                     }
                     break;
                 case 'marketTypeError':

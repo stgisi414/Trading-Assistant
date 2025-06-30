@@ -28,6 +28,7 @@ import {
     MARKET_OPTIONS,
 } from "./constants.ts";
 import { ErrorMessage } from "./components/ErrorMessage.tsx";
+import { SymbolDebugger } from "./components/SymbolDebugger.tsx";
 
 const getInitialDates = () => {
     const endDate = new Date();
@@ -131,10 +132,12 @@ function App() {
 
     // Save input data to localStorage whenever it changes
     useEffect(() => {
+        console.log('🔧 Saving selectedSymbols to localStorage:', selectedSymbols);
         localStorage.setItem(
             "tradingApp_selectedSymbols",
             JSON.stringify(selectedSymbols),
         );
+        console.log('🔧 localStorage updated for selectedSymbols');
     }, [selectedSymbols]);
 
     useEffect(() => {
@@ -203,15 +206,46 @@ function App() {
     }, [selectedMarket]);
 
     const onAddSymbol = (symbol: FmpSearchResult) => {
-        // Adds a symbol if it's not already in the list
-        if (!selectedSymbols.find(s => s.symbol === symbol.symbol)) {
-            setSelectedSymbols(prev => [...prev, symbol]);
+        console.log('🔧 onAddSymbol called with:', symbol);
+        console.log('🔧 Current selectedSymbols before addition:', selectedSymbols);
+        console.log('🔧 Symbol validation:', {
+            symbol: symbol.symbol,
+            name: symbol.name,
+            isValidSymbol: typeof symbol.symbol === 'string' && symbol.symbol.length > 0,
+            isValidName: typeof symbol.name === 'string' && symbol.name.length > 0
+        });
+
+        // Check if symbol already exists
+        const existingSymbol = selectedSymbols.find(s => s.symbol === symbol.symbol);
+        if (existingSymbol) {
+            console.log('⚠️ Symbol already exists, not adding:', existingSymbol);
+            return;
         }
+
+        console.log('✅ Adding new symbol to state...');
+        setSelectedSymbols(prev => {
+            const newSymbols = [...prev, symbol];
+            console.log('🔧 New symbols array:', newSymbols);
+            return newSymbols;
+        });
     };
 
     const onRemoveSymbol = (symbol: string) => {
-        // Removes a symbol from the list
-        setSelectedSymbols(prev => prev.filter(s => s.symbol !== symbol));
+        console.log('🔧 onRemoveSymbol called with:', symbol);
+        console.log('🔧 Current selectedSymbols before removal:', selectedSymbols);
+        
+        const symbolExists = selectedSymbols.find(s => s.symbol === symbol);
+        if (!symbolExists) {
+            console.log('⚠️ Symbol not found in list, cannot remove:', symbol);
+            return;
+        }
+
+        console.log('✅ Removing symbol from state...');
+        setSelectedSymbols(prev => {
+            const newSymbols = prev.filter(s => s.symbol !== symbol);
+            console.log('🔧 New symbols array after removal:', newSymbols);
+            return newSymbols;
+        });
     };
 
     const toggleTheme = () => {
@@ -535,37 +569,55 @@ function App() {
     };
 
     const handleChatbotInputUpdates = (updates: any) => {
+        console.log('🤖 handleChatbotInputUpdates called with:', updates);
+        
         // Handle market type and market changes first if they exist
         if (updates.selectedMarketType !== undefined) {
+            console.log('🤖 Setting market type to:', updates.selectedMarketType);
             setSelectedMarketType(updates.selectedMarketType as MarketType);
         }
         if (updates.selectedMarket !== undefined) {
+            console.log('🤖 Setting market to:', updates.selectedMarket);
             setSelectedMarket(updates.selectedMarket);
         }
         
         // Clear existing symbols if market type is changing
         if (updates.selectedMarketType !== undefined) {
+            console.log('🤖 Clearing symbols due to market type change');
             setSelectedSymbols([]);
         }
         
         // Handle other updates
         if (updates.walletAmount !== undefined) {
+            console.log('🤖 Setting wallet amount to:', updates.walletAmount);
             setWalletAmount(updates.walletAmount);
         }
         if (updates.selectedTimeframe !== undefined) {
+            console.log('🤖 Setting timeframe to:', updates.selectedTimeframe);
             setSelectedTimeframe(updates.selectedTimeframe);
         }
         if (updates.selectedIndicators !== undefined) {
+            console.log('🤖 Setting indicators to:', updates.selectedIndicators);
             setSelectedIndicators(updates.selectedIndicators);
         }
         
         // Add symbols after market changes are applied
         if (updates.addSymbols !== undefined) {
+            console.log('🤖 Processing addSymbols:', updates.addSymbols);
+            console.log('🤖 Current selectedSymbols before adding:', selectedSymbols);
+            
             setSelectedSymbols(prev => {
-                const newSymbols = updates.addSymbols.filter((newSymbol: any) => 
-                    !prev.some(existing => existing.symbol === newSymbol.symbol)
-                );
-                return [...prev, ...newSymbols];
+                console.log('🤖 Previous symbols in setter:', prev);
+                
+                const newSymbols = updates.addSymbols.filter((newSymbol: any) => {
+                    const exists = prev.some(existing => existing.symbol === newSymbol.symbol);
+                    console.log(`🤖 Symbol ${newSymbol.symbol} exists: ${exists}`);
+                    return !exists;
+                });
+                
+                const result = [...prev, ...newSymbols];
+                console.log('🤖 New symbols array will be:', result);
+                return result;
             });
         }
     };
@@ -717,6 +769,15 @@ function App() {
                                 isLoading={isLoading}
                             />
                         </main>
+                        
+                        {/* Symbol Addition Debugger */}
+                        <SymbolDebugger
+                            selectedSymbols={selectedSymbols}
+                            currentMarketType={selectedMarketType}
+                            currentMarket={selectedMarket}
+                            onAddSymbol={onAddSymbol}
+                            onRemoveSymbol={onRemoveSymbol}
+                        />
                     </>
                 )}
             </div>
