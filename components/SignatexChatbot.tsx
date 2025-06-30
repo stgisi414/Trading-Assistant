@@ -200,46 +200,45 @@ What would you like to explore today? 🚀📈`,
             });
         }
 
-        // Symbol additions - Enhanced to handle AI stocks and company names with market validation
-        const addSymbolMatch = message.match(/(?:add|include).*?(?:symbol|stock|asset|ai stocks?)s?\s+([A-Z]{1,5}(?:\s*,?\s*[A-Z]{1,5})*|ai stocks?)/i);
-        if (addSymbolMatch || lowerMessage.includes('ai stocks')) {
+        // Symbol additions - Enhanced to handle energy stocks and company names
+        const addSymbolMatch = message.match(/(?:add|include).*?(?:symbol|stock|asset|energy|ai stocks?)s?\s+([A-Z]{2,5}(?:\s*,?\s*[A-Z]{2,5})*|ai stocks?|energy)/i);
+        const energyMatch = lowerMessage.includes('energy') || lowerMessage.includes('xom') || lowerMessage.includes('cvx');
+        
+        if (addSymbolMatch || lowerMessage.includes('ai stocks') || energyMatch) {
             let symbols: string[] = [];
             
             if (lowerMessage.includes('ai stocks')) {
-                // Check if current market type supports stocks
-                if (currentInputs?.selectedMarketType !== 'STOCKS') {
-                    actions.push({
-                        type: 'marketTypeError',
-                        value: 'stocks',
-                        currentMarketType: currentInputs?.selectedMarketType || 'unknown',
-                        description: `Cannot add AI stocks - current market type is ${currentInputs?.selectedMarketType || 'not set'}`
-                    });
-                } else {
-                    // Add popular AI stocks
-                    symbols = ['NVDA', 'GOOGL', 'MSFT', 'AMZN', 'META', 'TSLA'];
-                    actions.push({
-                        type: 'addSymbols',
-                        value: symbols,
-                        description: 'Add AI stocks: NVDA, GOOGL, MSFT, AMZN, META, TSLA'
-                    });
+                symbols = ['NVDA', 'GOOGL', 'MSFT', 'AMZN', 'META', 'TSLA'];
+                actions.push({
+                    type: 'addSymbols',
+                    value: symbols,
+                    description: 'Add AI stocks: NVDA, GOOGL, MSFT, AMZN, META, TSLA'
+                });
+            } else if (energyMatch || lowerMessage.includes('xom') || lowerMessage.includes('cvx')) {
+                // Handle energy symbols specifically
+                symbols = [];
+                if (lowerMessage.includes('xom')) symbols.push('XOM');
+                if (lowerMessage.includes('cvx')) symbols.push('CVX');
+                if (symbols.length === 0) {
+                    // Default energy symbols if just "energy" is mentioned
+                    symbols = ['XOM', 'CVX'];
                 }
+                actions.push({
+                    type: 'addSymbols',
+                    value: symbols,
+                    description: `Add energy stocks: ${symbols.join(', ')}`
+                });
             } else if (addSymbolMatch) {
-                symbols = addSymbolMatch[1].split(/[,\s]+/).filter(s => s.length > 0);
-                
-                // Validate market type for stock symbols
-                if (currentInputs?.selectedMarketType !== 'STOCKS' && symbols.some(s => s.match(/^[A-Z]{1,5}$/))) {
-                    actions.push({
-                        type: 'marketTypeError',
-                        value: 'stocks',
-                        currentMarketType: currentInputs?.selectedMarketType || 'unknown',
-                        description: `Cannot add stock symbols - current market type is ${currentInputs?.selectedMarketType || 'not set'}`
-                    });
-                } else {
-                    actions.push({
-                        type: 'addSymbols',
-                        value: symbols,
-                        description: `Add symbols: ${symbols.join(', ')}`
-                    });
+                const extractedSymbols = addSymbolMatch[1];
+                if (extractedSymbols && extractedSymbols !== 'energy' && extractedSymbols !== 'ai stocks') {
+                    symbols = extractedSymbols.split(/[,\s]+/).filter(s => s.length > 0 && s.match(/^[A-Z]{2,5}$/));
+                    if (symbols.length > 0) {
+                        actions.push({
+                            type: 'addSymbols',
+                            value: symbols,
+                            description: `Add symbols: ${symbols.join(', ')}`
+                        });
+                    }
                 }
             }
         }
@@ -344,7 +343,15 @@ What would you like to explore today? 🚀📈`,
                                 'NOW': 'ServiceNow Inc.',
                                 'PLTR': 'Palantir Technologies',
                                 'AI': 'C3.ai Inc.',
-                                'SNOW': 'Snowflake Inc.'
+                                'SNOW': 'Snowflake Inc.',
+                                'XOM': 'Exxon Mobil Corporation',
+                                'CVX': 'Chevron Corporation',
+                                'BP': 'BP plc',
+                                'SHEL': 'Shell plc',
+                                'COP': 'ConocoPhillips',
+                                'EOG': 'EOG Resources Inc.',
+                                'SLB': 'Schlumberger Limited',
+                                'MPC': 'Marathon Petroleum Corporation'
                             };
                             
                             return {
@@ -363,7 +370,7 @@ What would you like to explore today? 🚀📈`,
                     break;
                 case 'switchToStocksAndAddAI':
                     if (onUpdateInputs) {
-                        // Create AI symbols first
+                        // Create symbols first
                         const symbolsToAdd = action.value.map((symbol: string) => {
                             const symbolNames: Record<string, string> = {
                                 'NVDA': 'NVIDIA Corporation',
@@ -371,7 +378,9 @@ What would you like to explore today? 🚀📈`,
                                 'MSFT': 'Microsoft Corporation',
                                 'AMZN': 'Amazon.com Inc.',
                                 'META': 'Meta Platforms Inc.',
-                                'TSLA': 'Tesla Inc.'
+                                'TSLA': 'Tesla Inc.',
+                                'XOM': 'Exxon Mobil Corporation',
+                                'CVX': 'Chevron Corporation'
                             };
                             
                             return {
