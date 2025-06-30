@@ -225,6 +225,12 @@ export interface PaperTrade {
     status: 'pending' | 'active' | 'closed' | 'cancelled';
     closedAt?: Date;
     realizedPnL?: number;
+    // Options trading fields
+    isOptions?: boolean;
+    optionType?: 'CALL' | 'PUT';
+    strikePrice?: number;
+    expirationDate?: Date;
+    contractSize?: number; // Usually 100 shares per contract
 }
 
 export interface PaperTradingPosition {
@@ -235,6 +241,19 @@ export interface PaperTradingPosition {
     marketValue: number;
     unrealizedPnL: number;
     unrealizedPnLPercent: number;
+    // Options trading fields
+    isOptions?: boolean;
+    optionType?: 'CALL' | 'PUT';
+    strikePrice?: number;
+    expirationDate?: Date;
+    contractSize?: number;
+    intrinsicValue?: number;
+    timeValue?: number;
+    impliedVolatility?: number;
+    delta?: number;
+    gamma?: number;
+    theta?: number;
+    vega?: number;
 }
 
 export interface PaperTradingPortfolio {
@@ -253,4 +272,27 @@ export interface MarketData {
     change: number;
     changePercent: number;
     timestamp: Date;
+}
+
+export interface OptionsChain {
+    symbol: string;
+    expirationDate: Date;
+    calls: OptionContract[];
+    puts: OptionContract[];
+}
+
+export interface OptionContract {
+    strike: number;
+    bid: number;
+    ask: number;
+    lastPrice: number;
+    volume: number;
+    openInterest: number;
+    impliedVolatility: number;
+    delta: number;
+    gamma: number;
+    theta: number;
+    vega: number;
+    intrinsicValue: number;
+    timeValue: number;
 }

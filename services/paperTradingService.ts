@@ -1,6 +1,6 @@
 
 import { firebaseService } from './firebaseService';
-import { PaperTrade, PaperTradingPortfolio, MarketData } from '../types';
+import { PaperTrade, PaperTradingPortfolio, MarketData, OptionsChain, OptionContract } from '../types';
 
 class PaperTradingService {
   private static instance: PaperTradingService;
@@ -40,6 +40,162 @@ class PaperTradingService {
     }
   }
 
+  // Black-Scholes option pricing model (simplified)
+  private calculateOptionPrice(
+    stockPrice: number,
+    strikePrice: number,
+    timeToExpiry: number, // in years
+    volatility: number = 0.25,
+    riskFreeRate: number = 0.05,
+    optionType: 'CALL' | 'PUT'
+  ): { price: number; greeks: { delta: number; gamma: number; theta: number; vega: number } } {
+    const d1 = (Math.log(stockPrice / strikePrice) + (riskFreeRate + (volatility ** 2) / 2) * timeToExpiry) / (volatility * Math.sqrt(timeToExpiry));
+    const d2 = d1 - volatility * Math.sqrt(timeToExpiry);
+
+    // Standard normal cumulative distribution function (approximation)
+    const normCDF = (x: number): number => {
+      const a1 = 0.31938153;
+      const a2 = -0.356563782;
+      const a3 = 1.781477937;
+      const a4 = -1.821255978;
+      const a5 = 1.330274429;
+      const k = 1.0 / (1.0 + 0.2316419 * Math.abs(x));
+      const w = 1.0 - (1.0 / Math.sqrt(2 * Math.PI)) * Math.exp(-0.5 * x * x) * (a1 * k + a2 * k * k + a3 * Math.pow(k, 3) + a4 * Math.pow(k, 4) + a5 * Math.pow(k, 5));
+      return x > 0 ? w : 1.0 - w;
+    };
+
+    const normPDF = (x: number): number => (1 / Math.sqrt(2 * Math.PI)) * Math.exp(-0.5 * x * x);
+
+    let price: number;
+    let delta: number;
+
+    if (optionType === 'CALL') {
+      price = stockPrice * normCDF(d1) - strikePrice * Math.exp(-riskFreeRate * timeToExpiry) * normCDF(d2);
+      delta = normCDF(d1);
+    } else {
+      price = strikePrice * Math.exp(-riskFreeRate * timeToExpiry) * normCDF(-d2) - stockPrice * normCDF(-d1);
+      delta = normCDF(d1) - 1;
+    }
+
+    // Greeks calculations
+    const gamma = normPDF(d1) / (stockPrice * volatility * Math.sqrt(timeToExpiry));
+    const theta = (-(stockPrice * normPDF(d1) * volatility) / (2 * Math.sqrt(timeToExpiry)) - 
+                   riskFreeRate * strikePrice * Math.exp(-riskFreeRate * timeToExpiry) * 
+                   (optionType === 'CALL' ? normCDF(d2) : normCDF(-d2))) / 365;
+    const vega = (stockPrice * normPDF(d1) * Math.sqrt(timeToExpiry)) / 100;
+
+    return {
+      price: Math.max(price, 0.01), // Minimum price of $0.01
+      greeks: { delta, gamma, theta, vega }
+    };
+  }
+
+  // Get option price for a specific contract
+  private async getOptionPrice(
+    symbol: string,
+    optionType: 'CALL' | 'PUT',
+    strikePrice: number,
+    expirationDate: Date
+  ): Promise<{ price: number; greeks: { delta: number; gamma: number; theta: number; vega: number } }> {
+    const stockPrice = await this.getMarketPrice(symbol);
+    const now = new Date();
+    const timeToExpiry = (expirationDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24 * 365); // in years
+
+    if (timeToExpiry <= 0) {
+      // Option has expired, calculate intrinsic value only
+      const intrinsicValue = optionType === 'CALL' 
+        ? Math.max(stockPrice - strikePrice, 0)
+        : Math.max(strikePrice - stockPrice, 0);
+      
+      return {
+        price: intrinsicValue,
+        greeks: { delta: 0, gamma: 0, theta: 0, vega: 0 }
+      };
+    }
+
+    return this.calculateOptionPrice(stockPrice, strikePrice, timeToExpiry, 0.25, 0.05, optionType);
+  }
+
+  // Get available options chains for a symbol (mock data)
+  async getOptionsChain(symbol: string, expirationDate?: Date): Promise<OptionsChain[]> {
+    const stockPrice = await this.getMarketPrice(symbol);
+    const chains: OptionsChain[] = [];
+
+    // Generate expiration dates (next 4 fridays)
+    const expirationDates = [];
+    const now = new Date();
+    for (let i = 1; i <= 4; i++) {
+      const nextFriday = new Date(now);
+      nextFriday.setDate(now.getDate() + (5 - now.getDay() + 7 * (i - 1)) % 7);
+      if (nextFriday <= now) {
+        nextFriday.setDate(nextFriday.getDate() + 7);
+      }
+      expirationDates.push(nextFriday);
+    }
+
+    for (const expDate of expirationDates) {
+      if (expirationDate && expDate.getTime() !== expirationDate.getTime()) continue;
+
+      const calls: OptionContract[] = [];
+      const puts: OptionContract[] = [];
+
+      // Generate strike prices around current stock price
+      const strikeSpacing = stockPrice > 100 ? 5 : 2.5;
+      const numStrikes = 10;
+      
+      for (let i = -numStrikes/2; i <= numStrikes/2; i++) {
+        const strike = Math.round((stockPrice + i * strikeSpacing) / strikeSpacing) * strikeSpacing;
+        
+        const callOption = await this.getOptionPrice(symbol, 'CALL', strike, expDate);
+        const putOption = await this.getOptionPrice(symbol, 'PUT', strike, expDate);
+
+        const callContract: OptionContract = {
+          strike,
+          bid: callOption.price * 0.98,
+          ask: callOption.price * 1.02,
+          lastPrice: callOption.price,
+          volume: Math.floor(Math.random() * 1000),
+          openInterest: Math.floor(Math.random() * 5000),
+          impliedVolatility: 0.25,
+          delta: callOption.greeks.delta,
+          gamma: callOption.greeks.gamma,
+          theta: callOption.greeks.theta,
+          vega: callOption.greeks.vega,
+          intrinsicValue: Math.max(stockPrice - strike, 0),
+          timeValue: callOption.price - Math.max(stockPrice - strike, 0)
+        };
+
+        const putContract: OptionContract = {
+          strike,
+          bid: putOption.price * 0.98,
+          ask: putOption.price * 1.02,
+          lastPrice: putOption.price,
+          volume: Math.floor(Math.random() * 1000),
+          openInterest: Math.floor(Math.random() * 5000),
+          impliedVolatility: 0.25,
+          delta: putOption.greeks.delta,
+          gamma: putOption.greeks.gamma,
+          theta: putOption.greeks.theta,
+          vega: putOption.greeks.vega,
+          intrinsicValue: Math.max(strike - stockPrice, 0),
+          timeValue: putOption.price - Math.max(strike - stockPrice, 0)
+        };
+
+        calls.push(callContract);
+        puts.push(putContract);
+      }
+
+      chains.push({
+        symbol,
+        expirationDate: expDate,
+        calls,
+        puts
+      });
+    }
+
+    return chains;
+  }
+
   // Initialize user's paper trading portfolio
   async initializePortfolio(): Promise<PaperTradingPortfolio> {
     const initialBalance = 100000; // $100,000 starting balance
@@ -69,18 +225,54 @@ class PaperTradingService {
       // Update positions with current market prices
       const updatedPositions = await Promise.all(
         portfolio.positions.map(async (position) => {
-          const currentPrice = await this.getMarketPrice(position.symbol);
-          const marketValue = currentPrice * position.quantity;
-          const unrealizedPnL = marketValue - (position.averagePrice * position.quantity);
-          const unrealizedPnLPercent = (unrealizedPnL / (position.averagePrice * position.quantity)) * 100;
+          let currentPrice: number;
+          let marketValue: number;
+          const contractSize = position.contractSize || (position.isOptions ? 100 : 1);
 
-          return {
-            ...position,
-            currentPrice,
-            marketValue,
-            unrealizedPnL,
-            unrealizedPnLPercent
-          };
+          if (position.isOptions && position.optionType && position.strikePrice && position.expirationDate) {
+            // Update options position
+            const optionData = await this.getOptionPrice(
+              position.symbol,
+              position.optionType,
+              position.strikePrice,
+              new Date(position.expirationDate)
+            );
+            currentPrice = optionData.price;
+            marketValue = currentPrice * position.quantity * contractSize;
+
+            return {
+              ...position,
+              currentPrice,
+              marketValue,
+              unrealizedPnL: marketValue - (position.averagePrice * position.quantity * contractSize),
+              unrealizedPnLPercent: ((marketValue - (position.averagePrice * position.quantity * contractSize)) / (position.averagePrice * position.quantity * contractSize)) * 100,
+              // Update Greeks
+              delta: optionData.greeks.delta,
+              gamma: optionData.greeks.gamma,
+              theta: optionData.greeks.theta,
+              vega: optionData.greeks.vega,
+              intrinsicValue: position.optionType === 'CALL' 
+                ? Math.max((await this.getMarketPrice(position.symbol)) - position.strikePrice, 0)
+                : Math.max(position.strikePrice - (await this.getMarketPrice(position.symbol)), 0),
+              timeValue: currentPrice - (position.optionType === 'CALL' 
+                ? Math.max((await this.getMarketPrice(position.symbol)) - position.strikePrice, 0)
+                : Math.max(position.strikePrice - (await this.getMarketPrice(position.symbol)), 0))
+            };
+          } else {
+            // Update stock position
+            currentPrice = await this.getMarketPrice(position.symbol);
+            marketValue = currentPrice * position.quantity;
+            const unrealizedPnL = marketValue - (position.averagePrice * position.quantity);
+            const unrealizedPnLPercent = (unrealizedPnL / (position.averagePrice * position.quantity)) * 100;
+
+            return {
+              ...position,
+              currentPrice,
+              marketValue,
+              unrealizedPnL,
+              unrealizedPnLPercent
+            };
+          }
         })
       );
 
@@ -111,15 +303,39 @@ class PaperTradingService {
     stopLoss?: number;
     takeProfit?: number;
     reasoning?: string;
+    // Options fields
+    isOptions?: boolean;
+    optionType?: 'CALL' | 'PUT';
+    strikePrice?: number;
+    expirationDate?: Date;
   }): Promise<string> {
     const portfolio = await this.getPortfolio();
     
-    // Get current market price
-    const marketPrice = tradeRequest.orderType === 'LIMIT' && tradeRequest.limitPrice 
-      ? tradeRequest.limitPrice 
-      : await this.getMarketPrice(tradeRequest.symbol);
+    let marketPrice: number;
+    let contractSize = 1;
+    
+    if (tradeRequest.isOptions && tradeRequest.optionType && tradeRequest.strikePrice && tradeRequest.expirationDate) {
+      // Options trading
+      contractSize = 100; // Standard option contract size
+      if (tradeRequest.orderType === 'LIMIT' && tradeRequest.limitPrice) {
+        marketPrice = tradeRequest.limitPrice;
+      } else {
+        const optionData = await this.getOptionPrice(
+          tradeRequest.symbol,
+          tradeRequest.optionType,
+          tradeRequest.strikePrice,
+          tradeRequest.expirationDate
+        );
+        marketPrice = optionData.price;
+      }
+    } else {
+      // Stock trading
+      marketPrice = tradeRequest.orderType === 'LIMIT' && tradeRequest.limitPrice 
+        ? tradeRequest.limitPrice 
+        : await this.getMarketPrice(tradeRequest.symbol);
+    }
 
-    const totalCost = marketPrice * tradeRequest.quantity;
+    const totalCost = marketPrice * tradeRequest.quantity * contractSize;
     
     // Validate trade
     if (tradeRequest.action === 'BUY' && totalCost > portfolio.cashBalance) {
@@ -127,9 +343,27 @@ class PaperTradingService {
     }
 
     if (tradeRequest.action === 'SELL') {
-      const existingPosition = portfolio.positions.find(p => p.symbol === tradeRequest.symbol);
+      let positionKey: string;
+      if (tradeRequest.isOptions) {
+        positionKey = `${tradeRequest.symbol}_${tradeRequest.optionType}_${tradeRequest.strikePrice}_${tradeRequest.expirationDate?.toISOString()}`;
+      } else {
+        positionKey = tradeRequest.symbol;
+      }
+      
+      const existingPosition = portfolio.positions.find(p => {
+        if (tradeRequest.isOptions) {
+          return p.symbol === tradeRequest.symbol && 
+                 p.isOptions === true &&
+                 p.optionType === tradeRequest.optionType &&
+                 p.strikePrice === tradeRequest.strikePrice &&
+                 p.expirationDate?.toISOString() === tradeRequest.expirationDate?.toISOString();
+        } else {
+          return p.symbol === tradeRequest.symbol && !p.isOptions;
+        }
+      });
+      
       if (!existingPosition || existingPosition.quantity < tradeRequest.quantity) {
-        throw new Error('Insufficient shares to sell');
+        throw new Error(`Insufficient ${tradeRequest.isOptions ? 'option contracts' : 'shares'} to sell`);
       }
     }
 
@@ -147,7 +381,13 @@ class PaperTradingService {
       takeProfit: tradeRequest.takeProfit,
       reasoning: tradeRequest.reasoning,
       timestamp: new Date(),
-      status: 'active'
+      status: 'active',
+      // Options fields
+      isOptions: tradeRequest.isOptions,
+      optionType: tradeRequest.optionType,
+      strikePrice: tradeRequest.strikePrice,
+      expirationDate: tradeRequest.expirationDate,
+      contractSize: contractSize
     };
 
     // Update portfolio
@@ -321,3 +561,6 @@ class PaperTradingService {
 }
 
 export const paperTradingService = PaperTradingService.getInstance();
+
+// Export the service class and its methods
+export { PaperTradingService };
