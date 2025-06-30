@@ -99,7 +99,7 @@ export const Header: React.FC<HeaderProps> = ({
 
     return (
         <>
-            <header className="glass-effect p-6 rounded-2xl shadow-2xl border-border backdrop-blur-xl card-glow sharp-corners relative overflow-hidden">
+            <header className="glass-effect p-6 rounded-2xl shadow-2xl border-border backdrop-blur-xl card-glow sharp-corners relative">
                 <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent dark:from-white/10 dark:to-transparent"></div>
                 <div className="relative z-10">
                     <div className="flex items-center justify-between">
