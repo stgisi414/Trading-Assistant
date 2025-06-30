@@ -104,27 +104,29 @@ export const Header: React.FC<HeaderProps> = ({
                 <div className="relative z-10">
                     <div className="flex items-center justify-between">
                         <div>
-                            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 bg-clip-text text-transparent mb-2 flex items-center gap-3" style={{ letterSpacing: '-0.05em' }}>
-                                <span className="material-symbols-outlined text-4xl md:text-5xl text-indigo-600 dark:text-indigo-400">
+                            <h1 className="text-lg sm:text-2xl md:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 bg-clip-text text-transparent mb-1 sm:mb-2 flex items-center gap-2 sm:gap-3" style={{ letterSpacing: '-0.05em' }}>
+                                <span className="material-symbols-outlined text-xl sm:text-3xl md:text-4xl lg:text-5xl text-indigo-600 dark:text-indigo-400">
                                     finance
                                 </span>
-                                AI-Powered Trading Assistant
+                                <span className="hidden xs:inline">AI-Powered Trading Assistant</span>
+                                <span className="xs:hidden">Signatex</span>
                             </h1>
-                            <p className="text-lg text-muted dark:text-gray-300 mb-4 ml-12 md:ml-18">
-                                Leveraging Gemini for Market Insights
+                            <p className="text-xs sm:text-sm md:text-base lg:text-lg text-muted dark:text-gray-300 mb-2 sm:mb-4 ml-6 sm:ml-12 md:ml-18">
+                                <span className="hidden sm:inline">Leveraging Gemini for Market Insights</span>
+                                <span className="sm:hidden">AI Trading Assistant</span>
                             </p>
                         </div>
 
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-1 sm:gap-2 md:gap-3">
                             <button
                                 onClick={onToggleTheme}
-                                className="p-3 rounded-xl bg-card/80 backdrop-blur-sm border border-border hover:bg-accent transition-all duration-300 text-foreground"
+                                className="p-2 sm:p-3 rounded-lg sm:rounded-xl bg-card/80 backdrop-blur-sm border border-border hover:bg-accent transition-all duration-300 text-foreground"
                                 title={`Switch to ${theme === "light" ? "dark" : "light"} mode`}
                             >
                                 {theme === "light" ? (
-                                    <Moon className="w-5 h-5" />
+                                    <Moon className="w-4 h-4 sm:w-5 sm:h-5" />
                                 ) : (
-                                    <Sun className="w-5 h-5 text-gray-300" />
+                                    <Sun className="w-4 h-4 sm:w-5 sm:h-5 text-gray-300" />
                                 )}
                             </button>
 
@@ -143,10 +145,10 @@ export const Header: React.FC<HeaderProps> = ({
                             ) : (
                                 <button
                                     onClick={onSignInClick}
-                                    className="flex items-center gap-2 px-4 py-2 bg-white hover:bg-gray-50 border border-gray-300 text-gray-700 rounded-lg transition-all duration-300 hover:scale-105 text-sm font-medium shadow-sm"
+                                    className="flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-2 bg-white hover:bg-gray-50 border border-gray-300 text-gray-700 rounded-lg transition-all duration-300 hover:scale-105 text-xs sm:text-sm font-medium shadow-sm"
                                 >
                                     <svg
-                                        className="w-4 h-4"
+                                        className="w-3 h-3 sm:w-4 sm:h-4"
                                         viewBox="0 0 24 24"
                                     >
                                         <path
@@ -166,17 +168,18 @@ export const Header: React.FC<HeaderProps> = ({
                                             d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
                                         />
                                     </svg>
+                                    <span className="hidden sm:inline">Sign In</span>
                                 </button>
                             )}
                         </div>
                     </div>
-                    <div className="flex justify-center gap-4">
+                    <div className="flex justify-center gap-2 sm:gap-4">
                         <button
                             onClick={() => setIsChatbotOpen(true)}
-                            className="flex items-center gap-2 px-4 py-3 rounded-xl bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 font-medium transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
+                            className="flex items-center gap-1 sm:gap-2 px-3 sm:px-4 py-2 sm:py-3 rounded-lg sm:rounded-xl bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 font-medium transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 text-sm sm:text-base"
                             title="Open Signatex Assistant"
                         >
-                            <MessageCircle className="w-5 h-5" />
+                            <MessageCircle className="w-4 h-4 sm:w-5 sm:h-5" />
                             <span className="hidden sm:inline">
                                 Ask <span className="signatex-embossed">S</span>
                                 ignatex
@@ -189,11 +192,11 @@ export const Header: React.FC<HeaderProps> = ({
                                     new CustomEvent("toggleDebugPage"),
                                 )
                             }
-                            className="flex items-center gap-2 px-4 py-3 rounded-xl bg-yellow-600 text-white hover:bg-yellow-700 font-medium transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
+                            className="flex items-center gap-1 sm:gap-2 px-3 sm:px-4 py-2 sm:py-3 rounded-lg sm:rounded-xl bg-yellow-600 text-white hover:bg-yellow-700 font-medium transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 text-sm sm:text-base"
                             title="Toggle Debug Console"
                         >
                             <svg
-                                className="w-5 h-5"
+                                className="w-4 h-4 sm:w-5 sm:h-5"
                                 fill="none"
                                 stroke="currentColor"
                                 viewBox="0 0 24 24"
@@ -222,12 +225,12 @@ export const Header: React.FC<HeaderProps> = ({
             {/* Floating Chatbot Toggle */}
             <button
                 onClick={() => setIsChatbotOpen(true)}
-                className="fixed bottom-6 right-6 z-50 bg-blue-500 hover:bg-blue-600 text-white p-4 rounded-full shadow-lg transition-all duration-300 hover:scale-110 focus:outline-none focus:ring-4 focus:ring-blue-300"
+                className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 bg-blue-500 hover:bg-blue-600 text-white p-3 sm:p-4 rounded-full shadow-lg transition-all duration-300 hover:scale-110 focus:outline-none focus:ring-4 focus:ring-blue-300"
                 aria-label="Open Signatex Assistant"
                 title="Open Signatex Assistant"
             >
                 <svg
-                    className="w-6 h-6"
+                    className="w-5 h-5 sm:w-6 sm:h-6"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"

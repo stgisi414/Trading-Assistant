@@ -167,4 +167,33 @@ body {
   font-family: 'Inter', sans-serif;
   color: var(--color-foreground);
   background-color: var(--color-background);
+  font-size: 14px;
+}
+
+@media (min-width: 640px) {
+  body {
+    font-size: 16px;
+  }
+}
+
+/* Mobile-first button optimizations */
+.btn-mobile {
+  @apply px-2 py-2 text-sm;
+}
+
+@media (min-width: 640px) {
+  .btn-mobile {
+    @apply px-4 py-3 text-base;
+  }
+}
+
+/* Compact spacing for mobile */
+.space-mobile > * + * {
+  margin-top: 0.5rem;
+}
+
+@media (min-width: 640px) {
+  .space-mobile > * + * {
+    margin-top: 1rem;
+  }
 }

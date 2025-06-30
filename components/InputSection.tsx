@@ -295,22 +295,35 @@ export const InputSection: React.FC<InputSectionProps> = ({
                         )}
                     </button>
                     <button
-                        onClick={onAnalyze}
-                        disabled={isLoading || selectedSymbols.length === 0}
-                        className="w-full bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 disabled:bg-gray-400 disabled:text-gray-200 text-white font-semibold py-4 px-8 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-[1.02] disabled:transform-none flex items-center justify-center gap-3 text-lg"
-                    >
-                        {isLoading ? (
-                            <>
-                                <Spinner className="text-white" /> 
-                                Analyzing...
-                            </>
-                        ) : (
-                            <>
-                                <span className="material-symbols-outlined text-xl">search</span>
-                                Analyze {selectedSymbols.length || 0} Asset(s)
-                            </>
-                        )}
-                    </button>
+                            onClick={onAnalyze}
+                            disabled={isLoading || selectedSymbols.length === 0}
+                            className="flex items-center justify-center gap-2 sm:gap-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-4 sm:px-6 md:px-8 py-3 sm:py-4 rounded-lg sm:rounded-xl font-semibold text-sm sm:text-base md:text-lg transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 shadow-lg"
+                        >
+                            {isLoading ? (
+                                <>
+                                    <div className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                    <span className="hidden sm:inline">Analyzing...</span>
+                                </>
+                            ) : (
+                                <>
+                                    <svg
+                                        className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth={2}
+                                            d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                                        />
+                                    </svg>
+                                    <span className="hidden xs:inline">Analyze</span>
+                                    <span className="hidden sm:inline">Market</span>
+                                </>
+                            )}
+                        </button>
                     {hasResults && (
                         <button
                             onClick={onClearResults}

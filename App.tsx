@@ -824,7 +824,7 @@ function App() {
     return (
         <>
             <LoadingOverlay isVisible={isInitialLoading} />
-            <div className="bg-background text-foreground min-h-screen p-4 sm:p-6 md:p-8 relative overflow-hidden">
+            <div className="bg-background text-foreground min-h-screen p-2 sm:p-4 md:p-6 lg:p-8 relative overflow-hidden">
             {/* Animated shooting streaks background */}
             <div className="shooting-streaks">
                 <div className="streak streak-blue streak-1"></div>
@@ -844,7 +844,7 @@ function App() {
                 <div className="streak streak-purple streak-15"></div>
             </div>
 
-            <div className="relative z-10 max-w-7xl mx-auto flex flex-col gap-8">
+            <div className="relative z-10 max-w-7xl mx-auto flex flex-col gap-3 sm:gap-6 md:gap-8">
                  <Header 
                     theme={theme} 
                     onToggleTheme={() => setTheme(theme === 'light' ? 'dark' : 'light')}
@@ -887,7 +887,7 @@ function App() {
                             appCallbacks={proFlowCallbacks}
                         />
                         <main className="flex flex-col gap-3">
-                            <div className="glass-effect p-6 sm:p-8 rounded-2xl shadow-2xl border-border backdrop-blur-xl card-glow sharp-corners relative overflow-hidden">
+                            <div className="glass-effect p-3 sm:p-6 md:p-8 rounded-xl sm:rounded-2xl shadow-2xl border-border backdrop-blur-xl card-glow sharp-corners relative overflow-hidden">
                                 <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent dark:from-white/10 dark:to-transparent"></div>
                                 <div className="relative z-10">
                                     <InputSection
