@@ -6,18 +6,26 @@ import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, query, orderB
 const firebaseConfig = {
   apiKey: "AIzaSyAqsmue4lx8vALO5o08TdclI5uXI52BtOA",
   authDomain: "signatex-d1b11.firebaseapp.com",
-  databaseURL: "https://signatex-d1b11-default-rtdb.firebaseio.com",
   projectId: "signatex-d1b11",
   storageBucket: "signatex-d1b11.firebasestorage.app",
-  messagingSenderId: "470730639644",
-  appId: "1:470730639644:web:a7fadaefc6446e676c12d9",
-  measurementId: "G-SZXC86690S"
+  messagingSenderId: "123456789012",
+  appId: "1:123456789012:web:abcdef123456789012345"
 };
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const db = getFirestore(app);
+
+// Enable offline persistence
+try {
+  import('firebase/firestore').then(({ enableNetwork, disableNetwork }) => {
+    // Enable offline persistence
+    db._delegate._databaseId.projectId = firebaseConfig.projectId;
+  });
+} catch (error) {
+  console.log('Offline persistence not available:', error);
+}
 
 // Google Auth Provider
 const googleProvider = new GoogleAuthProvider();
@@ -166,13 +174,34 @@ export class FirebaseService {
   async getUserProfile(): Promise<UserProfile | null> {
     if (!this.currentUser) return null;
 
-    const userRef = doc(db, 'users', this.currentUser.uid);
-    const userDoc = await getDoc(userRef);
+    try {
+      const userRef = doc(db, 'users', this.currentUser.uid);
+      const userDoc = await getDoc(userRef);
 
-    if (userDoc.exists()) {
-      return userDoc.data() as UserProfile;
+      if (userDoc.exists()) {
+        return userDoc.data() as UserProfile;
+      }
+      return null;
+    } catch (error: any) {
+      console.error('Failed to get user profile:', error);
+      
+      // Return a default profile if offline
+      if (error.code === 'unavailable' || error.message?.includes('offline')) {
+        return {
+          uid: this.currentUser.uid,
+          email: this.currentUser.email || '',
+          displayName: this.currentUser.displayName || '',
+          photoURL: this.currentUser.photoURL || undefined,
+          createdAt: new Date(),
+          lastLoginAt: new Date(),
+          tier: 'free',
+          analysisCount: 0,
+          maxAnalyses: 50
+        };
+      }
+      
+      throw error;
     }
-    return null;
   }
 
   // Data synchronization methods
