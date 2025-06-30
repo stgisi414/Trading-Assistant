@@ -10,9 +10,8 @@ channel = "stable-24_05"
 language = "nodejs"
 
 [deployment]
-deploymentTarget = "static"
+deploymentTarget = "autoscale"
 build = ["sh", "-c", "npm run build"]
-publicDir = "dist"
 run = ["sh", "-c", "cd server && npm start & npx serve -s ../dist -l 5173 & wait"]
 
 [[ports]]
