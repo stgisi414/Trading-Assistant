@@ -179,7 +179,7 @@ export const ProFlowControls: React.FC<ProFlowControlsProps> = ({ onShowToast, a
 
                     {status.isRunning && status.isPaused && (
                         <button
-                            onClick={handleContinueProFlow}
+                            onClick={handleContinue}
                             className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-all duration-200 text-sm"
                         >
                             ▶️ Continue
