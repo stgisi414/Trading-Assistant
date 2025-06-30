@@ -567,9 +567,9 @@ Your symbols should now appear in the **Asset Symbols** section. You're all set 
 - Click **"Analyze 6 Asset(s)"** to start your analysis
 - Try asking me about any of these specific companies!
 
-**Ready to dive into AI stock analysis? 🤖💰**`}
+**Ready to dive into AI stock analysis? 🤖💰**` :
 
-${lowerMessage.includes('beginner') ? 
+lowerMessage.includes('beginner') ? 
     `### 🎯 Perfect Beginner Setup! 
 
 I've configured you with the **Holy Trinity** of beginner indicators:
