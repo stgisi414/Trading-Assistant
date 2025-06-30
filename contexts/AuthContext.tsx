@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { User } from 'firebase/auth';
 import { firebaseService, UserProfile, CloudUserData } from '../services/firebaseService.ts';
@@ -41,7 +40,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const initializeAuth = async () => {
       // Check if redirect is pending
       setIsAuthRedirectPending(firebaseService.isAuthRedirectPending());
-      
+
       // First check for redirect result
       try {
         const result = await firebaseService.handleRedirectResult();
@@ -78,7 +77,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       await firebaseService.signInWithGoogle();
     } catch (error: any) {
       console.error('Sign-in error:', error);
-      
+
       // Don't show error for redirect case
       if (error.message !== 'Redirecting for authentication...') {
         throw error;
@@ -123,10 +122,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   const deleteAnalysis = async (analysisId: string) => {
+    if (!firebaseService.getCurrentUser()) {
+      throw new Error('User not authenticated');
+    }
+
     await firebaseService.deleteAnalysis(analysisId);
+
     // Refresh user profile to update analysis count
-    if (user) {
-      const updatedProfile = await firebaseService.getUserProfile();
+    const updatedProfile = await firebaseService.getUserProfile();
+    if (updatedProfile) {
       setUserProfile(updatedProfile);
     }
   };
