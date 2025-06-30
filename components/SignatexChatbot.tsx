@@ -561,6 +561,7 @@ Try asking me about indicators, trading setups, or general trading advice. 🤖`
                     text: content,
                     languageCode: 'en-US',
                     voiceName: 'en-US-Studio-O',
+                    ssmlGender: 'FEMALE', // Explicitly set supported gender
                     speakingRate: 1.1,
                     pitch: 0.2
                 });

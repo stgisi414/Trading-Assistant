@@ -3,7 +3,7 @@ export interface TTSOptions {
     text: string;
     languageCode?: string;
     voiceName?: string;
-    ssmlGender?: 'NEUTRAL' | 'FEMALE' | 'MALE';
+    ssmlGender?: 'FEMALE' | 'MALE'; // Removed NEUTRAL as it's not supported
     audioEncoding?: 'MP3' | 'LINEAR16' | 'OGG_OPUS';
     speakingRate?: number;
     pitch?: number;
@@ -32,7 +32,7 @@ export class TTSService {
             text,
             languageCode = 'en-US',
             voiceName = 'en-US-Studio-O', // High quality neural voice
-            ssmlGender = 'NEUTRAL',
+            ssmlGender = 'FEMALE', // Changed from NEUTRAL to FEMALE (supported by API)
             audioEncoding = 'MP3',
             speakingRate = 1.0,
             pitch = 0.0
@@ -150,7 +150,7 @@ export class TTSService {
     getVoiceOptions(languageCode: string = 'en-US') {
         const voiceOptions = {
             'en-US': [
-                { name: 'en-US-Studio-O', gender: 'NEUTRAL', description: 'High quality neural voice' },
+                { name: 'en-US-Studio-O', gender: 'FEMALE', description: 'High quality neural voice' },
                 { name: 'en-US-Studio-Q', gender: 'FEMALE', description: 'Female neural voice' },
                 { name: 'en-US-Studio-M', gender: 'MALE', description: 'Male neural voice' },
                 { name: 'en-US-Wavenet-A', gender: 'MALE', description: 'WaveNet male voice' },
