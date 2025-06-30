@@ -522,6 +522,20 @@ function App() {
     };
 
     const handleChatbotInputUpdates = (updates: any) => {
+        // Handle market type and market changes first if they exist
+        if (updates.selectedMarketType !== undefined) {
+            setSelectedMarketType(updates.selectedMarketType as MarketType);
+        }
+        if (updates.selectedMarket !== undefined) {
+            setSelectedMarket(updates.selectedMarket);
+        }
+        
+        // Clear existing symbols if market type is changing
+        if (updates.selectedMarketType !== undefined) {
+            setSelectedSymbols([]);
+        }
+        
+        // Handle other updates
         if (updates.walletAmount !== undefined) {
             setWalletAmount(updates.walletAmount);
         }
@@ -531,20 +545,18 @@ function App() {
         if (updates.selectedIndicators !== undefined) {
             setSelectedIndicators(updates.selectedIndicators);
         }
-        if (updates.selectedMarketType !== undefined) {
-            handleMarketTypeChange(updates.selectedMarketType);
-        }
-        if (updates.selectedMarket !== undefined) {
-            handleMarketChange(updates.selectedMarket);
-        }
+        
+        // Add symbols after market changes are applied
         if (updates.addSymbols !== undefined) {
-            // Add new symbols to existing ones, avoiding duplicates
-            setSelectedSymbols(prev => {
-                const newSymbols = updates.addSymbols.filter((newSymbol: any) => 
-                    !prev.some(existing => existing.symbol === newSymbol.symbol)
-                );
-                return [...prev, ...newSymbols];
-            });
+            // Use a small delay to ensure market changes are processed first
+            setTimeout(() => {
+                setSelectedSymbols(prev => {
+                    const newSymbols = updates.addSymbols.filter((newSymbol: any) => 
+                        !prev.some(existing => existing.symbol === newSymbol.symbol)
+                    );
+                    return [...prev, ...newSymbols];
+                });
+            }, 50);
         }
     };
 

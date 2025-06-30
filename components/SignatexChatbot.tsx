@@ -271,13 +271,13 @@ What would you like to explore today? 🚀📈`,
             });
         }
 
-        // Market switching with stock additions
-        if ((lowerMessage.includes('switch to stocks') || lowerMessage.includes('change to stocks')) && 
-            (lowerMessage.includes('ai stocks') || lowerMessage.includes('add'))) {
+        // Market switching with stock additions - Enhanced pattern matching
+        if ((lowerMessage.includes('switch to stocks') || lowerMessage.includes('change to stocks')) || 
+            (lowerMessage.includes('stocks market') && (lowerMessage.includes('ai stocks') || lowerMessage.includes('add')))) {
             actions.push({
                 type: 'switchToStocksAndAddAI',
                 value: ['NVDA', 'GOOGL', 'MSFT', 'AMZN', 'META', 'TSLA'],
-                description: 'Switch to stocks market and add AI stocks'
+                description: 'Switch to stocks market and add AI stocks: NVDA, GOOGL, MSFT, AMZN, META, TSLA'
             });
         }
 
@@ -363,13 +363,7 @@ What would you like to explore today? 🚀📈`,
                     break;
                 case 'switchToStocksAndAddAI':
                     if (onUpdateInputs) {
-                        // First switch to stocks market
-                        onUpdateInputs({ 
-                            selectedMarketType: 'STOCKS',
-                            selectedMarket: 'US' 
-                        });
-                        
-                        // Then add the AI symbols
+                        // Create AI symbols first
                         const symbolsToAdd = action.value.map((symbol: string) => {
                             const symbolNames: Record<string, string> = {
                                 'NVDA': 'NVIDIA Corporation',
@@ -386,10 +380,12 @@ What would you like to explore today? 🚀📈`,
                             };
                         });
                         
-                        // Small delay to ensure market switch completes first
-                        setTimeout(() => {
-                            onUpdateInputs!({ addSymbols: symbolsToAdd });
-                        }, 100);
+                        // Switch market and add symbols in a single update
+                        onUpdateInputs({ 
+                            selectedMarketType: 'STOCKS',
+                            selectedMarket: 'US',
+                            addSymbols: symbolsToAdd
+                        });
                         
                         executed = true;
                     }
@@ -550,10 +546,28 @@ Just say: **"Switch to stocks market and add AI stocks"** and I'll handle both s
         // If actions were executed, acknowledge them
         if (actions.length > 0) {
             const actionDescriptions = actions.map(a => a.description).join(', ');
+            const hasMarketSwitch = actions.some(a => a.type === 'switchToStocksAndAddAI');
+            
             return `## ✅ Updates Applied Successfully! 🎉
 
 I've made the following changes to your setup:
 > 🔧 **${actionDescriptions}**
+
+${hasMarketSwitch ? 
+    `### 🚀 **Market Switch Complete!** 
+
+✅ **Market Type**: Changed to **US Markets**  
+✅ **Market**: Set to **United States (NASDAQ/NYSE)**  
+✅ **AI Stocks Added**: NVDA, GOOGL, MSFT, AMZN, META, TSLA
+
+Your symbols should now appear in the **Asset Symbols** section. You're all set to analyze these top AI/tech companies! 📈
+
+### 💡 **Next Steps:**
+- Check that the symbols appear in your input section
+- Click **"Analyze 6 Asset(s)"** to start your analysis
+- Try asking me about any of these specific companies!
+
+**Ready to dive into AI stock analysis? 🤖💰**` :
 
 ${lowerMessage.includes('beginner') ? 
     `### 🎯 Perfect Beginner Setup! 
