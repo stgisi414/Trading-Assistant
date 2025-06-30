@@ -131,12 +131,49 @@ What would you like to explore today? 🚀📈`,
     const [isThinking, setIsThinking] = useState(false);
     const [isPlayingAudio, setIsPlayingAudio] = useState<string | null>(null);
     const [audioCache, setAudioCache] = useState<Map<string, string>>(new Map());
+    const [isListening, setIsListening] = useState(false);
+    const [speechSupported, setSpeechSupported] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const currentAudioRef = useRef<HTMLAudioElement | null>(null);
+    const recognitionRef = useRef<any>(null);
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     };
+
+    // Initialize speech recognition
+    useEffect(() => {
+        const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+        
+        if (SpeechRecognition) {
+            setSpeechSupported(true);
+            recognitionRef.current = new SpeechRecognition();
+            recognitionRef.current.continuous = false;
+            recognitionRef.current.interimResults = false;
+            recognitionRef.current.lang = 'en-US';
+
+            recognitionRef.current.onresult = (event: any) => {
+                const transcript = event.results[0][0].transcript;
+                setInputMessage(transcript);
+                setIsListening(false);
+            };
+
+            recognitionRef.current.onerror = (event: any) => {
+                console.error('Speech recognition error:', event.error);
+                setIsListening(false);
+            };
+
+            recognitionRef.current.onend = () => {
+                setIsListening(false);
+            };
+        }
+
+        return () => {
+            if (recognitionRef.current) {
+                recognitionRef.current.stop();
+            }
+        };
+    }, []);
 
     // Save conversation history to localStorage
     useEffect(() => {
@@ -610,6 +647,21 @@ Try asking me about indicators, trading setups, or general trading advice. 🤖`
         setIsPlayingAudio(null);
     };
 
+    // Speech recognition functions
+    const startListening = () => {
+        if (recognitionRef.current && speechSupported) {
+            setIsListening(true);
+            recognitionRef.current.start();
+        }
+    };
+
+    const stopListening = () => {
+        if (recognitionRef.current) {
+            recognitionRef.current.stop();
+        }
+        setIsListening(false);
+    };
+
     const handleKeyPress = (e: React.KeyboardEvent) => {
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
@@ -641,6 +693,15 @@ Try asking me about indicators, trading setups, or general trading advice. 🤖`
                                             <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
                                         </svg>
                                         TTS Ready
+                                    </span>
+                                )}
+                                {speechSupported && (
+                                    <span className="inline-flex items-center gap-1 px-2 py-1 text-xs bg-orange-100 dark:bg-orange-900/50 text-orange-700 dark:text-orange-300 rounded-full">
+                                        <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M12 2a3 3 0 0 1 3 3v6a3 3 0 0 1-6 0V5a3 3 0 0 1 3-3Z"/>
+                                            <path d="M19 11a7 7 0 0 1-14 0"/>
+                                        </svg>
+                                        Voice Input
                                     </span>
                                 )}
                                 {proFlowStatus?.isRunning && (
@@ -821,6 +882,33 @@ I'm ready for fresh insights and still fully synced with your Signatex setup!
                             rows={2}
                             disabled={isThinking}
                         />
+                        
+                        {/* Microphone Button */}
+                        {speechSupported && (
+                            <button
+                                onClick={isListening ? stopListening : startListening}
+                                disabled={isThinking}
+                                className={`p-2 rounded-lg transition-all duration-300 ${
+                                    isListening 
+                                        ? 'bg-red-500 hover:bg-red-600 text-white animate-pulse' 
+                                        : 'bg-gray-500 hover:bg-gray-600 text-white'
+                                } disabled:bg-gray-400`}
+                                title={isListening ? 'Stop listening' : 'Start voice input'}
+                            >
+                                {isListening ? (
+                                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M6 6h12v12H6z"/>
+                                    </svg>
+                                ) : (
+                                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M12 2a3 3 0 0 1 3 3v6a3 3 0 0 1-6 0V5a3 3 0 0 1 3-3Z"/>
+                                        <path d="M19 11a7 7 0 0 1-14 0m7 0a4 4 0 0 0 4-4V5a4 4 0 0 0-8 0v2a4 4 0 0 0 4 4Z"/>
+                                        <path d="M12 19v3m-4 0h8"/>
+                                    </svg>
+                                )}
+                            </button>
+                        )}
+                        
                         <button
                             onClick={handleSendMessage}
                             disabled={!inputMessage.trim() || isThinking}
@@ -831,6 +919,25 @@ I'm ready for fresh insights and still fully synced with your Signatex setup!
                             </svg>
                         </button>
                     </div>
+                    
+                    {/* Speech Recognition Status */}
+                    {speechSupported && isListening && (
+                        <div className="mt-2 flex items-center gap-2 text-sm text-red-600 dark:text-red-400">
+                            <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+                            <span>Listening... Speak now</span>
+                            <div className="flex space-x-1">
+                                <div className="w-1 h-3 bg-red-500 rounded animate-bounce"></div>
+                                <div className="w-1 h-4 bg-red-500 rounded animate-bounce" style={{animationDelay: '0.1s'}}></div>
+                                <div className="w-1 h-3 bg-red-500 rounded animate-bounce" style={{animationDelay: '0.2s'}}></div>
+                            </div>
+                        </div>
+                    )}
+                    
+                    {!speechSupported && (
+                        <div className="mt-2 text-xs text-gray-500 dark:text-gray-400">
+                            Voice input not supported in this browser
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
