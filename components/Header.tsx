@@ -69,7 +69,7 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme, currentInput
                                 </span>
                                 AI-Powered Trading Assistant
                             </h1>
-                            <p className="text-lg text-muted dark:text-gray-300 mb-4">
+                            <p className="text-lg text-muted dark:text-gray-300 mb-4 ml-12 md:ml-15">
                                 Leveraging Gemini for Market Insights
                             </p>
                         </div>
