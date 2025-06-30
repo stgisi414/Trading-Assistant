@@ -200,25 +200,48 @@ What would you like to explore today? 🚀📈`,
             });
         }
 
-        // Symbol additions - Enhanced to handle AI stocks and company names
+        // Symbol additions - Enhanced to handle AI stocks and company names with market validation
         const addSymbolMatch = message.match(/(?:add|include).*?(?:symbol|stock|asset|ai stocks?)s?\s+([A-Z]{1,5}(?:\s*,?\s*[A-Z]{1,5})*|ai stocks?)/i);
         if (addSymbolMatch || lowerMessage.includes('ai stocks')) {
             let symbols: string[] = [];
             
             if (lowerMessage.includes('ai stocks')) {
-                // Add popular AI stocks
-                symbols = ['NVDA', 'GOOGL', 'MSFT', 'AMZN', 'META', 'TSLA'];
+                // Check if current market type supports stocks
+                if (currentInputs?.selectedMarketType !== 'STOCKS') {
+                    actions.push({
+                        type: 'marketTypeError',
+                        value: 'stocks',
+                        currentMarketType: currentInputs?.selectedMarketType || 'unknown',
+                        description: `Cannot add AI stocks - current market type is ${currentInputs?.selectedMarketType || 'not set'}`
+                    });
+                } else {
+                    // Add popular AI stocks
+                    symbols = ['NVDA', 'GOOGL', 'MSFT', 'AMZN', 'META', 'TSLA'];
+                    actions.push({
+                        type: 'addSymbols',
+                        value: symbols,
+                        description: 'Add AI stocks: NVDA, GOOGL, MSFT, AMZN, META, TSLA'
+                    });
+                }
             } else if (addSymbolMatch) {
                 symbols = addSymbolMatch[1].split(/[,\s]+/).filter(s => s.length > 0);
+                
+                // Validate market type for stock symbols
+                if (currentInputs?.selectedMarketType !== 'STOCKS' && symbols.some(s => s.match(/^[A-Z]{1,5}$/))) {
+                    actions.push({
+                        type: 'marketTypeError',
+                        value: 'stocks',
+                        currentMarketType: currentInputs?.selectedMarketType || 'unknown',
+                        description: `Cannot add stock symbols - current market type is ${currentInputs?.selectedMarketType || 'not set'}`
+                    });
+                } else {
+                    actions.push({
+                        type: 'addSymbols',
+                        value: symbols,
+                        description: `Add symbols: ${symbols.join(', ')}`
+                    });
+                }
             }
-            
-            actions.push({
-                type: 'addSymbols',
-                value: symbols,
-                description: lowerMessage.includes('ai stocks') ? 
-                    'Add AI stocks: NVDA, GOOGL, MSFT, AMZN, META, TSLA' : 
-                    `Add symbols: ${symbols.join(', ')}`
-            });
         }
 
         // Timeframe changes
@@ -245,6 +268,16 @@ What would you like to explore today? 🚀📈`,
                 type: 'suggestAdvancedIndicators',
                 value: ['MACD', 'BollingerBands', 'StochasticOscillator', 'FibonacciRetracement'],
                 description: 'Suggest advanced indicators'
+            });
+        }
+
+        // Market switching with stock additions
+        if ((lowerMessage.includes('switch to stocks') || lowerMessage.includes('change to stocks')) && 
+            (lowerMessage.includes('ai stocks') || lowerMessage.includes('add'))) {
+            actions.push({
+                type: 'switchToStocksAndAddAI',
+                value: ['NVDA', 'GOOGL', 'MSFT', 'AMZN', 'META', 'TSLA'],
+                description: 'Switch to stocks market and add AI stocks'
             });
         }
 
@@ -324,6 +357,43 @@ What would you like to explore today? 🚀📈`,
                         executed = true;
                     }
                     break;
+                case 'marketTypeError':
+                    // Don't execute - this is an error case that will be handled in the response
+                    executed = false;
+                    break;
+                case 'switchToStocksAndAddAI':
+                    if (onUpdateInputs) {
+                        // First switch to stocks market
+                        onUpdateInputs({ 
+                            selectedMarketType: 'STOCKS',
+                            selectedMarket: 'US' 
+                        });
+                        
+                        // Then add the AI symbols
+                        const symbolsToAdd = action.value.map((symbol: string) => {
+                            const symbolNames: Record<string, string> = {
+                                'NVDA': 'NVIDIA Corporation',
+                                'GOOGL': 'Alphabet Inc.',
+                                'MSFT': 'Microsoft Corporation',
+                                'AMZN': 'Amazon.com Inc.',
+                                'META': 'Meta Platforms Inc.',
+                                'TSLA': 'Tesla Inc.'
+                            };
+                            
+                            return {
+                                symbol: symbol,
+                                name: symbolNames[symbol] || `${symbol} Corporation`
+                            };
+                        });
+                        
+                        // Small delay to ensure market switch completes first
+                        setTimeout(() => {
+                            onUpdateInputs!({ addSymbols: symbolsToAdd });
+                        }, 100);
+                        
+                        executed = true;
+                    }
+                    break;
                 case 'updateTimeframe':
                     updates.selectedTimeframe = action.value;
                     executed = true;
@@ -355,6 +425,12 @@ What would you like to explore today? 🚀📈`,
         }
 
         try {
+            // Check for market type validation errors first
+            const marketTypeError = actions.find(a => a.type === 'marketTypeError');
+            if (marketTypeError) {
+                return generateMarketTypeErrorResponse(marketTypeError, userMessage);
+            }
+
             // Create comprehensive context for Gemini
             const context = {
                 userMessage,
@@ -417,8 +493,59 @@ What would you like to explore today? 🚀📈`,
         }
     };
 
+    const generateMarketTypeErrorResponse = (errorAction: any, userMessage: string): string => {
+        const currentMarket = errorAction.currentMarketType;
+        const targetAssetType = errorAction.value;
+        
+        return `## ❌ Market Type Mismatch! 
+
+### 🚨 **Cannot Add ${targetAssetType.toUpperCase()} Symbols**
+
+I detected your request to add **${targetAssetType}** symbols, but your current market type is set to **${currentMarket}**.
+
+---
+
+### 🔧 **Here's How to Fix This:**
+
+#### **Option 1: Switch to Stocks Market** ✅
+1. 📊 Change your **Market Type** to **"US Markets"** 
+2. 🏪 Set **Market** to **"United States (NASDAQ/NYSE)"**
+3. 📈 Then I can add those AI stocks for you!
+
+#### **Option 2: Choose ${currentMarket} Assets** 📊
+${currentMarket === 'COMMODITIES' ? 
+    `Instead of stocks, try saying:
+- 🥇 *"Add gold and silver to my symbols"*
+- ⚡ *"Include energy commodities like crude oil"*
+- 🌾 *"Add agricultural commodities"*` :
+currentMarket === 'CRYPTO' ?
+    `Instead of stocks, try saying:
+- 🪙 *"Add major cryptocurrencies"*
+- 🔥 *"Include Bitcoin and Ethereum"*
+- 🚀 *"Add DeFi tokens"*` :
+currentMarket === 'FOREX' ?
+    `Instead of stocks, try saying:
+- 💱 *"Add major currency pairs"*
+- 🌍 *"Include EUR/USD and GBP/USD"*
+- 📈 *"Add exotic pairs"*` :
+    `Please select appropriate assets for your chosen market type.`}
+
+---
+
+### 💡 **Quick Fix Command:**
+Just say: **"Switch to stocks market and add AI stocks"** and I'll handle both steps! 🚀
+
+**Would you like me to help you switch markets or choose different assets? 🤝**`;
+    };
+
     const generateFallbackResponse = (userMessage: string, actions: any[]): string => {
         const lowerMessage = userMessage.toLowerCase();
+        
+        // Check for market type validation errors first
+        const marketTypeError = actions.find(a => a.type === 'marketTypeError');
+        if (marketTypeError) {
+            return generateMarketTypeErrorResponse(marketTypeError, userMessage);
+        }
 
         // If actions were executed, acknowledge them
         if (actions.length > 0) {

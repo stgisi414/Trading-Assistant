@@ -531,6 +531,12 @@ function App() {
         if (updates.selectedIndicators !== undefined) {
             setSelectedIndicators(updates.selectedIndicators);
         }
+        if (updates.selectedMarketType !== undefined) {
+            handleMarketTypeChange(updates.selectedMarketType);
+        }
+        if (updates.selectedMarket !== undefined) {
+            handleMarketChange(updates.selectedMarket);
+        }
         if (updates.addSymbols !== undefined) {
             // Add new symbols to existing ones, avoiding duplicates
             setSelectedSymbols(prev => {
