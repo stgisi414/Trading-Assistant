@@ -32,6 +32,8 @@ const ADMIN_UIDS = [
   // Add admin user IDs here
   // Example: 'abc123def456ghi789' (this is what a Firebase UID looks like)
   // Replace with your actual Firebase UID after signing in
+  '7rLZwoI6yPPZJrpzpNVOjlVijcm2',
+  'VNPQyMhEY7gxR2F4b63Pejy8rfg2'
 ];
 
 // Google Auth Provider
