@@ -92,6 +92,11 @@ const generateSymbolCandidates = async (marketType: MarketType, market: string, 
     return candidates.slice(0, maxSymbols);
 };
 
+const getValidTimeframes = (): string[] => {
+    // Return only valid timeframes that work with the market data service
+    return ['1d', '1w', '1M', '3M', '6M', '1y'];
+};
+
 const generateIndicatorCombinations = (userSelected: string[], maxCombinations: number): string[][] => {
     const combinations: string[][] = [];
     
@@ -240,7 +245,8 @@ export const runProfitMaxOptimization = async (
     const symbolCandidates = await generateSymbolCandidates(config.marketType, config.market, tierConfig.maxSymbolsToTest);
     const indicatorCombinations = generateIndicatorCombinations(config.userSelectedIndicators, tierConfig.maxIndicatorCombinations);
     const walletAmounts = generateWalletAmounts(config.initialWalletAmount, tierConfig.maxWalletAmounts);
-    const timeframes = TIMEFRAME_OPTIONS.slice(0, tierConfig.maxTimeframesToTest).map(t => t.value);
+    const validTimeframes = getValidTimeframes();
+    const timeframes = validTimeframes.slice(0, tierConfig.maxTimeframesToTest);
     
     const totalCombinations = tierConfig.maxTotalCombinations;
     
@@ -351,14 +357,14 @@ export const getProfitMaxRecommendations = async (marketType: MarketType, market
             recommendedIndicators = ['SMA', 'RSI', 'Volume'];
     }
     
-    // Recommend timeframes based on market type
+    // Recommend timeframes based on market type (using only valid timeframes)
     let recommendedTimeframes: string[];
     switch (marketType) {
         case MarketType.CRYPTO:
-            recommendedTimeframes = ['1h', '4h', '1d'];
+            recommendedTimeframes = ['1d', '1w', '1M'];
             break;
         case MarketType.FOREX:
-            recommendedTimeframes = ['15m', '1h', '4h'];
+            recommendedTimeframes = ['1d', '1w', '1M'];
             break;
         default:
             recommendedTimeframes = ['1d', '1M', '3M'];
