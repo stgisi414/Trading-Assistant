@@ -56,9 +56,9 @@ export const AnalysisHistoryModal: React.FC<AnalysisHistoryModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white dark:bg-gray-800 rounded-lg w-full max-w-4xl max-h-[90vh] overflow-hidden mx-4">
+      <div className="bg-white dark:bg-gray-800 rounded-lg w-full max-w-4xl max-h-[90vh] overflow-hidden mx-2 sm:mx-4">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
+        <div className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-200 dark:border-gray-700">
           <h2 className="text-xl font-bold text-gray-900 dark:text-white">
             Analysis History
           </h2>
@@ -73,7 +73,7 @@ export const AnalysisHistoryModal: React.FC<AnalysisHistoryModalProps> = ({
         </div>
 
         {/* Content */}
-        <div className="p-6 overflow-y-auto max-h-[calc(90vh-80px)]">
+        <div className="p-4 sm:p-6 overflow-y-auto max-h-[calc(90vh-80px)]">
           {error && (
             <div className="mb-4 p-3 bg-red-100 dark:bg-red-900/20 border border-red-300 dark:border-red-700 rounded-lg">
               <p className="text-sm text-red-700 dark:text-red-400">{error}</p>
@@ -125,17 +125,19 @@ export const AnalysisHistoryModal: React.FC<AnalysisHistoryModalProps> = ({
                 return (
                   <div
                     key={analysis.id}
-                    className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+                    className="border border-gray-200 dark:border-gray-700 rounded-lg p-3 sm:p-4 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
                   >
-                    <div className="flex items-start justify-between">
+                    <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 sm:gap-4">
                       <div className="flex-1">
                         {/* Basic Info */}
                         <div className="mb-3">
-                          <div className="text-lg font-semibold text-gray-900 dark:text-white mb-1">
-                            {analysis.symbols.join(', ')} Analysis
-                            <span className="ml-2 text-xs bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-2 py-1 rounded">
-                              {analysis.symbols.length} symbol{analysis.symbols.length !== 1 ? 's' : ''}
-                            </span>
+                          <div className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                            <div className="flex flex-wrap items-center gap-2">
+                              <span>{analysis.symbols.join(', ')} Analysis</span>
+                              <span className="text-xs bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-2 py-1 rounded whitespace-nowrap">
+                                {analysis.symbols.length} symbol{analysis.symbols.length !== 1 ? 's' : ''}
+                              </span>
+                            </div>
                           </div>
                           <div className="text-sm text-gray-600 dark:text-gray-400">
                             <strong>Date:</strong> {analysis.timestamp ? 
@@ -157,23 +159,23 @@ export const AnalysisHistoryModal: React.FC<AnalysisHistoryModalProps> = ({
                         </div>
 
                         {/* Analysis Summary */}
-                        <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-3 mb-2">
-                          <div className="grid grid-cols-2 gap-2 text-sm">
+                        <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-2 sm:p-3 mb-2">
+                          <div className="grid grid-cols-1 xs:grid-cols-2 gap-2 text-xs sm:text-sm">
                             <div>
                               <span className="text-gray-500 dark:text-gray-400">Results:</span>
-                              <span className="ml-1 font-medium">{summary.successfulResults}/{summary.totalResults}</span>
+                              <span className="ml-1 font-medium text-gray-900 dark:text-white">{summary.successfulResults}/{summary.totalResults}</span>
                             </div>
                             <div>
                               <span className="text-gray-500 dark:text-gray-400">Avg Confidence:</span>
-                              <span className="ml-1 font-medium">{summary.avgConfidence.toFixed(0)}%</span>
+                              <span className="ml-1 font-medium text-gray-900 dark:text-white">{summary.avgConfidence.toFixed(0)}%</span>
                             </div>
                             <div>
                               <span className="text-green-600 dark:text-green-400">Buy:</span>
-                              <span className="ml-1 font-medium">{summary.buyRecommendations}</span>
+                              <span className="ml-1 font-medium text-gray-900 dark:text-white">{summary.buyRecommendations}</span>
                             </div>
                             <div>
                               <span className="text-red-600 dark:text-red-400">Sell:</span>
-                              <span className="ml-1 font-medium">{summary.sellRecommendations}</span>
+                              <span className="ml-1 font-medium text-gray-900 dark:text-white">{summary.sellRecommendations}</span>
                             </div>
                           </div>
                         </div>
@@ -190,17 +192,17 @@ export const AnalysisHistoryModal: React.FC<AnalysisHistoryModalProps> = ({
                         </div>
                       </div>
 
-                      <div className="flex items-center space-x-2">
+                      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:space-x-2 min-w-fit">
                         <button
                           onClick={() => handleLoadAnalysis(analysis)}
-                          className="px-3 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 transition-colors"
+                          className="px-3 py-2 sm:py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 transition-colors text-center"
                           title="Load this analysis into the main app"
                         >
                           Load
                         </button>
                         <button
                           onClick={() => handleDeleteAnalysis(analysis.id)}
-                          className="px-3 py-1 bg-red-600 text-white text-sm rounded hover:bg-red-700 transition-colors"
+                          className="px-3 py-2 sm:py-1 bg-red-600 text-white text-sm rounded hover:bg-red-700 transition-colors text-center"
                           title="Delete this analysis"
                         >
                           Delete
