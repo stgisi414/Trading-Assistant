@@ -15,44 +15,112 @@ interface ProFlowControlsProps {
 }
 
 export const ProFlowControls: React.FC<ProFlowControlsProps> = ({ onShowToast, appCallbacks }) => {
-    const [status, setStatus] = useState(proFlowService.getStatus());
+    const [status, setStatus] = useState(() => {
+        try {
+            return proFlowService.getStatus();
+        } catch (error) {
+            console.error('Error getting ProFlow status:', error);
+            return {
+                isRunning: false,
+                currentStep: 0,
+                totalSteps: 0,
+                currentStepName: 'Idle',
+                mode: 'auto' as ProFlowMode,
+                isPaused: false,
+                flowPrompt: { prompt: '', isCustom: false }
+            };
+        }
+    });
     const [isExpanded, setIsExpanded] = useState(false);
     const [selectedMode, setSelectedMode] = useState<ProFlowMode>('auto');
     const [flowPrompt, setFlowPrompt] = useState('');
     const [isGeneratingPrompt, setIsGeneratingPrompt] = useState(false);
 
     useEffect(() => {
-        // Set up ProFlow service callbacks
-        proFlowService.setToastCallback(onShowToast);
-        proFlowService.setAppCallbacks(appCallbacks);
+        try {
+            // Set up ProFlow service callbacks
+            proFlowService.setToastCallback(onShowToast);
+            proFlowService.setAppCallbacks(appCallbacks);
 
-        // Set up status change callback for immediate updates
-        proFlowService.setStatusChangeCallback(() => {
-            setStatus(proFlowService.getStatus());
-        });
+            // Set up status change callback for immediate updates
+            proFlowService.setStatusChangeCallback(() => {
+                try {
+                    setStatus(proFlowService.getStatus());
+                } catch (error) {
+                    console.error('Error updating ProFlow status:', error);
+                }
+            });
 
-        // Update status periodically as backup
-        const interval = setInterval(() => {
-            setStatus(proFlowService.getStatus());
-        }, 1000);
+            // Update status periodically as backup
+            const interval = setInterval(() => {
+                try {
+                    setStatus(proFlowService.getStatus());
+                } catch (error) {
+                    console.error('Error in ProFlow status interval:', error);
+                }
+            }, 1000);
 
-        return () => clearInterval(interval);
+            return () => clearInterval(interval);
+        } catch (error) {
+            console.error('Error setting up ProFlow callbacks:', error);
+            onShowToast({
+                id: Date.now().toString(),
+                message: '❌ Error initializing ProFlow. Please refresh the page.',
+                type: 'error'
+            });
+        }
     }, [onShowToast, appCallbacks]);
 
     const handleStartProFlow = () => {
-        proFlowService.startProFlow();
+        try {
+            proFlowService.startProFlow();
+        } catch (error) {
+            console.error('Error starting ProFlow:', error);
+            onShowToast({
+                id: Date.now().toString(),
+                message: '❌ Error starting ProFlow. Please try again.',
+                type: 'error'
+            });
+        }
     };
 
     const handleStopProFlow = () => {
-        proFlowService.stopProFlow();
+        try {
+            proFlowService.stopProFlow();
+        } catch (error) {
+            console.error('Error stopping ProFlow:', error);
+            onShowToast({
+                id: Date.now().toString(),
+                message: '❌ Error stopping ProFlow. Please refresh the page.',
+                type: 'error'
+            });
+        }
     };
 
     const handleQuickDemo = () => {
-        proFlowService.runQuickDemo();
+        try {
+            proFlowService.runQuickDemo();
+        } catch (error) {
+            console.error('Error running Quick Demo:', error);
+            onShowToast({
+                id: Date.now().toString(),
+                message: '❌ Error running Quick Demo. Please try again.',
+                type: 'error'
+            });
+        }
     };
 
     const handleAdvancedAnalysis = () => {
-        proFlowService.runAdvancedAnalysis();
+        try {
+            proFlowService.runAdvancedAnalysis();
+        } catch (error) {
+            console.error('Error running Advanced Analysis:', error);
+            onShowToast({
+                id: Date.now().toString(),
+                message: '❌ Error running Advanced Analysis. Please try again.',
+                type: 'error'
+            });
+        }
     };
 
     const handleModeChange = (mode: ProFlowMode) => {

@@ -226,6 +226,12 @@ export class ProFlowService {
                                 { symbol: 'ETH-USD', name: 'Ethereum USD' },
                                 { symbol: 'ADA-USD', name: 'Cardano USD' }
                             ];
+                        } else if (prompt.includes('medical') || prompt.includes('healthcare') || prompt.includes('pharma') || prompt.includes('biotech')) {
+                            symbols = [
+                                { symbol: 'JNJ', name: 'Johnson & Johnson' },
+                                { symbol: 'PFE', name: 'Pfizer Inc.' },
+                                { symbol: 'ABT', name: 'Abbott Laboratories' }
+                            ];
                         } else if (prompt.includes('dividend') || prompt.includes('income')) {
                             symbols = [
                                 { symbol: 'JNJ', name: 'Johnson & Johnson' },
@@ -258,8 +264,27 @@ export class ProFlowService {
                 name: 'Set Wallet Amount',
                 description: 'Configuring trading capital',
                 action: async () => {
-                    this.showToast('💰 Setting wallet amount to $25,000 for diversified portfolio...', 'info');
-                    this.appCallbacks.setWalletAmount?.('25000');
+                    let walletAmount = '25000';
+                    let message = '💰 Setting wallet amount to $25,000 for diversified portfolio...';
+                    
+                    // Adapt wallet amount based on flow prompt
+                    if (this.flowPrompt.prompt) {
+                        const prompt = this.flowPrompt.prompt.toLowerCase();
+                        const match = prompt.match(/(\d+)\s*dollar/);
+                        if (match) {
+                            walletAmount = match[1];
+                            message = `💰 Setting wallet amount to $${parseInt(walletAmount).toLocaleString()} based on your guidance...`;
+                        } else if (prompt.includes('small') || prompt.includes('beginner')) {
+                            walletAmount = '10000';
+                            message = '💰 Setting wallet amount to $10,000 for conservative start...';
+                        } else if (prompt.includes('large') || prompt.includes('professional')) {
+                            walletAmount = '50000';
+                            message = '💰 Setting wallet amount to $50,000 for professional trading...';
+                        }
+                    }
+                    
+                    this.showToast(message, 'info');
+                    this.appCallbacks.setWalletAmount?.(walletAmount);
                 },
                 delay: 1500
             },
