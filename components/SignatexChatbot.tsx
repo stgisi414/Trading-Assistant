@@ -200,47 +200,38 @@ What would you like to explore today? 🚀📈`,
             });
         }
 
-        // Symbol additions - Enhanced to handle energy stocks and company names
-        const addSymbolMatch = message.match(/(?:add|include).*?(?:symbol|stock|asset|energy|ai stocks?)s?\s+([A-Z]{2,5}(?:\s*,?\s*[A-Z]{2,5})*|ai stocks?|energy)/i);
-        const energyMatch = lowerMessage.includes('energy') || lowerMessage.includes('xom') || lowerMessage.includes('cvx');
+        // Enhanced symbol detection - handle multiple formats
+        let symbols: string[] = [];
         
-        if (addSymbolMatch || lowerMessage.includes('ai stocks') || energyMatch) {
-            let symbols: string[] = [];
-            
-            if (lowerMessage.includes('ai stocks')) {
+        // Direct symbol matches (XOM, CVX, AAPL, etc.)
+        const directSymbolMatches = message.match(/\b([A-Z]{2,5})\b/g);
+        if (directSymbolMatches) {
+            symbols = directSymbolMatches.filter(s => s.length >= 2 && s.length <= 5);
+        }
+        
+        // Phrase-based additions
+        if (lowerMessage.includes('add') || lowerMessage.includes('include')) {
+            // AI stocks
+            if (lowerMessage.includes('ai stocks') || lowerMessage.includes('ai companies')) {
                 symbols = ['NVDA', 'GOOGL', 'MSFT', 'AMZN', 'META', 'TSLA'];
-                actions.push({
-                    type: 'addSymbols',
-                    value: symbols,
-                    description: 'Add AI stocks: NVDA, GOOGL, MSFT, AMZN, META, TSLA'
-                });
-            } else if (energyMatch || lowerMessage.includes('xom') || lowerMessage.includes('cvx')) {
-                // Handle energy symbols specifically
-                symbols = [];
-                if (lowerMessage.includes('xom')) symbols.push('XOM');
-                if (lowerMessage.includes('cvx')) symbols.push('CVX');
-                if (symbols.length === 0) {
-                    // Default energy symbols if just "energy" is mentioned
-                    symbols = ['XOM', 'CVX'];
-                }
-                actions.push({
-                    type: 'addSymbols',
-                    value: symbols,
-                    description: `Add energy stocks: ${symbols.join(', ')}`
-                });
-            } else if (addSymbolMatch) {
-                const extractedSymbols = addSymbolMatch[1];
-                if (extractedSymbols && extractedSymbols !== 'energy' && extractedSymbols !== 'ai stocks') {
-                    symbols = extractedSymbols.split(/[,\s]+/).filter(s => s.length > 0 && s.match(/^[A-Z]{2,5}$/));
-                    if (symbols.length > 0) {
-                        actions.push({
-                            type: 'addSymbols',
-                            value: symbols,
-                            description: `Add symbols: ${symbols.join(', ')}`
-                        });
-                    }
-                }
             }
+            // Energy stocks
+            else if (lowerMessage.includes('energy') && !directSymbolMatches) {
+                symbols = ['XOM', 'CVX'];
+            }
+            // Tech stocks
+            else if (lowerMessage.includes('tech stocks') || lowerMessage.includes('technology')) {
+                symbols = ['AAPL', 'MSFT', 'GOOGL', 'META', 'AMZN'];
+            }
+        }
+        
+        // Add symbols if found
+        if (symbols.length > 0) {
+            actions.push({
+                type: 'addSymbols',
+                value: symbols,
+                description: `Add symbols: ${symbols.join(', ')}`
+            });
         }
 
         // Timeframe changes
@@ -552,76 +543,28 @@ Just say: **"Switch to stocks market and add AI stocks"** and I'll handle both s
             return generateMarketTypeErrorResponse(marketTypeError, userMessage);
         }
 
-        // If actions were executed, acknowledge them
+        // If actions were executed, give a concise acknowledgment
         if (actions.length > 0) {
             const actionDescriptions = actions.map(a => a.description).join(', ');
-            const hasMarketSwitch = actions.some(a => a.type === 'switchToStocksAndAddAI');
+            const hasSymbolAddition = actions.some(a => a.type === 'addSymbols');
             
-            return `## ✅ Updates Applied Successfully! 🎉
+            if (hasSymbolAddition) {
+                return `## ✅ Symbols Added Successfully! 🎉
 
-I've made the following changes to your setup:
 > 🔧 **${actionDescriptions}**
 
-${hasMarketSwitch ? 
-    `### 🚀 **Market Switch Complete!** 
+Your symbols should now appear in the **Asset Symbols** section above. You can now click **"Analyze X Asset(s)"** to start your analysis.
 
-✅ **Market Type**: Changed to **US Markets**  
-✅ **Market**: Set to **United States (NASDAQ/NYSE)**  
-✅ **AI Stocks Added**: NVDA, GOOGL, MSFT, AMZN, META, TSLA
+**Ready to analyze? 📊**`;
+            }
+            
+            return `## ✅ Configuration Updated! 🎉
 
-Your symbols should now appear in the **Asset Symbols** section. You're all set to analyze these top AI/tech companies! 📈
+> 🔧 **${actionDescriptions}**
 
-### 💡 **Next Steps:**
-- Check that the symbols appear in your input section
-- Click **"Analyze 6 Asset(s)"** to start your analysis
-- Try asking me about any of these specific companies!
+Your settings have been applied successfully!
 
-**Ready to dive into AI stock analysis? 🤖💰**` :
-
-lowerMessage.includes('beginner') ? 
-    `### 🎯 Perfect Beginner Setup! 
-
-I've configured you with the **Holy Trinity** of beginner indicators:
-
-| Indicator | Purpose | Why It's Great |
-|-----------|---------|----------------|
-| 📈 **SMA** | Trend Direction | Shows clear trend without noise |
-| 🔄 **RSI** | Momentum | Easy 0-100 scale for entry/exit |
-| 📊 **Volume** | Confirmation | Validates price movements |
-
-### 💡 Why These Work Together:
-- 🎯 **SMA** keeps you aligned with the trend
-- ⚡ **RSI** helps time your entries (>70 = overbought, <30 = oversold)
-- 🔊 **Volume** confirms if moves are genuine
-
-### 🚀 Next Steps:
-Start practicing with these three! Once you're comfortable reading their signals, we can explore more advanced indicators like MACD and Bollinger Bands.
-
-**Ready to start analyzing? 📊**` :
-lowerMessage.includes('day trading') ?
-    `### ⚡ Day Trading Configuration Complete! 
-
-Your setup is now optimized for **intraday action**:
-
-#### 🎛️ **Your New Configuration:**
-- ⏰ **15-minute timeframe**: Perfect for catching quick moves
-- 📈 **EMA**: Faster than SMA for quick trend changes  
-- 🔄 **RSI**: Momentum for entry/exit timing
-- 📊 **Volume**: Confirms breakout strength
-- 🎯 **VWAP**: Institutional price benchmark
-
-#### 🔥 **Why This Rocks for Day Trading:**
-- Fast enough to catch momentum
-- Smooth enough to avoid noise
-- Volume confirms legitimate moves
-- VWAP shows you where institutions are active
-
-**Ready to catch some intraday moves? 🚀💰**` :
-    `### 🔧 Configuration Updated! 
-
-Your settings have been successfully modified! 
-
-**Need any explanations about these changes or want to explore other configurations? Just ask! 😊**`}`;
+**What would you like to do next? 🚀**`;
         }
 
         // Provide contextual responses based on message content
