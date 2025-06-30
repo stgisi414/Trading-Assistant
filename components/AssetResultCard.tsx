@@ -60,9 +60,9 @@ export const AssetResultCard: React.FC<AssetResultCardProps> = ({ analysis, them
     };
 
     return (
-        <div className="glass-effect rounded-2xl shadow-2xl overflow-hidden card-glow sharp-corners relative border backdrop-blur-xl">
+        <div className="glass-effect mobile-no-padding sm:p-6 md:p-8 rounded-xl sm:rounded-2xl shadow-2xl border-border backdrop-blur-xl card-glow sharp-corners relative overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-br from-white/5 via-transparent to-blue-500/5 dark:from-white/10 dark:via-transparent dark:to-blue-500/10"></div>
-            <div className="relative z-10">
+            <div className="relative z-10 space-y-4 sm:space-y-6 md:space-y-8 p-3 sm:p-0">
                 <div className="p-6 border-b border-white/20 dark:border-white/10 bg-gradient-to-r from-transparent via-white/5 to-transparent dark:via-white/10">
                     <h2 className="text-2xl font-bold bg-gradient-to-r from-gray-800 to-blue-600 dark:from-gray-200 dark:to-blue-400 bg-clip-text text-transparent flex items-center gap-2">
                         <div className="w-3 h-3 bg-gradient-to-r from-blue-500 to-amber-500 rounded-full animate-pulse"></div>

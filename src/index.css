@@ -187,6 +187,28 @@ body {
   }
 }
 
+/* Icon-only buttons for mobile */
+.btn-icon-mobile {
+  @apply p-2 w-10 h-10 flex items-center justify-center;
+}
+
+@media (min-width: 640px) {
+  .btn-icon-mobile {
+    @apply px-4 py-3 w-auto h-auto;
+  }
+}
+
+/* Hide text on mobile, show on desktop */
+.text-mobile-hidden {
+  @apply hidden;
+}
+
+@media (min-width: 640px) {
+  .text-mobile-hidden {
+    @apply inline;
+  }
+}
+
 /* Compact spacing for mobile */
 .space-mobile > * + * {
   margin-top: 0.5rem;
@@ -195,5 +217,33 @@ body {
 @media (min-width: 640px) {
   .space-mobile > * + * {
     margin-top: 1rem;
+  }
+}
+
+/* Remove nested padding on mobile */
+.mobile-no-padding {
+  @apply p-0;
+}
+
+@media (min-width: 640px) {
+  .mobile-no-padding {
+    @apply p-3;
+  }
+}
+
+/* Reduce card padding on mobile */
+.card-mobile-padding {
+  @apply p-2;
+}
+
+@media (min-width: 640px) {
+  .card-mobile-padding {
+    @apply p-4;
+  }
+}
+
+@media (min-width: 768px) {
+  .card-mobile-padding {
+    @apply p-6;
   }
 }

@@ -887,7 +887,7 @@ function App() {
                             appCallbacks={proFlowCallbacks}
                         />
                         <main className="flex flex-col gap-3">
-                            <div className="glass-effect p-3 sm:p-6 md:p-8 rounded-xl sm:rounded-2xl shadow-2xl border-border backdrop-blur-xl card-glow sharp-corners relative overflow-hidden">
+                            <div className="glass-effect card-mobile-padding sm:p-6 md:p-8 rounded-xl sm:rounded-2xl shadow-2xl border-border backdrop-blur-xl card-glow sharp-corners relative overflow-hidden">
                                 <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent dark:from-white/10 dark:to-transparent"></div>
                                 <div className="relative z-10">
                                     <InputSection
