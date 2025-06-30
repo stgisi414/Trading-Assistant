@@ -316,8 +316,21 @@ function App() {
             setSelectedIndicators(profitMaxResult.bestIndicators);
             setSelectedTimeframe(profitMaxResult.bestTimeframe);
             setAnalyses(profitMaxResult.analyses);
+
+            // Persist the profitMaxResult so the chatbot knows it has been run
+            // This is the missing piece of the puzzle.
+            // You can also save it to localStorage if you want it to persist across sessions.
+            localStorage.setItem("tradingApp_profitMaxResult", JSON.stringify(profitMaxResult));
         }
     };
+
+    // Also, make sure to load this from localStorage when the app starts
+    useEffect(() => {
+        const savedProfitMaxResult = localStorage.getItem("tradingApp_profitMaxResult");
+        if (savedProfitMaxResult) {
+            setProfitMaxResult(JSON.parse(savedProfitMaxResult));
+        }
+    }, []);
 
     // ProFlow helper functions
     const handleShowToast = (toast: ProFlowToast) => {

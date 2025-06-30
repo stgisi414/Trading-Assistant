@@ -209,29 +209,47 @@ What would you like to explore today? 🚀📈`,
             symbols = directSymbolMatches.filter(s => s.length >= 2 && s.length <= 5);
         }
         
-        // Phrase-based additions
+        // Improved Symbol Detection
         if (lowerMessage.includes('add') || lowerMessage.includes('include')) {
-            // AI stocks
-            if (lowerMessage.includes('ai stocks') || lowerMessage.includes('ai companies')) {
-                symbols = ['NVDA', 'GOOGL', 'MSFT', 'AMZN', 'META', 'TSLA'];
+            let symbols: string[] = [];
+            const directSymbolMatches = message.match(/\b([A-Z]{2,5})\b/g);
+            if (directSymbolMatches) {
+                symbols = directSymbolMatches;
             }
-            // Energy stocks
-            else if (lowerMessage.includes('energy') && !directSymbolMatches) {
-                symbols = ['XOM', 'CVX'];
+
+            if (lowerMessage.includes('energy')) {
+                // From constants.ts, we have energy symbols
+                const energySymbols = MARKET_OPTIONS.COMMODITIES.find(c => c.value === 'ENERGY')?.symbols?.map(s => s.symbol) || [];
+                symbols.push(...energySymbols);
             }
-            // Tech stocks
-            else if (lowerMessage.includes('tech stocks') || lowerMessage.includes('technology')) {
-                symbols = ['AAPL', 'MSFT', 'GOOGL', 'META', 'AMZN'];
+
+            if (lowerMessage.includes('ai stocks')) {
+                symbols.push('NVDA', 'GOOGL', 'MSFT', 'AMZN', 'META', 'TSLA');
             }
-        }
-        
-        // Add symbols if found
-        if (symbols.length > 0) {
-            actions.push({
-                type: 'addSymbols',
-                value: symbols,
-                description: `Add symbols: ${symbols.join(', ')}`
-            });
+
+            if (symbols.length > 0) {
+                // Check if the current market is correct
+                if (currentInputs?.selectedMarketType !== MarketType.STOCKS && (lowerMessage.includes('ai stocks') || lowerMessage.includes('tech stocks'))) {
+                     actions.push({
+                        type: 'marketTypeError',
+                        value: 'STOCKS',
+                        currentMarketType: currentInputs?.selectedMarketType
+                    });
+                } else if (currentInputs?.selectedMarketType !== MarketType.COMMODITIES && lowerMessage.includes('energy')) {
+                     actions.push({
+                        type: 'marketTypeError',
+                        value: 'COMMODITIES',
+                        currentMarketType: currentInputs?.selectedMarketType
+                    });
+                }
+                else {
+                    actions.push({
+                        type: 'addSymbols',
+                        value: [...new Set(symbols)], // Remove duplicates
+                        description: `Add symbols: ${[...new Set(symbols)].join(', ')}`
+                    });
+                }
+            }
         }
 
         // Timeframe changes
