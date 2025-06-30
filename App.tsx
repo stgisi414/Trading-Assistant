@@ -561,15 +561,12 @@ function App() {
         
         // Add symbols after market changes are applied
         if (updates.addSymbols !== undefined) {
-            // Use a small delay to ensure market changes are processed first
-            setTimeout(() => {
-                setSelectedSymbols(prev => {
-                    const newSymbols = updates.addSymbols.filter((newSymbol: any) => 
-                        !prev.some(existing => existing.symbol === newSymbol.symbol)
-                    );
-                    return [...prev, ...newSymbols];
-                });
-            }, 50);
+            setSelectedSymbols(prev => {
+                const newSymbols = updates.addSymbols.filter((newSymbol: any) => 
+                    !prev.some(existing => existing.symbol === newSymbol.symbol)
+                );
+                return [...prev, ...newSymbols];
+            });
         }
     };
 

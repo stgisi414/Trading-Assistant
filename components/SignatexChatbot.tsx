@@ -201,26 +201,19 @@ What would you like to explore today? 🚀📈`,
             });
         }
 
-        // Enhanced symbol detection - handle multiple formats
-        let symbols: string[] = [];
-        
-        // Direct symbol matches (XOM, CVX, AAPL, etc.)
-        const directSymbolMatches = message.match(/\b([A-Z]{2,5})\b/g);
-        if (directSymbolMatches) {
-            symbols = directSymbolMatches.filter(s => s.length >= 2 && s.length <= 5);
-        }
-        
-        // Improved Symbol Detection
+        // Symbol detection for add commands
         if (lowerMessage.includes('add') || lowerMessage.includes('include')) {
             let symbols: string[] = [];
+            
+            // Direct symbol matches (GOOG, MSFT, AAPL, etc.)
             const directSymbolMatches = message.match(/\b([A-Z]{2,5})\b/g);
             if (directSymbolMatches) {
-                symbols = directSymbolMatches;
+                symbols = directSymbolMatches.filter(s => s.length >= 2 && s.length <= 5);
             }
 
             if (lowerMessage.includes('energy')) {
                 // From constants.ts, we have energy symbols
-                const energySymbols = MARKET_OPTIONS.COMMODITIES.find(c => c.value === 'ENERGY')?.symbols?.map(s => s.symbol) || [];
+                const energySymbols = MARKET_OPTIONS.COMMODITIES?.find(c => c.value === 'ENERGY')?.symbols?.map(s => s.symbol) || [];
                 symbols.push(...energySymbols);
             }
 
@@ -333,42 +326,40 @@ What would you like to explore today? 🚀📈`,
                 case 'addSymbols':
                     // Convert symbol strings to FmpSearchResult objects and add them
                     if (onUpdateInputs) {
-                        const symbolsToAdd = action.value.map((symbol: string) => {
-                            // Map common symbols to their company names
-                            const symbolNames: Record<string, string> = {
-                                'NVDA': 'NVIDIA Corporation',
-                                'GOOGL': 'Alphabet Inc.',
-                                'MSFT': 'Microsoft Corporation',
-                                'AMZN': 'Amazon.com Inc.',
-                                'META': 'Meta Platforms Inc.',
-                                'TSLA': 'Tesla Inc.',
-                                'AAPL': 'Apple Inc.',
-                                'NFLX': 'Netflix Inc.',
-                                'CRM': 'Salesforce Inc.',
-                                'ORCL': 'Oracle Corporation',
-                                'IBM': 'International Business Machines',
-                                'AMD': 'Advanced Micro Devices',
-                                'INTC': 'Intel Corporation',
-                                'ADBE': 'Adobe Inc.',
-                                'NOW': 'ServiceNow Inc.',
-                                'PLTR': 'Palantir Technologies',
-                                'AI': 'C3.ai Inc.',
-                                'SNOW': 'Snowflake Inc.',
-                                'XOM': 'Exxon Mobil Corporation',
-                                'CVX': 'Chevron Corporation',
-                                'BP': 'BP plc',
-                                'SHEL': 'Shell plc',
-                                'COP': 'ConocoPhillips',
-                                'EOG': 'EOG Resources Inc.',
-                                'SLB': 'Schlumberger Limited',
-                                'MPC': 'Marathon Petroleum Corporation'
-                            };
-                            
-                            return {
-                                symbol: symbol,
-                                name: symbolNames[symbol] || `${symbol} Corporation`
-                            };
-                        });
+                        const symbolNames: Record<string, string> = {
+                            'NVDA': 'NVIDIA Corporation',
+                            'GOOGL': 'Alphabet Inc.',
+                            'GOOG': 'Alphabet Inc. Class C',
+                            'MSFT': 'Microsoft Corporation',
+                            'AMZN': 'Amazon.com Inc.',
+                            'META': 'Meta Platforms Inc.',
+                            'TSLA': 'Tesla Inc.',
+                            'AAPL': 'Apple Inc.',
+                            'NFLX': 'Netflix Inc.',
+                            'CRM': 'Salesforce Inc.',
+                            'ORCL': 'Oracle Corporation',
+                            'IBM': 'International Business Machines',
+                            'AMD': 'Advanced Micro Devices',
+                            'INTC': 'Intel Corporation',
+                            'ADBE': 'Adobe Inc.',
+                            'NOW': 'ServiceNow Inc.',
+                            'PLTR': 'Palantir Technologies',
+                            'AI': 'C3.ai Inc.',
+                            'SNOW': 'Snowflake Inc.',
+                            'XOM': 'Exxon Mobil Corporation',
+                            'CVX': 'Chevron Corporation',
+                            'BP': 'BP plc',
+                            'SHEL': 'Shell plc',
+                            'COP': 'ConocoPhillips',
+                            'EOG': 'EOG Resources Inc.',
+                            'SLB': 'Schlumberger Limited',
+                            'MPC': 'Marathon Petroleum Corporation'
+                        };
+                        
+                        const symbolsToAdd = action.value.map((symbol: string) => ({
+                            symbol: symbol,
+                            name: symbolNames[symbol] || `${symbol} Corporation`
+                        }));
                         
                         onUpdateInputs({ addSymbols: symbolsToAdd });
                         executed = true;
