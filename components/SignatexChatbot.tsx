@@ -898,7 +898,7 @@ currentMarket === 'FOREX' ?
 - 💱 *"Add major currency pairs"*
 - 🌍 *"Include EUR/USD and GBP/USD"*
 - 📈 *"Add exotic pairs"*` :
-    `Please select appropriate assets for your chosen market type.`}```python
+    `Please select appropriate assets for your chosen market type.`}
 
 ---
 
