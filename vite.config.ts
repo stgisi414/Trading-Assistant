@@ -22,9 +22,13 @@ export default defineConfig(({ mode }) => {
         }
       },
       server: {
-        host: true,
+        host: '0.0.0.0',
         port: 5173,
-        allowedHosts: ['632adf7a-44e5-40a0-a51a-c17993bb9a8a-00-1x1mnek33hdee.worf.replit.dev', 'signatex.co', 'trading-assistant-stefdgisi.replit.app']
+        allowedHosts: ['632adf7a-44e5-40a0-a51a-c17993bb9a8a-00-1x1mnek33hdee.worf.replit.dev', 'signatex.co', 'trading-assistant-stefdgisi.replit.app'],
+        hmr: {
+          clientPort: 443,
+          host: '632adf7a-44e5-40a0-a51a-c17993bb9a8a-00-1x1mnek33hdee.worf.replit.dev'
+        }
       },
       preview: {
         host: '0.0.0.0',
