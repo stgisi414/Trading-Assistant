@@ -53,10 +53,12 @@ export const ProFlowControls: React.FC<ProFlowControlsProps> = ({ onShowToast, a
     const handleModeChange = (mode: ProFlowMode) => {
         setSelectedMode(mode);
         proFlowService.setMode(mode);
+        setStatus(proFlowService.getStatus()); // Update status to reflect mode change
     };
 
     const handleContinue = () => {
         proFlowService.continueFromManualPause();
+        setStatus(proFlowService.getStatus()); // Force status update
     };
 
     const handleFlowPromptChange = (value: string) => {
@@ -134,7 +136,7 @@ export const ProFlowControls: React.FC<ProFlowControlsProps> = ({ onShowToast, a
                     {/* Mode Selection */}
                     <div className="flex gap-2">
                         <button
-                            onClick={() => setSelectedMode('auto')}
+                            onClick={() => handleModeChange('auto')}
                             className={`px-3 py-1 text-sm rounded-lg font-medium transition-all ${
                                 selectedMode === 'auto'
                                     ? 'bg-purple-600 text-white'
@@ -145,7 +147,7 @@ export const ProFlowControls: React.FC<ProFlowControlsProps> = ({ onShowToast, a
                             Auto
                         </button>
                         <button
-                            onClick={() => setSelectedMode('manual')}
+                            onClick={() => handleModeChange('manual')}
                             className={`px-3 py-1 text-sm rounded-lg font-medium transition-all ${
                                 selectedMode === 'manual'
                                     ? 'bg-purple-600 text-white'

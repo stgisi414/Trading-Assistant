@@ -69,7 +69,9 @@ export class ProFlowService {
     continueFromManualPause() {
         if (this.isPaused && this.confirmationCallback) {
             this.isPaused = false;
-            this.confirmationCallback();
+            const callback = this.confirmationCallback;
+            this.confirmationCallback = undefined;
+            callback();
         }
     }
 
@@ -205,17 +207,23 @@ export class ProFlowService {
                     // Adapt symbols based on flow prompt
                     if (this.flowPrompt.prompt) {
                         const prompt = this.flowPrompt.prompt.toLowerCase();
-                        if (prompt.includes('crypto')) {
+                        if (prompt.includes('crypto') || prompt.includes('bitcoin') || prompt.includes('ethereum')) {
                             symbols = [
                                 { symbol: 'BTC-USD', name: 'Bitcoin USD' },
                                 { symbol: 'ETH-USD', name: 'Ethereum USD' },
                                 { symbol: 'ADA-USD', name: 'Cardano USD' }
                             ];
-                        } else if (prompt.includes('dividend')) {
+                        } else if (prompt.includes('dividend') || prompt.includes('income')) {
                             symbols = [
                                 { symbol: 'JNJ', name: 'Johnson & Johnson' },
                                 { symbol: 'KO', name: 'Coca-Cola Company' },
                                 { symbol: 'PG', name: 'Procter & Gamble' }
+                            ];
+                        } else if (prompt.includes('entertainment') || prompt.includes('media') || prompt.includes('streaming')) {
+                            symbols = [
+                                { symbol: 'DIS', name: 'Walt Disney Company' },
+                                { symbol: 'NFLX', name: 'Netflix Inc.' },
+                                { symbol: 'WBD', name: 'Warner Bros. Discovery' }
                             ];
                         } else if (prompt.includes('small-cap') || prompt.includes('growth')) {
                             symbols = [
