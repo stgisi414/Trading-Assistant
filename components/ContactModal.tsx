@@ -40,7 +40,7 @@ export const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose }) =
   };
 
   const sendEmailViaGmail = async (emailData: typeof formData) => {
-    const GMAIL_API_KEY = import.meta.env.VITE_GMAIL_API_KEY;
+    const GMAIL_API_KEY = process.env.GMAIL_API_KEY;
     
     if (!GMAIL_API_KEY) {
       throw new Error('Gmail API key not configured');
