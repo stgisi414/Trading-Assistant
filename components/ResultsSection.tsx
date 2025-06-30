@@ -75,7 +75,7 @@ export const ResultsSection: React.FC<ResultsSectionProps> = ({
             <div className="relative z-10 analysis-nested-mobile">
                 <div className="flex items-center justify-between mb-6">
                     <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
-                        <img src="https://cdn.hugeicons.com/icons/analytics-up-stroke-rounded.svg" className="w-8 h-8 text-green-600 dark:text-green-400" alt="Analytics" />
+                        <img src="https://cdn.hugeicons.com/icons/analytics-up-stroke-rounded.svg" className="w-8 h-8 text-green-600 dark:text-green-400 dark:filter dark:brightness-0 dark:invert" alt="Analytics" />
                         Analysis Results
                     </h2>
 
@@ -102,7 +102,7 @@ export const ResultsSection: React.FC<ResultsSectionProps> = ({
 
                     {!user && hasAnalyses && (
                         <div className="flex items-center gap-2 px-4 py-2 bg-amber-100 dark:bg-amber-900/20 text-amber-800 dark:text-amber-400 rounded-lg">
-                            <img src="https://cdn.hugeicons.com/icons/login-03-stroke-rounded.svg" className="w-4 h-4 text-amber-600 dark:text-amber-400" alt="Login" />
+                            <img src="https://cdn.hugeicons.com/icons/login-03-stroke-rounded.svg" className="w-4 h-4 text-amber-600 dark:text-amber-400 dark:filter dark:brightness-0 dark:invert" alt="Login" />
                             <span>Sign in to save analysis</span>
                         </div>
                     )}
