@@ -220,7 +220,31 @@ export class ProFlowService {
                     // Adapt symbols based on flow prompt
                     if (this.flowPrompt.prompt) {
                         const prompt = this.flowPrompt.prompt.toLowerCase();
-                        if (prompt.includes('crypto') || prompt.includes('bitcoin') || prompt.includes('ethereum')) {
+                        if (prompt.includes('amazon') || prompt.includes('amzn')) {
+                            symbols = [
+                                { symbol: 'AMZN', name: 'Amazon.com Inc.' },
+                                { symbol: 'SHOP', name: 'Shopify Inc.' },
+                                { symbol: 'WMT', name: 'Walmart Inc.' }
+                            ];
+                        } else if (prompt.includes('apple') || prompt.includes('aapl')) {
+                            symbols = [
+                                { symbol: 'AAPL', name: 'Apple Inc.' },
+                                { symbol: 'MSFT', name: 'Microsoft Corporation' },
+                                { symbol: 'GOOGL', name: 'Alphabet Inc.' }
+                            ];
+                        } else if (prompt.includes('tesla') || prompt.includes('tsla')) {
+                            symbols = [
+                                { symbol: 'TSLA', name: 'Tesla, Inc.' },
+                                { symbol: 'RIVN', name: 'Rivian Automotive' },
+                                { symbol: 'F', name: 'Ford Motor Company' }
+                            ];
+                        } else if (prompt.includes('microsoft') || prompt.includes('msft')) {
+                            symbols = [
+                                { symbol: 'MSFT', name: 'Microsoft Corporation' },
+                                { symbol: 'GOOGL', name: 'Alphabet Inc.' },
+                                { symbol: 'META', name: 'Meta Platforms Inc.' }
+                            ];
+                        } else if (prompt.includes('crypto') || prompt.includes('bitcoin') || prompt.includes('ethereum')) {
                             symbols = [
                                 { symbol: 'BTC-USD', name: 'Bitcoin USD' },
                                 { symbol: 'ETH-USD', name: 'Ethereum USD' },
