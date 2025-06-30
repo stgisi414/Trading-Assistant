@@ -189,7 +189,7 @@ export const Header: React.FC<HeaderProps> = ({
                         >
                             <MessageCircle className="w-4 h-4 sm:w-5 sm:h-5" />
                             <span className="hidden sm:inline">
-                                Ask <span className="signatex-embossed">S</span>
+                                Ask <span className="signatex-embossed-alt">S</span>
                                 ignatex
                             </span>
                         </button>

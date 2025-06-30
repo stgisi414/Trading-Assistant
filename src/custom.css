@@ -11,6 +11,15 @@
     display: inline;
 }
 
+.signatex-embossed-alt {
+    all: unset;
+    background: linear-gradient(135deg, #0a4199, #1d0061, #003b99);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: inline;
+}
+
 /* Animated shooting streaks background */
 @keyframes streak {
     0% {
