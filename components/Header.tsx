@@ -118,8 +118,8 @@ export const Header: React.FC<HeaderProps> = ({
                                 </div>
                             </div>
                             <p className="text-xs sm:text-sm md:text-base lg:text-lg text-muted dark:text-gray-300 mb-2 sm:mb-4 ml-6 sm:ml-12 md:ml-18">
-                                <span className="hidden sm:inline">Leveraging Gemini for Market Insights</span>
-                                <span className="inline sm:hidden">AI Trading Assistant</span>
+                                <span className="hidden sm:block">Leveraging Gemini for Market Insights</span>
+                                <span className="block sm:hidden">AI Trading Assistant</span>
                             </p>
                         </div>
 
