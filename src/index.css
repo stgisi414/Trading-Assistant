@@ -9,13 +9,27 @@
     background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
+    font-family: inherit;
+    font-size: inherit;
     font-weight: inherit;
-    display: inline;
+    font-style: inherit;
+    font-variant: inherit;
     line-height: inherit;
-    margin: 0;
-    padding: 0;
-    vertical-align: baseline;
+    text-decoration: inherit;
+    text-transform: inherit;
     letter-spacing: inherit;
+    word-spacing: inherit;
+    text-indent: inherit;
+    text-align: inherit;
+    white-space: inherit;
+    display: inline;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none;
+    outline: none;
+    vertical-align: baseline;
+    text-shadow: none;
+    box-shadow: none;
 }
 
 /* Animated shooting streaks background */
