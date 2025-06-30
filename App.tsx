@@ -785,12 +785,6 @@ function App() {
                     onUpdateInputs={handleChatbotInputUpdates}
                 />
 
-                {/* ProFlow Controls */}
-                <ProFlowControls
-                    onShowToast={handleShowToast}
-                    appCallbacks={proFlowCallbacks}
-                />
-
                 {/* Debug Toggle Button */}
                 <div className="flex justify-end mb-4">
                     <button
@@ -806,6 +800,11 @@ function App() {
                     </>
                 ) : (
                     <>
+                        {/* ProFlow Controls */}
+                        <ProFlowControls
+                            onShowToast={handleShowToast}
+                            appCallbacks={proFlowCallbacks}
+                        />
                         <main className="flex flex-col gap-3">
                             <div className="glass-effect p-6 sm:p-8 rounded-2xl shadow-2xl border-border backdrop-blur-xl card-glow sharp-corners relative overflow-hidden">
                                 <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent dark:from-white/10 dark:to-transparent"></div>
