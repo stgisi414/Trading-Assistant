@@ -44,7 +44,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ onSyncData, onViewHist
         <img
           src={user.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.displayName || '')}&background=3b82f6&color=fff`}
           alt={user.displayName || 'User'}
-          className="w-8 h-8 rounded-full"
+          className="w-8 h-8 rounded-full object-cover flex-shrink-0"
         />
         <div className="hidden sm:block text-left">
           <div className="text-sm font-medium text-gray-900 dark:text-white">
@@ -66,14 +66,14 @@ export const UserProfile: React.FC<UserProfileProps> = ({ onSyncData, onViewHist
 
       {/* Dropdown Menu */}
       {isDropdownOpen && (
-        <div className="absolute right-0 mt-2 w-64 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50">
+        <div className="absolute right-0 mt-2 w-64 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-[9999]"></div>
           {/* User Info */}
           <div className="p-4 border-b border-gray-200 dark:border-gray-700">
             <div className="flex items-center space-x-3">
               <img
                 src={user.photoURL || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.displayName || '')}&background=3b82f6&color=fff`}
                 alt={user.displayName || 'User'}
-                className="w-10 h-10 rounded-full"
+                className="w-10 h-10 rounded-full object-cover flex-shrink-0"
               />
               <div>
                 <div className="font-medium text-gray-900 dark:text-white">
