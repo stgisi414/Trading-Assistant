@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { GoogleGenAI } from "@google/genai";
+import { ttsService } from '../services/ttsService.ts';
 
 interface ChatMessage {
     id: string;
@@ -72,7 +73,11 @@ export const SignatexChatbot: React.FC<SignatexChatbotProps> = ({
                 type: 'bot',
                 content: `# 🤖 Hey there! I'm your Signatex AI Assistant! 👋✨
 
-I'm powered by **Gemini AI** 🧠 and deeply integrated with all Signatex features. I can help you with natural language commands and intelligent trading suggestions! 
+I'm powered by **Gemini AI** 🧠 and deeply integrated with all Signatex features. I can help you with natural language commands and intelligent trading suggestions!
+
+${ttsService.isAvailable() ? 
+    '🔊 **Voice-Enabled**: Click the play button on my messages to hear them spoken aloud with Google Text-to-Speech! Perfect for hands-free learning while you focus on charts. 🎧✨' : 
+    ''} 
 
 ---
 
@@ -124,7 +129,10 @@ What would you like to explore today? 🚀📈`,
     });
     const [inputMessage, setInputMessage] = useState('');
     const [isThinking, setIsThinking] = useState(false);
+    const [isPlayingAudio, setIsPlayingAudio] = useState<string | null>(null);
+    const [audioCache, setAudioCache] = useState<Map<string, string>>(new Map());
     const messagesEndRef = useRef<HTMLDivElement>(null);
+    const currentAudioRef = useRef<HTMLAudioElement | null>(null);
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -534,6 +542,73 @@ Try asking me about indicators, trading setups, or general trading advice. 🤖`
         }
     };
 
+    // TTS Functions
+    const synthesizeAndPlayMessage = async (messageId: string, content: string) => {
+        if (!ttsService.isAvailable()) {
+            console.warn('TTS service not available');
+            return;
+        }
+
+        try {
+            setIsPlayingAudio(messageId);
+
+            // Check cache first
+            let audioDataUrl = audioCache.get(messageId);
+            
+            if (!audioDataUrl) {
+                // Synthesize speech
+                audioDataUrl = await ttsService.synthesizeSpeech({
+                    text: content,
+                    languageCode: 'en-US',
+                    voiceName: 'en-US-Studio-O',
+                    speakingRate: 1.1,
+                    pitch: 0.2
+                });
+
+                if (audioDataUrl) {
+                    // Cache the audio
+                    setAudioCache(prev => new Map(prev).set(messageId, audioDataUrl!));
+                }
+            }
+
+            if (audioDataUrl) {
+                // Stop any currently playing audio
+                if (currentAudioRef.current) {
+                    currentAudioRef.current.pause();
+                    currentAudioRef.current = null;
+                }
+
+                // Create and play new audio
+                const audio = new Audio(audioDataUrl);
+                currentAudioRef.current = audio;
+
+                audio.onended = () => {
+                    setIsPlayingAudio(null);
+                    currentAudioRef.current = null;
+                };
+
+                audio.onerror = () => {
+                    setIsPlayingAudio(null);
+                    currentAudioRef.current = null;
+                    console.error('Audio playback failed');
+                };
+
+                await audio.play();
+            }
+        } catch (error) {
+            console.error('TTS error:', error);
+            setIsPlayingAudio(null);
+        }
+    };
+
+    const stopAudio = () => {
+        if (currentAudioRef.current) {
+            currentAudioRef.current.pause();
+            currentAudioRef.current = null;
+        }
+        setIsPlayingAudio(null);
+    };
+
     const handleKeyPress = (e: React.KeyboardEvent) => {
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
@@ -559,6 +634,14 @@ Try asking me about indicators, trading setups, or general trading advice. 🤖`
                                     <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
                                     Gemini AI
                                 </span>
+                                {ttsService.isAvailable() && (
+                                    <span className="inline-flex items-center gap-1 px-2 py-1 text-xs bg-purple-100 dark:bg-purple-900/50 text-purple-700 dark:text-purple-300 rounded-full">
+                                        <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+                                        </svg>
+                                        TTS Ready
+                                    </span>
+                                )}
                                 {proFlowStatus?.isRunning && (
                                     <span className="inline-flex items-center gap-1 px-2 py-1 text-xs bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 rounded-full">
                                         <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
@@ -630,38 +713,74 @@ I'm ready for fresh insights and still fully synced with your Signatex setup!
                             className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}
                         >
                             <div
-                                className={`max-w-[80%] rounded-2xl px-4 py-3 ${
+                                className={`max-w-[80%] rounded-2xl px-4 py-3 relative ${
                                     message.type === 'user'
                                         ? 'bg-blue-500 text-white'
                                         : 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white'
                                 }`}
                             >
                                 {message.type === 'bot' ? (
-                                    <div className="prose prose-sm dark:prose-invert max-w-none">
-                                        <ReactMarkdown 
-                                            remarkPlugins={[remarkGfm]}
-                                            components={{
-                                                h1: ({children}) => <h1 className="text-xl font-bold mb-3 text-blue-600 dark:text-blue-400 border-b border-blue-200 dark:border-blue-700 pb-2">{children}</h1>,
-                                                h2: ({children}) => <h2 className="text-lg font-semibold mb-2 text-purple-600 dark:text-purple-400">{children}</h2>,
-                                                h3: ({children}) => <h3 className="text-md font-medium mb-2 text-green-600 dark:text-green-400">{children}</h3>,
-                                                p: ({children}) => <p className="mb-3 leading-relaxed">{children}</p>,
-                                                ul: ({children}) => <ul className="list-disc list-inside mb-3 space-y-2 ml-2">{children}</ul>,
-                                                ol: ({children}) => <ol className="list-decimal list-inside mb-3 space-y-2 ml-2">{children}</ol>,
-                                                li: ({children}) => <li className="text-sm leading-relaxed">{children}</li>,
-                                                strong: ({children}) => <strong className="font-bold text-gray-900 dark:text-white">{children}</strong>,
-                                                em: ({children}) => <em className="italic text-gray-700 dark:text-gray-300">{children}</em>,
-                                                code: ({children}) => <code className="bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-200 px-2 py-1 rounded text-xs font-mono border">{children}</code>,
-                                                pre: ({children}) => <pre className="bg-gray-800 text-green-400 p-3 rounded-lg overflow-x-auto text-sm font-mono mb-3 border">{children}</pre>,
-                                                blockquote: ({children}) => <blockquote className="border-l-4 border-blue-500 pl-4 py-2 bg-blue-50 dark:bg-blue-900/20 rounded-r-lg mb-3 italic">{children}</blockquote>,
-                                                hr: () => <hr className="border-gray-300 dark:border-gray-600 my-4" />,
-                                                a: ({href, children}) => <a href={href} className="text-blue-500 hover:text-blue-700 underline" target="_blank" rel="noopener noreferrer">{children}</a>,
-                                                table: ({children}) => <table className="w-full border-collapse border border-gray-300 dark:border-gray-600 mb-3">{children}</table>,
-                                                th: ({children}) => <th className="border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-700 p-2 text-left font-semibold">{children}</th>,
-                                                td: ({children}) => <td className="border border-gray-300 dark:border-gray-600 p-2">{children}</td>,
-                                            }}
-                                        >
-                                            {message.content}
-                                        </ReactMarkdown>
+                                    <div className="relative">
+                                        {/* TTS Controls */}
+                                        {ttsService.isAvailable() && (
+                                            <div className="absolute -top-2 -right-2 flex gap-1">
+                                                {isPlayingAudio === message.id ? (
+                                                    <button
+                                                        onClick={stopAudio}
+                                                        className="bg-red-500 hover:bg-red-600 text-white p-1.5 rounded-full shadow-lg transition-colors z-10"
+                                                        title="Stop audio"
+                                                    >
+                                                        <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
+                                                            <path d="M6 6h12v12H6z"/>
+                                                        </svg>
+                                                    </button>
+                                                ) : (
+                                                    <button
+                                                        onClick={() => synthesizeAndPlayMessage(message.id, message.content)}
+                                                        className="bg-blue-500 hover:bg-blue-600 text-white p-1.5 rounded-full shadow-lg transition-colors z-10"
+                                                        title="Play audio"
+                                                    >
+                                                        <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
+                                                            <path d="M8 5v14l11-7z"/>
+                                                        </svg>
+                                                    </button>
+                                                )}
+                                                {audioCache.has(message.id) && (
+                                                    <div className="bg-green-500 text-white p-1.5 rounded-full shadow-lg" title="Audio cached">
+                                                        <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
+                                                            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                                                        </svg>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        )}
+                                        
+                                        <div className="prose prose-sm dark:prose-invert max-w-none">
+                                            <ReactMarkdown 
+                                                remarkPlugins={[remarkGfm]}
+                                                components={{
+                                                    h1: ({children}) => <h1 className="text-xl font-bold mb-3 text-blue-600 dark:text-blue-400 border-b border-blue-200 dark:border-blue-700 pb-2">{children}</h1>,
+                                                    h2: ({children}) => <h2 className="text-lg font-semibold mb-2 text-purple-600 dark:text-purple-400">{children}</h2>,
+                                                    h3: ({children}) => <h3 className="text-md font-medium mb-2 text-green-600 dark:text-green-400">{children}</h3>,
+                                                    p: ({children}) => <p className="mb-3 leading-relaxed">{children}</p>,
+                                                    ul: ({children}) => <ul className="list-disc list-inside mb-3 space-y-2 ml-2">{children}</ul>,
+                                                    ol: ({children}) => <ol className="list-decimal list-inside mb-3 space-y-2 ml-2">{children}</ol>,
+                                                    li: ({children}) => <li className="text-sm leading-relaxed">{children}</li>,
+                                                    strong: ({children}) => <strong className="font-bold text-gray-900 dark:text-white">{children}</strong>,
+                                                    em: ({children}) => <em className="italic text-gray-700 dark:text-gray-300">{children}</em>,
+                                                    code: ({children}) => <code className="bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-200 px-2 py-1 rounded text-xs font-mono border">{children}</code>,
+                                                    pre: ({children}) => <pre className="bg-gray-800 text-green-400 p-3 rounded-lg overflow-x-auto text-sm font-mono mb-3 border">{children}</pre>,
+                                                    blockquote: ({children}) => <blockquote className="border-l-4 border-blue-500 pl-4 py-2 bg-blue-50 dark:bg-blue-900/20 rounded-r-lg mb-3 italic">{children}</blockquote>,
+                                                    hr: () => <hr className="border-gray-300 dark:border-gray-600 my-4" />,
+                                                    a: ({href, children}) => <a href={href} className="text-blue-500 hover:text-blue-700 underline" target="_blank" rel="noopener noreferrer">{children}</a>,
+                                                    table: ({children}) => <table className="w-full border-collapse border border-gray-300 dark:border-gray-600 mb-3">{children}</table>,
+                                                    th: ({children}) => <th className="border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-700 p-2 text-left font-semibold">{children}</th>,
+                                                    td: ({children}) => <td className="border border-gray-300 dark:border-gray-600 p-2">{children}</td>,
+                                                }}
+                                            >
+                                                {message.content}
+                                            </ReactMarkdown>
+                                        </div>
                                     </div>
                                 ) : (
                                     <p className="whitespace-pre-wrap">{message.content}</p>
