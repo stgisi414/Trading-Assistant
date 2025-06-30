@@ -103,9 +103,9 @@ const PositionResult: React.FC<PositionResultProps> = ({
 
     const getPositionColor = (position: Position) => {
         switch (position) {
-            case Position.LONG:
+            case Position.BUY:
                 return 'text-green-600 dark:text-green-400';
-            case Position.SHORT:
+            case Position.SELL:
                 return 'text-red-600 dark:text-red-400';
             case Position.HOLD:
                 return 'text-yellow-600 dark:text-yellow-400';
@@ -116,9 +116,9 @@ const PositionResult: React.FC<PositionResultProps> = ({
 
     const getPositionIcon = (position: Position) => {
         switch (position) {
-            case Position.LONG:
-                return '📈';
-            case Position.SHORT:
+            case Position.BUY:
+                return '💰';
+            case Position.SELL:
                 return '📉';
             case Position.HOLD:
                 return '⏸️';
@@ -185,9 +185,6 @@ const PositionResult: React.FC<PositionResultProps> = ({
             {/* Symbol Logo */}
             {result.symbolLogo && result.symbolLogo.length > 0 && (
                 <div className="mb-4">
-                    <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        Company Logo
-                    </h4>
                     <ImageGallery 
                         images={result.symbolLogo} 
                         title="Company Logo" 
@@ -254,9 +251,6 @@ const PositionResult: React.FC<PositionResultProps> = ({
             {/* Reasoning Illustrations */}
             {result.reasoningIllustrations && result.reasoningIllustrations.length > 0 && (
                 <div className="mb-4">
-                    <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        Analysis Illustrations
-                    </h4>
                     <ImageGallery 
                         images={result.reasoningIllustrations} 
                         title="Analysis Illustrations" 
