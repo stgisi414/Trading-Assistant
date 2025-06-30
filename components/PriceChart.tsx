@@ -159,15 +159,34 @@ export const PriceChart: React.FC<PriceChartProps> = ({ data, theme }) => {
             .append("g")
             .attr("transform", `translate(${margin.left},${margin.top})`);
 
-        const parseDate = timeParse("%Y-%m-%d");
-        const processedData = data.map(d => ({
-            date: parseDate(d.date),
-            close: d.close,
-            open: d.open || d.close,
-            high: d.high || d.close,
-            low: d.low || d.close,
-            volume: d.volume || 0
-        })).filter(d => d.date !== null) as { 
+        // Handle both daily (YYYY-MM-DD) and intraday (ISO datetime) formats
+        const parseDateDaily = timeParse("%Y-%m-%d");
+        const processedData = data.map(d => {
+            let parsedDate: Date | null = null;
+            
+            // Try parsing as ISO datetime first (for intraday data)
+            if (d.date.includes('T') || d.date.includes(' ')) {
+                parsedDate = new Date(d.date);
+                // Check if the date is valid
+                if (isNaN(parsedDate.getTime())) {
+                    parsedDate = null;
+                }
+            }
+            
+            // Fallback to daily format parsing
+            if (!parsedDate) {
+                parsedDate = parseDateDaily(d.date);
+            }
+            
+            return {
+                date: parsedDate,
+                close: d.close,
+                open: d.open || d.close,
+                high: d.high || d.close,
+                low: d.low || d.close,
+                volume: d.volume || 0
+            };
+        }).filter(d => d.date !== null) as { 
             date: Date, 
             close: number, 
             open: number, 
@@ -472,8 +491,12 @@ export const PriceChart: React.FC<PriceChartProps> = ({ data, theme }) => {
             // Volume axis
             volumeChart.append("g")
                 .attr("transform", `translate(0, ${volumeHeight})`)
-                .call(axisBottom(xScale).ticks(Math.max(width / 100, 2)).tickFormat(timeFormat("%b %d")))
-                .call(g => g.selectAll("text").style("fill", axisColor))
+                .call(axisBottom(xScale).ticks(Math.max(width / 100, 2)).tickFormat(timeFormatter))
+                .call(g => g.selectAll("text")
+                    .style("fill", axisColor)
+                    .style("font-size", isIntraday ? "10px" : "12px")
+                    .attr("transform", isIntraday ? "rotate(-45)" : "rotate(0)")
+                    .style("text-anchor", isIntraday ? "end" : "middle"))
                 .call(g => g.select(".domain").attr("stroke", axisColor));
 
             volumeChart.append("g")
@@ -484,14 +507,22 @@ export const PriceChart: React.FC<PriceChartProps> = ({ data, theme }) => {
             volumeChart.selectAll('.tick line').attr('stroke', axisColor);
         }
 
-        // Main chart axes
-        const xAxis = axisBottom(xScale).ticks(Math.max(width / 100, 2)).tickFormat(timeFormat("%b %d"));
+        // Main chart axes with dynamic time formatting
+        const isIntraday = processedData.length > 0 && 
+            (processedData[0].date.getHours() !== 0 || processedData[0].date.getMinutes() !== 0);
+        
+        const timeFormatter = isIntraday ? timeFormat("%m/%d %H:%M") : timeFormat("%b %d");
+        const xAxis = axisBottom(xScale).ticks(Math.max(width / 100, 2)).tickFormat(timeFormatter);
         const yAxis = axisLeft(yScale).tickFormat(d => `$${format(".2f")(d)}`);
         
         mainChart.append("g")
             .attr("transform", `translate(0,${mainHeight})`)
             .call(xAxis)
-            .call(g => g.selectAll("text").style("fill", axisColor))
+            .call(g => g.selectAll("text")
+                .style("fill", axisColor)
+                .style("font-size", isIntraday ? "10px" : "12px")
+                .attr("transform", isIntraday ? "rotate(-45)" : "rotate(0)")
+                .style("text-anchor", isIntraday ? "end" : "middle"))
             .call(g => g.select(".domain").attr("stroke", axisColor));
 
         mainChart.append("g")
