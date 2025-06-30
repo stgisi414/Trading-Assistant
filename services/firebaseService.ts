@@ -246,6 +246,29 @@ export class FirebaseService {
     return null;
   }
 
+  // Helper function to remove undefined values from objects
+  private cleanObjectForFirestore(obj: any): any {
+    if (obj === null || obj === undefined) {
+      return null;
+    }
+    
+    if (Array.isArray(obj)) {
+      return obj.map(item => this.cleanObjectForFirestore(item));
+    }
+    
+    if (typeof obj === 'object' && obj !== null) {
+      const cleaned: any = {};
+      for (const [key, value] of Object.entries(obj)) {
+        if (value !== undefined) {
+          cleaned[key] = this.cleanObjectForFirestore(value);
+        }
+      }
+      return cleaned;
+    }
+    
+    return obj;
+  }
+
   // Analysis results management
   async saveAnalysisResults(results: any[], settings: CloudUserData): Promise<string> {
     if (!this.currentUser) throw new Error('User not authenticated');
@@ -258,19 +281,26 @@ export class FirebaseService {
       throw new Error(`Analysis limit reached. Free users can save up to ${userProfile.maxAnalyses} analyses.`);
     }
 
+    // Clean results and settings to remove undefined values
+    const cleanedResults = this.cleanObjectForFirestore(results);
+    const cleanedSettings = this.cleanObjectForFirestore(settings);
+
     // Create analysis record
     const analysisId = `analysis_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
     const analysisRecord: AnalysisRecord = {
       id: analysisId,
       timestamp: new Date(),
-      symbols: results.map(r => r.symbol?.symbol || ''),
-      results,
-      settings
+      symbols: cleanedResults.map((r: any) => r.symbol?.symbol || '').filter(Boolean),
+      results: cleanedResults,
+      settings: cleanedSettings
     };
+
+    // Clean the entire record to ensure no undefined values
+    const cleanedRecord = this.cleanObjectForFirestore(analysisRecord);
 
     // Save to Firestore
     const analysisRef = doc(db, 'analyses', this.currentUser.uid, 'userAnalyses', analysisId);
-    await setDoc(analysisRef, analysisRecord);
+    await setDoc(analysisRef, cleanedRecord);
 
     // Update user's analysis count
     const userRef = doc(db, 'users', this.currentUser.uid);
