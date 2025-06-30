@@ -381,11 +381,27 @@ export const fetchHistoricalData = async (
             } else {
                 console.warn(`FMP API returned ${response.status}: ${response.statusText} for ${symbol} (${timeframe})`);
                 if (response.status === 403) {
-                    console.warn(`API access denied - this may indicate the ${timeframe} timeframe requires a paid FMP plan`);
+                    console.warn(`❌ API access denied for ${timeframe} - this timeframe requires a paid FMP plan`);
+                } else if (response.status === 401) {
+                    console.warn(`❌ API key unauthorized for ${timeframe} - check API key validity`);
+                } else if (response.status === 429) {
+                    console.warn(`❌ API rate limit exceeded for ${timeframe}`);
+                }
+                
+                // Log the full URL for debugging
+                console.log(`🔍 Debug URL: ${url.replace(FMP_API_KEY, 'API_KEY_HIDDEN')}`);
+                
+                // For 30m specifically, provide more context
+                if (timeframe === '30m') {
+                    console.warn(`⚠️  30-minute data typically requires FMP's Essential plan or higher`);
                 }
             }
         } catch (error) {
-            console.warn(`Failed to fetch real data for ${symbol}, falling back to mock data:`, error);
+            if (error.name === 'AbortError') {
+                console.warn(`Request timeout for ${symbol} (${timeframe}), falling back to mock data`);
+            } else {
+                console.warn(`Failed to fetch real data for ${symbol} (${timeframe}), falling back to mock data:`, error);
+            }
         }
     }
 
