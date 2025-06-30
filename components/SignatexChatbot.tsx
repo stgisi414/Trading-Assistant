@@ -962,14 +962,14 @@ I'm ready for fresh insights and still fully synced with your Signatex setup!
                             className="p-1.5 sm:p-2 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg transition-colors text-gray-500 dark:text-gray-300 border dark:border-gray-600"
                             title="Clear conversation"
                         >
-                            <img src="https://cdn.hugeicons.com/icons/delete-02-stroke-rounded.svg" className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 dark:text-gray-300" />
+                            <img src="https://cdn.hugeicons.com/icons/delete-02-stroke-rounded.svg" className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 dark:text-gray-300 dark:filter dark:brightness-0 dark:invert" />
                         </button>
                         <button
                             onClick={onClose}
                             className="p-1.5 sm:p-2 hover:bg-red-100 dark:hover:bg-red-500/20 rounded-lg transition-colors bg-red-50 dark:bg-red-500/10 border dark:border-red-400/30"
                             title="Close chat"
                         >
-                            <img src="https://cdn.hugeicons.com/icons/cancel-01-stroke-rounded.svg" className="w-5 h-5 sm:w-6 sm:h-6 text-red-500 dark:text-red-300" />
+                            <img src="https://cdn.hugeicons.com/icons/cancel-01-stroke-rounded.svg" className="w-5 h-5 sm:w-6 sm:h-6 text-red-500 dark:text-red-300 dark:filter dark:brightness-0 dark:invert" />
                         </button>
                     </div>
                 </div>
