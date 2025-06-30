@@ -1,5 +1,6 @@
 import { GoogleGenAI, GenerateContentResponse } from "@google/genai";
-import type { AnalysisResult, HistoricalDataPoint, NewsArticle, Position, OpenInterestAnalysis, OptionsAnalysis, OptionRecommendation, OrderAnalysis, LimitOrder } from '../types.ts';
+import { Position } from '../types.ts';
+import type { AnalysisResult, HistoricalDataPoint, NewsArticle, OpenInterestAnalysis, OptionsAnalysis, OptionRecommendation, OrderAnalysis, LimitOrder } from '../types.ts';
 import { calculateTechnicalIndicators, type TechnicalIndicatorValues } from './technicalIndicators.ts';
 import { searchNews } from './newsSearchService.ts';
 import { searchSymbolLogo, searchReasoningIllustration } from './imageSearchService.ts';
