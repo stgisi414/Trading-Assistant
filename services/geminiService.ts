@@ -110,7 +110,7 @@ function createEnhancedGeminiPrompt(
     Recommended Position: [BUY/SELL/HOLD]
     Confidence Level: [Percentage based on confluence strength]
     Confluence Score: [Numerical score from methodology above]
-    
+
     Detailed Reasoning:
 
     **CONFLUENCE EQUILIBRIUM ANALYSIS:**

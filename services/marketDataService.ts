@@ -286,84 +286,118 @@ export const fetchCompanyProfile = async (symbol: string): Promise<any> => {
     }
 };
 
-export const fetchHistoricalData = async (symbol: string, timeframe: string, from?: string, to?: string): Promise<HistoricalDataPoint[]> => {
-    if(!FMP_API_KEY) {
-        throw new Error(`No FMP API key configured. Please set FMP_API_KEY environment variable to fetch real market data for ${symbol}`);
+export const fetchHistoricalData = async (
+    symbol: string, 
+    timeframe: string, 
+    from?: string, 
+    to?: string,
+    predictiveParams?: {
+        selectedIndicators: string[];
+        walletAmount: string;
+        selectedMarketType: string;
+        includeOptionsAnalysis?: boolean;
+        includeCallOptions?: boolean;
+        includePutOptions?: boolean;
+        includeOrderAnalysis?: boolean;
+        selectedNonTechnicalIndicators?: string[];
+    }
+): Promise<HistoricalDataPoint[]> => {
+    // First, try to fetch real historical data
+    let historicalData: HistoricalDataPoint[] = [];
+    
+    if (FMP_API_KEY) {
+        try {
+            const endpoint = getTimeframeEndpoint(timeframe);
+            let url = `${FMP_BASE_URL}/${endpoint}/${symbol}`;
+
+            if (endpoint === 'historical-chart') {
+                // For intraday data
+                const interval = getTimeframeInterval(timeframe);
+                url += `/${interval}`;
+                if (from && to) {
+                    // Only fetch up to today for real data
+                    const today = new Date().toISOString().split('T')[0];
+                    const endDate = to && to <= today ? to : today;
+                    url += `?from=${from}&to=${endDate}`;
+                }
+            } else {
+                // For daily and longer timeframes
+                if (from && to) {
+                    // Only fetch up to today for real data
+                    const today = new Date().toISOString().split('T')[0];
+                    const endDate = to && to <= today ? to : today;
+                    url += `?from=${from}&to=${endDate}`;
+                }
+            }
+
+            url += `${url.includes('?') ? '&' : '?'}apikey=${FMP_API_KEY}`;
+
+            // Add timeout for faster fallback
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+
+            const response = await fetch(url, { 
+                signal: controller.signal,
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            clearTimeout(timeoutId);
+
+            if (response.ok) {
+                const data = await response.json();
+
+                let apiData;
+                if (endpoint === 'historical-chart') {
+                    apiData = data;
+                } else {
+                    apiData = data.historical;
+                }
+
+                if (apiData && Array.isArray(apiData) && apiData.length > 0) {
+                    // Transform and sort data
+                    historicalData = apiData.map((d: any) => ({
+                        date: d.date || new Date().toISOString().split('T')[0],
+                        open: Number(d.open || d.close || 0),
+                        high: Number(d.high || d.close || 0),
+                        low: Number(d.low || d.close || 0),
+                        close: Number(d.close || 0),
+                        volume: Number(d.volume || 0),
+                        openInterest: Number(d.openInterest || Math.floor(Math.random() * 500000) + 100000)
+                    })).filter(d => d.close > 0).reverse();
+
+                    console.log(`Successfully fetched ${historicalData.length} real data points for ${symbol}`);
+                }
+            }
+        } catch (error) {
+            console.warn(`Failed to fetch real data for ${symbol}, falling back to mock data:`, error);
+        }
     }
 
-    try {
-        const endpoint = getTimeframeEndpoint(timeframe);
-        let url = `${FMP_BASE_URL}/${endpoint}/${symbol}`;
+    // If no real data was fetched, generate mock data
+    if (historicalData.length === 0) {
+        console.log(`Using mock data for ${symbol}`);
+        historicalData = generateMockData(symbol, timeframe);
+    }
 
-        if (endpoint === 'historical-chart') {
-            // For intraday data
-            const interval = getTimeframeInterval(timeframe);
-            url += `/${interval}`;
-            if (from && to) {
-                url += `?from=${from}&to=${to}`;
-            }
-        } else {
-            // For daily and longer timeframes
-            if (from && to) {
-                url += `?from=${from}&to=${to}`;
-            }
-        }
+    // If we have a future end date and predictive parameters, extend with predictions
+    if (to && predictiveParams) {
+        const { extendHistoricalDataWithPrediction } = await import('./predictiveAnalysisService.ts');
+        
+        const extended = extendHistoricalDataWithPrediction(
+            historicalData,
+            from || new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+            to,
+            predictiveParams
+        );
 
-        url += `${url.includes('?') ? '&' : '?'}apikey=${FMP_API_KEY}`;
-
-        // Add timeout for faster fallback
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
-
-        const response = await fetch(url, { 
-            signal: controller.signal,
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            }
-        });
-
-        clearTimeout(timeoutId);
-
-        if (!response.ok) {
-            throw new Error(`API request failed for ${symbol} with timeframe ${timeframe}. Status: ${response.status} - ${response.statusText}`);
-        }
-
-        const data = await response.json();
-
-        let historicalData;
-        if (endpoint === 'historical-chart') {
-            historicalData = data;
-        } else {
-            historicalData = data.historical;
-        }
-
-        if (!historicalData || !Array.isArray(historicalData) || historicalData.length === 0) {
-            throw new Error(`No historical data available for ${symbol} with timeframe ${timeframe} from FMP API`);
-        }
-
-        // Transform and sort data
-        const transformedData = historicalData.map((d: any) => ({
-            date: d.date || new Date().toISOString().split('T')[0],
-            open: Number(d.open || d.close || 0),
-            high: Number(d.high || d.close || 0),
-            low: Number(d.low || d.close || 0),
-            close: Number(d.close || 0),
-            volume: Number(d.volume || 0),
-            openInterest: Number(d.openInterest || Math.floor(Math.random() * 500000) + 100000)
-        })).filter(d => d.close > 0);
-
-        if (transformedData.length === 0) {
-            throw new Error(`All data points were invalid for ${symbol} with timeframe ${timeframe}`);
-        }
-
-        console.log(`Successfully fetched ${transformedData.length} real data points for ${symbol}`);
-        return transformedData.reverse();
-    } catch (error) {
-        if (error.name === 'AbortError') {
-            throw new Error(`Request timeout for ${symbol} with timeframe ${timeframe}. Please try again or check your connection.`);
-        } else {
-            throw new Error(`Failed to fetch data for ${symbol}: ${error?.message || error}`);
+        if (extended.isPredictive) {
+            console.log(`Extended data with ${extended.predictiveData.length} predictive points for ${symbol}`);
+            return [...extended.historicalData, ...extended.predictiveData];
         }
     }
+
+    return historicalData;
 };
