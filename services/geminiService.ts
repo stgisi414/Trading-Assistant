@@ -67,14 +67,15 @@ function createEnhancedGeminiPrompt(
     ${newsString}
 
     **Calculated Technical Indicator Values:**
-    - SMA: ${technicalIndicatorValues.sma?.toFixed(2) || 'N/A'}
-    - EMA: ${technicalIndicatorValues.ema?.toFixed(2) || 'N/A'}
-    - RSI: ${technicalIndicatorValues.rsi?.toFixed(2) || 'N/A'}
-    - MACD: ${technicalIndicatorValues.macd?.toFixed(2) || 'N/A'}
-    - Bollinger Bands (Upper): ${technicalIndicatorValues.bollingerBandsUpper?.toFixed(2) || 'N/A'}
-    - Bollinger Bands (Lower): ${technicalIndicatorValues.bollingerBandsLower?.toFixed(2) || 'N/A'}
-    - Stochastic Oscillator: ${technicalIndicatorValues.stochasticOscillator?.toFixed(2) || 'N/A'}
-    - ADX: ${technicalIndicatorValues.adx?.toFixed(2) || 'N/A'}
+    - SMA: ${technicalIndicatorValues.sma ? technicalIndicatorValues.sma.map(s => `${s.period}-period: ${s.value.toFixed(2)} (${s.trend})`).join(', ') : 'N/A'}
+    - EMA: ${technicalIndicatorValues.ema ? technicalIndicatorValues.ema.map(e => `${e.period}-period: ${e.value.toFixed(2)} (${e.trend})`).join(', ') : 'N/A'}
+    - RSI: ${technicalIndicatorValues.rsi ? `${technicalIndicatorValues.rsi.value.toFixed(2)} (${technicalIndicatorValues.rsi.signal})` : 'N/A'}
+    - MACD: ${technicalIndicatorValues.macd ? `MACD: ${technicalIndicatorValues.macd.macd.toFixed(2)}, Signal: ${technicalIndicatorValues.macd.signal.toFixed(2)}, Histogram: ${technicalIndicatorValues.macd.histogram.toFixed(2)} (${technicalIndicatorValues.macd.trend})` : 'N/A'}
+    - Bollinger Bands: ${technicalIndicatorValues.bollingerBands ? `Upper: ${technicalIndicatorValues.bollingerBands.upper.toFixed(2)}, Middle: ${technicalIndicatorValues.bollingerBands.middle.toFixed(2)}, Lower: ${technicalIndicatorValues.bollingerBands.lower.toFixed(2)} (${technicalIndicatorValues.bollingerBands.position})` : 'N/A'}
+    - Stochastic Oscillator: ${technicalIndicatorValues.stochasticOscillator ? `%K: ${technicalIndicatorValues.stochasticOscillator.k.toFixed(2)}, %D: ${technicalIndicatorValues.stochasticOscillator.d.toFixed(2)} (${technicalIndicatorValues.stochasticOscillator.signal})` : 'N/A'}
+    - ADX: ${technicalIndicatorValues.adx ? `${technicalIndicatorValues.adx.value.toFixed(2)} (${technicalIndicatorValues.adx.trend})` : 'N/A'}
+    - Volume: ${technicalIndicatorValues.volume ? `Current: ${technicalIndicatorValues.volume.current.toLocaleString()}, Average: ${technicalIndicatorValues.volume.average.toLocaleString()} (${technicalIndicatorValues.volume.trend})` : 'N/A'}
+    - Volatility: ${technicalIndicatorValues.volatility ? `${technicalIndicatorValues.volatility.value.toFixed(2)}% (${technicalIndicatorValues.volatility.level})` : 'N/A'}
 
     **Your Analysis Task:**
     Based on your comprehensive analysis of the historical data, selected indicators, and recent news sentiment, provide the following information in a clear, structured format.
