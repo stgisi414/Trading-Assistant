@@ -442,10 +442,25 @@ function App() {
 
     // Handle initial loading
     useEffect(() => {
-        // Simulate app initialization time
-        const timer = setTimeout(() => {
-            setIsInitialLoading(false);
-        }, 2000); // Show loading for 2 seconds
+        const checkFinanceIconLoaded = () => {
+            // Check if Material Symbols font is loaded
+            if (document.fonts && document.fonts.ready) {
+                document.fonts.ready.then(() => {
+                    // Additional delay to ensure icon is rendered
+                    setTimeout(() => {
+                        setIsInitialLoading(false);
+                    }, 500);
+                });
+            } else {
+                // Fallback for browsers without font loading API
+                setTimeout(() => {
+                    setIsInitialLoading(false);
+                }, 3000);
+            }
+        };
+
+        // Start checking after a minimum delay
+        const timer = setTimeout(checkFinanceIconLoaded, 1500);
 
         return () => clearTimeout(timer);
     }, []);
