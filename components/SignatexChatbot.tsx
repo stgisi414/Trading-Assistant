@@ -895,32 +895,32 @@ Try asking me about indicators, trading setups, or general trading advice. 🤖`
                         <div className="min-w-0 flex-1">
                             <h2 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-1 sm:gap-2 flex-wrap">
                                 <span className="signatex-embossed">Signatex Assistant</span>
-                                <span className="inline-flex items-center gap-1 px-1 sm:px-2 py-0.5 sm:py-1 text-xs bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-300 rounded-full">
-                                    <img src="https://cdn.hugeicons.com/icons/ai-cloud-stroke-rounded.svg" className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-green-500" />
+                                <span className="inline-flex items-center gap-1 px-1 sm:px-2 py-0.5 sm:py-1 text-xs bg-green-100 dark:bg-green-500/20 text-green-700 dark:text-green-200 rounded-full border dark:border-green-400/30">
+                                    <img src="https://cdn.hugeicons.com/icons/ai-cloud-stroke-rounded.svg" className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-green-500 dark:text-green-300" />
                                     <span className="hidden sm:inline">Gemini AI</span>
-                                    <img src="https://cdn.hugeicons.com/icons/google-gemini-stroke-rounded.svg" className="w-2.5 h-2.5 sm:hidden text-green-500" />
+                                    <img src="https://cdn.hugeicons.com/icons/google-gemini-stroke-rounded.svg" className="w-2.5 h-2.5 sm:hidden text-green-500 dark:text-green-300" />
                                 </span>
                                 {ttsService.isAvailable() && (
-                                    <span className="inline-flex items-center gap-1 px-1 sm:px-2 py-0.5 sm:py-1 text-xs bg-purple-100 dark:bg-purple-900/50 text-purple-700 dark:text-purple-300 rounded-full">
-                                        <img src="https://cdn.hugeicons.com/icons/voice-stroke-rounded.svg" className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
+                                    <span className="inline-flex items-center gap-1 px-1 sm:px-2 py-0.5 sm:py-1 text-xs bg-purple-100 dark:bg-purple-500/20 text-purple-700 dark:text-purple-200 rounded-full border dark:border-purple-400/30">
+                                        <img src="https://cdn.hugeicons.com/icons/voice-stroke-rounded.svg" className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-purple-600 dark:text-purple-300" />
                                         <span className="hidden sm:inline">TTS Ready</span>
                                     </span>
                                 )}
                                 {speechSupported && (
-                                    <span className="inline-flex items-center gap-1 px-1 sm:px-2 py-0.5 sm:py-1 text-xs bg-orange-100 dark:bg-orange-900/50 text-orange-700 dark:text-orange-300 rounded-full">
-                                        <img src="https://cdn.hugeicons.com/icons/mic-01-stroke-rounded.svg" className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
+                                    <span className="inline-flex items-center gap-1 px-1 sm:px-2 py-0.5 sm:py-1 text-xs bg-orange-100 dark:bg-orange-500/20 text-orange-700 dark:text-orange-200 rounded-full border dark:border-orange-400/30">
+                                        <img src="https://cdn.hugeicons.com/icons/mic-01-stroke-rounded.svg" className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-orange-600 dark:text-orange-300" />
                                         <span className="hidden sm:inline">Voice Input</span>
                                     </span>
                                 )}
                                 {proFlowStatus?.isRunning && (
-                                    <span className="inline-flex items-center gap-1 px-1 sm:px-2 py-0.5 sm:py-1 text-xs bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 rounded-full">
-                                        <img src="https://cdn.hugeicons.com/icons/workflow-square-09-stroke-rounded.svg" className="w-2.5 h-2.5 sm:w-3 sm:h-3 animate-pulse" />
+                                    <span className="inline-flex items-center gap-1 px-1 sm:px-2 py-0.5 sm:py-1 text-xs bg-blue-100 dark:bg-blue-500/20 text-blue-700 dark:text-blue-200 rounded-full border dark:border-blue-400/30">
+                                        <img src="https://cdn.hugeicons.com/icons/workflow-square-09-stroke-rounded.svg" className="w-2.5 h-2.5 sm:w-3 sm:h-3 animate-pulse text-blue-600 dark:text-blue-300" />
                                         <span className="hidden sm:inline">ProFlow Active</span>
                                     </span>
                                 )}
                                 {profitMaxResult && (
-                                    <span className="inline-flex items-center px-1 sm:px-2 py-0.5 sm:py-1 text-xs bg-purple-100 dark:bg-purple-900/50 text-purple-700 dark:text-purple-300 rounded-full">
-                                        <img src="https://cdn.hugeicons.com/icons/money-add-02-stroke-rounded.svg" className="w-2.5 h-2.5 sm:hidden" />
+                                    <span className="inline-flex items-center px-1 sm:px-2 py-0.5 sm:py-1 text-xs bg-purple-100 dark:bg-purple-500/20 text-purple-700 dark:text-purple-200 rounded-full border dark:border-purple-400/30">
+                                        <img src="https://cdn.hugeicons.com/icons/money-add-02-stroke-rounded.svg" className="w-2.5 h-2.5 sm:hidden text-purple-600 dark:text-purple-300" />
                                         <span className="hidden sm:inline">ProfitMax Ready</span>
                                     </span>
                                 )}
@@ -959,17 +959,17 @@ I'm ready for fresh insights and still fully synced with your Signatex setup!
                                 }]);
                                 localStorage.removeItem('signatex_chat_history');
                             }}
-                            className="p-1.5 sm:p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors text-gray-500 dark:text-gray-400"
+                            className="p-1.5 sm:p-2 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg transition-colors text-gray-500 dark:text-gray-300 border dark:border-gray-600"
                             title="Clear conversation"
                         >
-                            <img src="https://cdn.hugeicons.com/icons/delete-02-stroke-rounded.svg" className="w-4 h-4 sm:w-5 sm:h-5" />
+                            <img src="https://cdn.hugeicons.com/icons/delete-02-stroke-rounded.svg" className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 dark:text-gray-300" />
                         </button>
                         <button
                             onClick={onClose}
-                            className="p-1.5 sm:p-2 hover:bg-red-100 dark:hover:bg-red-900/50 rounded-lg transition-colors bg-red-50 dark:bg-red-900/30"
+                            className="p-1.5 sm:p-2 hover:bg-red-100 dark:hover:bg-red-500/20 rounded-lg transition-colors bg-red-50 dark:bg-red-500/10 border dark:border-red-400/30"
                             title="Close chat"
                         >
-                            <img src="https://cdn.hugeicons.com/icons/cancel-01-stroke-rounded.svg" className="w-5 h-5 sm:w-6 sm:h-6 text-red-500 dark:text-red-400" />
+                            <img src="https://cdn.hugeicons.com/icons/cancel-01-stroke-rounded.svg" className="w-5 h-5 sm:w-6 sm:h-6 text-red-500 dark:text-red-300" />
                         </button>
                     </div>
                 </div>
