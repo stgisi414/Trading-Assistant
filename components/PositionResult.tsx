@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import type { AnalysisResult } from '../types.ts';
 import { Position } from '../types.ts';
 import { NewsSection } from './NewsSection.tsx';
@@ -227,9 +229,26 @@ const PositionResult: React.FC<PositionResultProps> = ({
                         </button>
                     )}
                 </div>
-                <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
-                    {showFullReasoning ? result.reasoning : truncateText(result.reasoning || '')}
-                </p>
+                <div className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed prose prose-sm dark:prose-invert max-w-none">
+                    <ReactMarkdown 
+                        remarkPlugins={[remarkGfm]}
+                        components={{
+                            h1: ({children}) => <h1 className="text-lg font-bold text-gray-800 dark:text-gray-200 mb-2">{children}</h1>,
+                            h2: ({children}) => <h2 className="text-base font-semibold text-gray-800 dark:text-gray-200 mb-1">{children}</h2>,
+                            h3: ({children}) => <h3 className="text-sm font-medium text-gray-800 dark:text-gray-200 mb-1">{children}</h3>,
+                            p: ({children}) => <p className="mb-2">{children}</p>,
+                            ul: ({children}) => <ul className="list-disc list-inside mb-2 space-y-1">{children}</ul>,
+                            ol: ({children}) => <ol className="list-decimal list-inside mb-2 space-y-1">{children}</ol>,
+                            li: ({children}) => <li className="text-gray-600 dark:text-gray-300">{children}</li>,
+                            strong: ({children}) => <strong className="font-semibold text-gray-800 dark:text-gray-200">{children}</strong>,
+                            em: ({children}) => <em className="italic text-gray-700 dark:text-gray-300">{children}</em>,
+                            code: ({children}) => <code className="bg-gray-100 dark:bg-gray-700 px-1 py-0.5 rounded text-xs font-mono">{children}</code>,
+                            blockquote: ({children}) => <blockquote className="border-l-4 border-gray-300 dark:border-gray-600 pl-4 italic text-gray-700 dark:text-gray-300 mb-2">{children}</blockquote>,
+                        }}
+                    >
+                        {showFullReasoning ? result.reasoning : truncateText(result.reasoning || '')}
+                    </ReactMarkdown>
+                </div>
             </div>
 
             {/* Reasoning Illustrations */}

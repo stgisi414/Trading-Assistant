@@ -1,6 +1,7 @@
-
 import React from 'react';
 import type { OptionsAnalysis } from '../types.ts';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 interface OptionsAnalysisSectionProps {
     optionsAnalysis: OptionsAnalysis;
@@ -15,7 +16,7 @@ export const OptionsAnalysisSection: React.FC<OptionsAnalysisSectionProps> = ({ 
                 </svg>
                 Options Analysis
             </h4>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {optionsAnalysis.callRecommendation && (
                     <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-700">
@@ -38,11 +39,25 @@ export const OptionsAnalysisSection: React.FC<OptionsAnalysisSectionProps> = ({ 
                                     <p className="font-bold">${optionsAnalysis.callRecommendation.spread?.toFixed(2) || 'N/A'}</p>
                                 </div>
                             </div>
-                            <p className="mt-2"><span className="font-medium">Reasoning:</span> {optionsAnalysis.callRecommendation.reasoning}</p>
+                            <div className="text-xs text-gray-600 dark:text-gray-400 mt-2 prose prose-xs dark:prose-invert max-w-none">
+                                <ReactMarkdown 
+                                    remarkPlugins={[remarkGfm]}
+                                    components={{
+                                        p: ({children}) => <p className="mb-1">{children}</p>,
+                                        ul: ({children}) => <ul className="list-disc list-inside mb-1">{children}</ul>,
+                                        ol: ({children}) => <ol className="list-decimal list-inside mb-1">{children}</ol>,
+                                        li: ({children}) => <li>{children}</li>,
+                                        strong: ({children}) => <strong className="font-semibold">{children}</strong>,
+                                        code: ({children}) => <code className="bg-gray-100 dark:bg-gray-700 px-1 rounded text-xs">{children}</code>,
+                                    }}
+                                >
+                                    {optionsAnalysis.callRecommendation.reasoning}
+                                </ReactMarkdown>
+                            </div>
                         </div>
                     </div>
                 )}
-                
+
                 {optionsAnalysis.putRecommendation && (
                     <div className="p-3 bg-red-50 dark:bg-red-900/20 rounded-lg border border-red-200 dark:border-red-700">
                         <h5 className="font-medium text-red-800 dark:text-red-300 mb-2">Put Option</h5>
@@ -64,7 +79,21 @@ export const OptionsAnalysisSection: React.FC<OptionsAnalysisSectionProps> = ({ 
                                     <p className="font-bold">${optionsAnalysis.putRecommendation.spread?.toFixed(2) || 'N/A'}</p>
                                 </div>
                             </div>
-                            <p className="mt-2"><span className="font-medium">Reasoning:</span> {optionsAnalysis.putRecommendation.reasoning}</p>
+                            <div className="text-xs text-gray-600 dark:text-gray-400 mt-2 prose prose-xs dark:prose-invert max-w-none">
+                                <ReactMarkdown 
+                                    remarkPlugins={[remarkGfm]}
+                                    components={{
+                                        p: ({children}) => <p className="mb-1">{children}</p>,
+                                        ul: ({children}) => <ul className="list-disc list-inside mb-1">{children}</ul>,
+                                        ol: ({children}) => <ol className="list-decimal list-inside mb-1">{children}</ol>,
+                                        li: ({children}) => <li>{children}</li>,
+                                        strong: ({children}) => <strong className="font-semibold">{children}</strong>,
+                                        code: ({children}) => <code className="bg-gray-100 dark:bg-gray-700 px-1 rounded text-xs">{children}</code>,
+                                    }}
+                                >
+                                    {optionsAnalysis.putRecommendation.reasoning}
+                                </ReactMarkdown>
+                            </div>
                         </div>
                     </div>
                 )}

@@ -1,6 +1,7 @@
-
 import React from 'react';
 import type { OrderAnalysis } from '../types.ts';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 interface OrderAnalysisSectionProps {
     orderAnalysis: OrderAnalysis;
@@ -15,7 +16,7 @@ export const OrderAnalysisSection: React.FC<OrderAnalysisSectionProps> = ({ orde
                 </svg>
                 Order Analysis
             </h4>
-            
+
             <div className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {orderAnalysis.stopLoss && (
@@ -24,7 +25,7 @@ export const OrderAnalysisSection: React.FC<OrderAnalysisSectionProps> = ({ orde
                             <p className="text-lg font-bold text-red-700 dark:text-red-400">${orderAnalysis.stopLoss.toFixed(2)}</p>
                         </div>
                     )}
-                    
+
                     {orderAnalysis.takeProfit && (
                         <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-700">
                             <h5 className="font-medium text-green-800 dark:text-green-300 mb-1">Take Profit</h5>
@@ -32,7 +33,7 @@ export const OrderAnalysisSection: React.FC<OrderAnalysisSectionProps> = ({ orde
                         </div>
                     )}
                 </div>
-                
+
                 {orderAnalysis.limitOrders && orderAnalysis.limitOrders.length > 0 && (
                     <div>
                         <h5 className="font-medium text-orange-800 dark:text-orange-300 mb-2">Limit Orders</h5>
@@ -49,7 +50,21 @@ export const OrderAnalysisSection: React.FC<OrderAnalysisSectionProps> = ({ orde
                                         </span>
                                         <span className="font-bold text-blue-700 dark:text-blue-400">${order.price.toFixed(2)}</span>
                                     </div>
-                                    <p className="text-sm text-blue-600 dark:text-blue-400">{order.reasoning}</p>
+                                    <div className="text-xs text-gray-600 dark:text-gray-400 mt-1 prose prose-xs dark:prose-invert max-w-none">
+                                        <ReactMarkdown 
+                                            remarkPlugins={[remarkGfm]}
+                                            components={{
+                                                p: ({children}) => <p className="mb-1">{children}</p>,
+                                                ul: ({children}) => <ul className="list-disc list-inside mb-1">{children}</ul>,
+                                                ol: ({children}) => <ol className="list-decimal list-inside mb-1">{children}</ol>,
+                                                li: ({children}) => <li>{children}</li>,
+                                                strong: ({children}) => <strong className="font-semibold">{children}</strong>,
+                                                code: ({children}) => <code className="bg-gray-100 dark:bg-gray-700 px-1 rounded text-xs">{children}</code>,
+                                            }}
+                                        >
+                                            {order.reasoning}
+                                        </ReactMarkdown>
+                                    </div>
                                 </div>
                             ))}
                         </div>

@@ -1,6 +1,7 @@
-
 import React from 'react';
-import type { PatternDetails } from '../types';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import type { PatternDetails } from '../types.ts';
 
 interface PatternAnalysisSectionProps {
     patterns: PatternDetails[];
@@ -59,7 +60,7 @@ export const PatternAnalysisSection: React.FC<PatternAnalysisSectionProps> = ({ 
                 <span>📊</span>
                 Chart Pattern Analysis
             </h3>
-            
+
             <div className="space-y-4">
                 {patterns.map((pattern, index) => (
                     <div
@@ -88,16 +89,41 @@ export const PatternAnalysisSection: React.FC<PatternAnalysisSectionProps> = ({ 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                                 <h5 className="font-medium text-gray-900 dark:text-white mb-2">Description</h5>
-                                <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
-                                    {pattern.description}
-                                </p>
+                                <div className="text-sm text-gray-600 dark:text-gray-400 mb-2 prose prose-sm dark:prose-invert max-w-none">
+                                    <ReactMarkdown 
+                                        remarkPlugins={[remarkGfm]}
+                                        components={{
+                                            p: ({children}) => <p className="mb-2">{children}</p>,
+                                            ul: ({children}) => <ul className="list-disc list-inside mb-2">{children}</ul>,
+                                            ol: ({children}) => <ol className="list-decimal list-inside mb-2">{children}</ol>,
+                                            li: ({children}) => <li>{children}</li>,
+                                            strong: ({children}) => <strong className="font-semibold">{children}</strong>,
+                                            code: ({children}) => <code className="bg-gray-100 dark:bg-gray-700 px-1 rounded text-xs">{children}</code>,
+                                        }}
+                                    >
+                                        {pattern.description}
+                                    </ReactMarkdown>
+                                </div>
                             </div>
 
                             <div>
                                 <h5 className="font-medium text-gray-900 dark:text-white mb-2">Trading Implications</h5>
-                                <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
-                                    {pattern.tradingImplications}
-                                </p>
+                                <div className="text-sm text-gray-600 dark:text-gray-400 mb-3 prose prose-sm dark:prose-invert max-w-none">
+                                    <strong>Trading Implications:</strong>
+                                    <ReactMarkdown 
+                                        remarkPlugins={[remarkGfm]}
+                                        components={{
+                                            p: ({children}) => <p className="mb-2 inline ml-1">{children}</p>,
+                                            ul: ({children}) => <ul className="list-disc list-inside mb-2 ml-1">{children}</ul>,
+                                            ol: ({children}) => <ol className="list-decimal list-inside mb-2 ml-1">{children}</ol>,
+                                            li: ({children}) => <li>{children}</li>,
+                                            strong: ({children}) => <strong className="font-semibold">{children}</strong>,
+                                            code: ({children}) => <code className="bg-gray-100 dark:bg-gray-700 px-1 rounded text-xs">{children}</code>,
+                                        }}
+                                    >
+                                        {pattern.tradingImplications}
+                                    </ReactMarkdown>
+                                </div>
                             </div>
                         </div>
 
