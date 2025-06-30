@@ -615,6 +615,46 @@ export class FirebaseService {
     return () => clearInterval(intervalId);
   }
 
+  // Admin method to delete messages
+  async deleteMessage(channel: string, messageId: string, reason?: string): Promise<void> {
+    if (!this.currentUser) throw new Error('User not authenticated');
+    
+    const isAdmin = await this.isUserAdmin();
+    if (!isAdmin) throw new Error('Insufficient permissions');
+
+    // Delete the message from Firestore
+    const messageRef = doc(db, 'chatrooms', channel, 'messages', messageId);
+    await deleteDoc(messageRef);
+
+    // Log the deletion for audit purposes
+    const deletionRef = doc(db, 'moderation', 'deletions', 'records', `${Date.now()}_${Math.random().toString(36).substr(2, 9)}`);
+    await setDoc(deletionRef, {
+      messageId,
+      adminUserId: this.currentUser.uid,
+      adminUserName: this.currentUser.displayName || 'Admin',
+      channel,
+      reason: reason || 'No reason provided',
+      timestamp: new Date(),
+      type: 'message_deletion'
+    });
+
+    // Optional: Send a system message about the deletion
+    if (reason) {
+      const systemMessageRef = doc(db, 'chatrooms', channel, 'messages', `deletion_${Date.now()}`);
+      await setDoc(systemMessageRef, {
+        id: `deletion_${Date.now()}`,
+        userId: 'system',
+        userName: 'System',
+        userPhoto: '',
+        content: `A message was removed by admin. Reason: ${reason}`,
+        timestamp: new Date(),
+        channel: channel,
+        isSystemMessage: true,
+        expiresAt: new Date(Date.now() + 48 * 60 * 60 * 1000)
+      });
+    }
+  }
+
   // Paper trading methods (placeholder for future implementation)
   async savePaperTrade(tradeData: any): Promise<string> {
     if (!this.currentUser) throw new Error('User not authenticated');

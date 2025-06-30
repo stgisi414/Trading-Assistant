@@ -2,7 +2,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { X, Send, Users, MessageCircle, TrendingUp, TrendingDown, Zap, RotateCcw, Clock, Shield, Ban, UserX, AlertTriangle } from 'lucide-react';
+import { X, Send, Users, MessageCircle, TrendingUp, TrendingDown, Zap, RotateCcw, Clock, Shield, Ban, UserX, AlertTriangle, Trash2 } from 'lucide-react';
 
 interface Message {
   id: string;
@@ -38,7 +38,8 @@ export const ChatroomModal: React.FC<ChatroomModalProps> = ({ isOpen, onClose })
     kickUserFromChannel,
     banUserFromChannel,
     banUserGlobally,
-    unbanUser
+    unbanUser,
+    deleteMessage
   } = useAuth();
   const [activeChannel, setActiveChannel] = useState('swing');
   const [messages, setMessages] = useState<Message[]>([]);
@@ -51,6 +52,8 @@ export const ChatroomModal: React.FC<ChatroomModalProps> = ({ isOpen, onClose })
   const [moderationAction, setModerationAction] = useState<'kick' | 'ban_channel' | 'ban_global' | null>(null);
   const [moderationReason, setModerationReason] = useState('');
   const [banDuration, setBanDuration] = useState(24);
+  const [messageToDelete, setMessageToDelete] = useState<string | null>(null);
+  const [deletionReason, setDeletionReason] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const unsubscribeRef = useRef<(() => void) | null>(null);
@@ -175,6 +178,27 @@ export const ChatroomModal: React.FC<ChatroomModalProps> = ({ isOpen, onClose })
     
     setSelectedUser(userId);
     setModerationAction(actionType);
+  };
+
+  const handleDeleteMessage = async () => {
+    if (!messageToDelete) return;
+
+    try {
+      await deleteMessage(activeChannel, messageToDelete, deletionReason);
+      setMessageToDelete(null);
+      setDeletionReason('');
+      
+      // Reload messages to show updated list
+      await loadChannelMessages();
+    } catch (error) {
+      console.error('Delete message failed:', error);
+      alert(`Failed to delete message: ${error}`);
+    }
+  };
+
+  const openDeleteMessageModal = (messageId: string) => {
+    if (!isAdmin) return;
+    setMessageToDelete(messageId);
   };
 
   const formatTime = (date: Date) => {
@@ -390,29 +414,40 @@ export const ChatroomModal: React.FC<ChatroomModalProps> = ({ isOpen, onClose })
                                   <span className="text-xs text-gray-500 dark:text-gray-400">
                                     {formatTime(message.timestamp)}
                                   </span>
-                                  {isAdmin && message.userId !== user?.uid && message.userId !== 'system' && (
+                                  {isAdmin && message.userId !== 'system' && (
                                     <div className="opacity-0 group-hover:opacity-100 transition-opacity flex space-x-1">
                                       <button
-                                        onClick={() => openModerationMenu(message.userId, message.userName, 'kick')}
+                                        onClick={() => openDeleteMessageModal(message.id)}
                                         className="p-1 hover:bg-red-100 dark:hover:bg-red-900 rounded text-red-600 dark:text-red-400"
-                                        title="Kick user"
+                                        title="Delete message"
                                       >
-                                        <UserX className="w-3 h-3" />
+                                        <Trash2 className="w-3 h-3" />
                                       </button>
-                                      <button
-                                        onClick={() => openModerationMenu(message.userId, message.userName, 'ban_channel')}
-                                        className="p-1 hover:bg-red-100 dark:hover:bg-red-900 rounded text-red-600 dark:text-red-400"
-                                        title="Ban from channel"
-                                      >
-                                        <Ban className="w-3 h-3" />
-                                      </button>
-                                      <button
-                                        onClick={() => openModerationMenu(message.userId, message.userName, 'ban_global')}
-                                        className="p-1 hover:bg-red-100 dark:hover:bg-red-900 rounded text-red-600 dark:text-red-400"
-                                        title="Ban globally"
-                                      >
-                                        <AlertTriangle className="w-3 h-3" />
-                                      </button>
+                                      {message.userId !== user?.uid && (
+                                        <>
+                                          <button
+                                            onClick={() => openModerationMenu(message.userId, message.userName, 'kick')}
+                                            className="p-1 hover:bg-red-100 dark:hover:bg-red-900 rounded text-red-600 dark:text-red-400"
+                                            title="Kick user"
+                                          >
+                                            <UserX className="w-3 h-3" />
+                                          </button>
+                                          <button
+                                            onClick={() => openModerationMenu(message.userId, message.userName, 'ban_channel')}
+                                            className="p-1 hover:bg-red-100 dark:hover:bg-red-900 rounded text-red-600 dark:text-red-400"
+                                            title="Ban from channel"
+                                          >
+                                            <Ban className="w-3 h-3" />
+                                          </button>
+                                          <button
+                                            onClick={() => openModerationMenu(message.userId, message.userName, 'ban_global')}
+                                            className="p-1 hover:bg-red-100 dark:hover:bg-red-900 rounded text-red-600 dark:text-red-400"
+                                            title="Ban globally"
+                                          >
+                                            <AlertTriangle className="w-3 h-3" />
+                                          </button>
+                                        </>
+                                      )}
                                     </div>
                                   )}
                                 </div>
@@ -536,6 +571,57 @@ export const ChatroomModal: React.FC<ChatroomModalProps> = ({ isOpen, onClose })
                 className="flex-1 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
               >
                 Confirm {moderationAction === 'kick' ? 'Kick' : 'Ban'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Message Deletion Modal */}
+      {messageToDelete && (
+        <div className="fixed inset-0 bg-black/70 z-[110] flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-md p-6">
+            <div className="flex items-center space-x-3 mb-4">
+              <Trash2 className="w-6 h-6 text-red-500" />
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                Delete Message
+              </h3>
+            </div>
+            
+            <p className="text-gray-600 dark:text-gray-400 mb-4">
+              Are you sure you want to delete this message? This action cannot be undone.
+            </p>
+            
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Reason (optional)
+                </label>
+                <textarea
+                  value={deletionReason}
+                  onChange={(e) => setDeletionReason(e.target.value)}
+                  placeholder="Enter reason for deletion..."
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  rows={3}
+                />
+              </div>
+            </div>
+            
+            <div className="flex space-x-3 mt-6">
+              <button
+                onClick={() => {
+                  setMessageToDelete(null);
+                  setDeletionReason('');
+                }}
+                className="flex-1 px-4 py-2 bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-400 dark:hover:bg-gray-500 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDeleteMessage}
+                className="flex-1 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+              >
+                Delete Message
               </button>
             </div>
           </div>

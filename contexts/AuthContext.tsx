@@ -22,6 +22,7 @@ interface AuthContextType {
   banUserFromChannel: (targetUserId: string, channel: string, duration?: number, reason?: string) => Promise<void>;
   banUserGlobally: (targetUserId: string, duration?: number, reason?: string) => Promise<void>;
   unbanUser: (targetUserId: string, channel?: string) => Promise<void>;
+  deleteMessage: (channel: string, messageId: string, reason?: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -175,6 +176,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     await firebaseService.unbanUser(targetUserId, channel);
   };
 
+  const deleteMessage = async (channel: string, messageId: string, reason?: string) => {
+    await firebaseService.deleteMessage(channel, messageId, reason);
+  };
+
   const value: AuthContextType = {
     user,
     userProfile,
@@ -194,7 +199,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     kickUserFromChannel,
     banUserFromChannel,
     banUserGlobally,
-    unbanUser
+    unbanUser,
+    deleteMessage
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
