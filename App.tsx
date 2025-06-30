@@ -52,9 +52,24 @@ function App() {
             ? "dark"
             : "light";
     });
-    const [selectedSymbols, setSelectedSymbols] = useState<FmpSearchResult[]>(
-        [],
-    );
+    const [selectedSymbols, setSelectedSymbols] = useState<FmpSearchResult[]>(() => {
+        try {
+            const savedSymbols = localStorage.getItem('selectedSymbols');
+            if (savedSymbols) {
+                console.log('📂 Loading selectedSymbols from localStorage during initialization:', savedSymbols);
+                const parsedSymbols = JSON.parse(savedSymbols);
+                // Ensure each symbol has both symbol and name properties
+                const validatedSymbols = parsedSymbols.map((s: any) => ({
+                    symbol: s.symbol || s,
+                    name: s.name || `${s.symbol || s} Corporation`
+                }));
+                return validatedSymbols;
+            }
+        } catch (error) {
+            console.error('❌ Error loading selectedSymbols from localStorage:', error);
+        }
+        return [];
+    });
     const [walletAmount, setWalletAmount] = useState(() => {
         const saved = localStorage.getItem("tradingApp_walletAmount");
         return saved || "10000";
@@ -209,10 +224,9 @@ function App() {
         localStorage.setItem("tradingApp_selectedMarket", selectedMarket);
     }, [selectedMarket]);
 
-    // Load data from localStorage on component mount
+    // Load other data from localStorage on component mount (selectedSymbols is loaded in state initialization)
     useEffect(() => {
         try {
-            const savedSymbols = localStorage.getItem('selectedSymbols');
             const savedWalletAmount = localStorage.getItem('tradingApp_walletAmount');
             const savedIndicators = localStorage.getItem('tradingApp_selectedIndicators');
             const savedNonTechnicalIndicators = localStorage.getItem('tradingApp_selectedNonTechnicalIndicators');
@@ -224,16 +238,6 @@ function App() {
             const savedIncludePutOptions = localStorage.getItem('tradingApp_includePutOptions');
             const savedIncludeOrderAnalysis = localStorage.getItem('tradingApp_includeOrderAnalysis');
 
-            if (savedSymbols) {
-                console.log('📂 Loading selectedSymbols from localStorage:', savedSymbols);
-                const parsedSymbols = JSON.parse(savedSymbols);
-                // Ensure each symbol has both symbol and name properties
-                const validatedSymbols = parsedSymbols.map((s: any) => ({
-                    symbol: s.symbol || s,
-                    name: s.name || `${s.symbol || s} Corporation`
-                }));
-                setSelectedSymbols(validatedSymbols);
-            }
             if (savedWalletAmount) setWalletAmount(savedWalletAmount);
             if (savedIndicators) setSelectedIndicators(JSON.parse(savedIndicators));
             if (savedNonTechnicalIndicators) setSelectedNonTechnicalIndicators(JSON.parse(savedNonTechnicalIndicators));
