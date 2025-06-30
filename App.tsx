@@ -29,6 +29,7 @@ import {
 } from "./constants.ts";
 import { ErrorMessage } from "./components/ErrorMessage.tsx";
 import { SymbolDebugger } from "./components/SymbolDebugger.tsx";
+import { LoadingOverlay } from "./components/LoadingOverlay.tsx";
 
 const getInitialDates = () => {
     const endDate = new Date();
@@ -116,6 +117,7 @@ function App() {
     const [showProfitMaxResults, setShowProfitMaxResults] = useState(false);
     const [profitMaxResults, setProfitMaxResults] = useState<any>(null);
     const [showDebugPage, setShowDebugPage] = useState(false);
+    const [isInitialLoading, setIsInitialLoading] = useState(true);
 
     // ProFlow state
     const [proFlowToasts, setProFlowToasts] = useState<ProFlowToast[]>([]);
@@ -438,6 +440,16 @@ function App() {
         return () => clearInterval(interval);
     }, []);
 
+    // Handle initial loading
+    useEffect(() => {
+        // Simulate app initialization time
+        const timer = setTimeout(() => {
+            setIsInitialLoading(false);
+        }, 2000); // Show loading for 2 seconds
+
+        return () => clearTimeout(timer);
+    }, []);
+
     const currentMarketSymbols = useMemo(() => {
         // Depend on your original state variables
         if (!selectedMarketType || !selectedMarket) return []; 
@@ -708,7 +720,9 @@ function App() {
     };
 
     return (
-        <div className="bg-background text-foreground min-h-screen p-4 sm:p-6 md:p-8 relative overflow-hidden">
+        <>
+            <LoadingOverlay isVisible={isInitialLoading} />
+            <div className="bg-background text-foreground min-h-screen p-4 sm:p-6 md:p-8 relative overflow-hidden">
             {/* Animated shooting streaks background */}
             <div className="shooting-streaks">
                 <div className="streak streak-blue streak-1"></div>
@@ -885,6 +899,7 @@ function App() {
                 onRemoveToast={handleRemoveToast}
             />
         </div>
+        </>
     );
 }
 
