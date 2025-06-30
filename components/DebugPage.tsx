@@ -135,7 +135,8 @@ export const DebugPage: React.FC = () => {
             'NEWS_CUSTOM_SEARCH_CX': !!process.env.NEWS_CUSTOM_SEARCH_CX,
             'IMAGE_CUSTOM_SEARCH_CX': !!process.env.IMAGE_CUSTOM_SEARCH_CX,
             'FMP_API_KEY': !!process.env.FMP_API_KEY,
-            'API_KEY': !!process.env.API_KEY
+            'API_KEY': !!process.env.API_KEY,
+            'GOOGLE_TTS_API_KEY': !!process.env.GOOGLE_TTS_API_KEY
         };
 
         return envVars;
