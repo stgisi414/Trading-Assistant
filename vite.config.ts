@@ -27,7 +27,7 @@ export default defineConfig(({ mode }) => {
         '/api': 'http://localhost:5000'
       },
       allowedHosts: [
-        'd68f20ac-76f0-436f-a3dd-99c21f05ab26-00-1d3z3kk8shxff.janeway.replit.dev', 'signatex.co', 'signatex.replit.app'
+        'd68f20ac-76f0-436f-a3dd-99c21f05ab26-00-1d3z3kk8shxff.janeway.replit.dev', 'signatex.co', 'signatex-stefdgisi.replit.app'
       ] 
      },
     ,
