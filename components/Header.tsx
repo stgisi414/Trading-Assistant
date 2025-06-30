@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { SignatexChatbot } from './SignatexChatbot.tsx';
 import { Moon, Sun, MessageCircle } from 'lucide-react';
-import { useAuth } from './contexts/AuthContext'; // Assuming you have an AuthContext
+import { useAuth } from '../contexts/AuthContext';
 
 interface ThemeToggleProps {
     theme: 'light' | 'dark';

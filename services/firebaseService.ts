@@ -5,12 +5,12 @@ import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, query, orderB
 
 // Firebase configuration - replace with your actual config
 const firebaseConfig = {
-  apiKey: "your-api-key",
-  authDomain: "your-project.firebaseapp.com",
+  apiKey: "YOUR_ACTUAL_API_KEY",
+  authDomain: "your-project-id.firebaseapp.com",
   projectId: "your-project-id",
-  storageBucket: "your-project.appspot.com",
-  messagingSenderId: "123456789",
-  appId: "your-app-id"
+  storageBucket: "your-project-id.appspot.com",
+  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+  appId: "YOUR_APP_ID"
 };
 
 // Initialize Firebase
