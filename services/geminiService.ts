@@ -57,6 +57,7 @@ function createEnhancedGeminiPrompt(
     **User's Context:**
     - Trading Wallet Amount: $${walletAmount.toLocaleString()}
     - Selected Technical Indicators for Analysis: ${selectedIndicators.join(", ")}
+    - Additional Analysis Factors: Consider market sentiment, social media trends, sector analysis, and fundamental factors
 
     **Recent Historical Price Data for ${assetSymbol} (Date: Closing Price):**
     [${historicalDataString}]
@@ -69,32 +70,45 @@ function createEnhancedGeminiPrompt(
 
     **IMPORTANT REQUIREMENTS:**
     1. Analyze ALL selected technical indicators: ${selectedIndicators.join(", ")}
-    2. Explain what each indicator means for this specific asset
+    2. For EACH indicator, create a dedicated section explaining:
+       - Current indicator value/signal for ${assetSymbol}
+       - What this indicator measures and why it's important
+       - How this specific reading impacts your recommendation
     3. Show how the indicators work together to support your recommendation
     4. Reference specific price movements and dates from the historical data
     5. Cite relevant news articles and explain their market impact
-    6. Provide detailed reasoning with multiple paragraphs
+    6. Provide detailed reasoning with multiple clearly labeled sections
 
     **Do not use markdown formatting like bold or italics for the labels.**
 
     **START_RESPONSE**
     Recommended Position: [Strictly one of: BUY, SELL, HOLD]
     Confidence Level: [A percentage, e.g., 85%]
-    Detailed Reasoning: [Provide a comprehensive multi-paragraph explanation for your recommendation. 
+    Detailed Reasoning: [Provide a comprehensive multi-section explanation for your recommendation. 
 
-    PARAGRAPH 1: Start with an overview of your recommendation and confidence level.
+    **Executive Summary:**
+    Start with an overview of your recommendation and confidence level.
     
-    PARAGRAPH 2: Analyze each selected technical indicator (${selectedIndicators.join(", ")}) individually - explain what each indicator currently shows for ${assetSymbol} and what signal it's giving.
+    **Individual Technical Indicator Analysis:**
+    For each selected indicator (${selectedIndicators.join(", ")}), provide a dedicated subsection:
+    - Current reading/signal for ${assetSymbol}
+    - What this indicator measures and its significance
+    - How this specific reading impacts your recommendation
     
-    PARAGRAPH 3: Explain how these indicators work together and any confirmations or contradictions between them.
+    **Combined Technical Analysis:**
+    Explain how these indicators work together and any confirmations or contradictions between them.
     
-    PARAGRAPH 4: Reference specific historical price movements from the data provided, including dates and price levels that support your analysis.
+    **Price Action Analysis:**
+    Reference specific historical price movements from the data provided, including dates and price levels that support your analysis.
     
-    PARAGRAPH 5: Analyze the recent news sentiment and how specific news articles impact the market outlook for ${assetSymbol}.
+    **News Sentiment Analysis:**
+    Analyze the recent news sentiment and how specific news articles impact the market outlook for ${assetSymbol}.
     
-    PARAGRAPH 6: Explain position sizing recommendations based on the $${walletAmount.toLocaleString()} wallet amount and risk management considerations.
+    **Position Sizing & Risk Management:**
+    Explain position sizing recommendations based on the $${walletAmount.toLocaleString()} wallet amount and risk management considerations.
     
-    PARAGRAPH 7: Provide any additional considerations, potential risks, or market conditions that could affect this position.]
+    **Additional Market Considerations:**
+    Provide any additional considerations, potential risks, or market conditions that could affect this position.]
     **END_RESPONSE**
     `;
 }
@@ -111,9 +125,9 @@ function parseGeminiResponse(responseText: string): Omit<AnalysisResult, 'news'>
                            responseText.match(/Confidence:\s*([\d\.]+%?)/i) ||
                            responseText.match(/([\d\.]+)%/);
     
-    const reasoningMatch = responseText.match(/Detailed Reasoning:\s*([\s\S]*?)(?:\n\n|$)/i) ||
-                          responseText.match(/Reasoning:\s*([\s\S]*?)(?:\n\n|$)/i) ||
-                          responseText.match(/Analysis:\s*([\s\S]*?)(?:\n\n|$)/i);
+    const reasoningMatch = responseText.match(/Detailed Reasoning:\s*([\s\S]*?)(?:\*\*END_RESPONSE\*\*|$)/i) ||
+                          responseText.match(/Reasoning:\s*([\s\S]*?)(?:\*\*END_RESPONSE\*\*|$)/i) ||
+                          responseText.match(/Analysis:\s*([\s\S]*?)(?:\*\*END_RESPONSE\*\*|$)/i);
 
     let reasoningText = "No detailed reasoning provided.";
     if (reasoningMatch && reasoningMatch[1]) {
