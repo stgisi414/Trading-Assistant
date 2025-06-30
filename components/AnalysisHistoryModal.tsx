@@ -1,7 +1,3 @@
-Addressing date formatting, text colors, and analysis count update.
-```
-
-```typescript
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext.tsx';
 
@@ -221,5 +217,3 @@ export const AnalysisHistoryModal: React.FC<AnalysisHistoryModalProps> = ({
     </div>
   );
 };
-```Addressing date formatting, text colors, and analysis count update.
-`
