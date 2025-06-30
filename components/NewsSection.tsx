@@ -7,9 +7,6 @@ interface NewsSectionProps {
 }
 
 export const NewsSection: React.FC<NewsSectionProps> = ({ news, theme }) => {
-    console.log("📰 NewsSection received:", news?.length || 0, "articles");
-    console.log("📰 NewsSection news data:", news);
-
     if (!news || news.length === 0) {
         return (
             <div className="p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-lg">
