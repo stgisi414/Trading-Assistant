@@ -1,12 +1,11 @@
-
 import { initializeApp } from 'firebase/app';
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged, User } from 'firebase/auth';
 import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, query, orderBy, limit, getDocs, deleteDoc } from 'firebase/firestore';
 
 // Firebase configuration - replace with your actual config
 const firebaseConfig = {
-  apiKey: "YOUR_ACTUAL_API_KEY",
-  authDomain: "your-project-id.firebaseapp.com",
+  apiKey: "AIzaSyAqsmue4lx8vALO5o08TdclI5uXI52BtOA",
+  authDomain: "signatex-d1b11.firebaseapp.com",
   projectId: "your-project-id",
   storageBucket: "your-project-id.appspot.com",
   messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
@@ -136,7 +135,7 @@ export class FirebaseService {
 
     const userRef = doc(db, 'users', this.currentUser.uid);
     const userDoc = await getDoc(userRef);
-    
+
     if (userDoc.exists()) {
       return userDoc.data() as UserProfile;
     }
@@ -235,7 +234,7 @@ export class FirebaseService {
 
     const tradeId = `trade_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
     const tradeRef = doc(db, 'paperTrades', this.currentUser.uid, 'trades', tradeId);
-    
+
     await setDoc(tradeRef, {
       ...tradeData,
       id: tradeId,
