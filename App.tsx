@@ -155,6 +155,8 @@ function App() {
     // Authentication state
     const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
     const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
+    const [isAnalysisHistoryOpen, setIsAnalysisHistoryOpen] = useState(false);
+    const [analysisHistory, setAnalysisHistory] = useState<any[]>([]);
     const [cloudSyncStatus, setCloudSyncStatus] = useState<'idle' | 'syncing' | 'success' | 'error'>('idle');
     const [isChatroomOpen, setIsChatroomOpen] = useState(false);
 
@@ -1046,8 +1048,22 @@ function App() {
             <AnalysisHistoryModal
                 isOpen={isAnalysisHistoryOpen}
                 onClose={() => setIsAnalysisHistoryOpen(false)}
-                analysisHistory={analysisHistory}
-                onDeleteAnalysis={handleDeleteAnalysis}
+                onLoadAnalysis={(analysis: any) => {
+                    // Apply the loaded analysis data
+                    if (analysis.settings) {
+                        applyUserData(analysis.settings);
+                    }
+                    if (analysis.results) {
+                        setAnalyses(analysis.results.map((result: any) => ({
+                            symbol: result.symbol || { symbol: result.symbols?.[0] || 'Unknown', name: 'Unknown' },
+                            isLoading: false,
+                            error: null,
+                            analysisResult: result.analysisResult || result,
+                            historicalData: result.historicalData || [],
+                            companyProfile: result.companyProfile || null
+                        })));
+                    }
+                }}
             />
 
             <ChatroomModal
