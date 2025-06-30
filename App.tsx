@@ -585,20 +585,46 @@ function App() {
     const handleChatbotInputUpdates = (updates: any) => {
         console.log('🤖 App.tsx: handleChatbotInputUpdates called with:', updates);
         console.log('🤖 App.tsx: Current selectedSymbols before update:', selectedSymbols);
+        console.log('🤖 App.tsx: Current selectedSymbols length:', selectedSymbols.length);
+        console.log('🤖 App.tsx: Current selectedSymbols array:', selectedSymbols.map(s => ({ symbol: s.symbol, name: s.name })));
         
         // Handle addSymbols first and separately
         if (updates.addSymbols) {
             console.log('🤖 App.tsx: Processing addSymbols:', updates.addSymbols);
+            console.log('🤖 App.tsx: addSymbols is array:', Array.isArray(updates.addSymbols));
+            console.log('🤖 App.tsx: addSymbols length:', updates.addSymbols.length);
             console.log('🤖 App.tsx: About to call onAddSymbol for each symbol');
             
             // Add symbols one by one using the existing onAddSymbol function
             updates.addSymbols.forEach((symbolToAdd: any, index: number) => {
-                console.log(`🤖 App.tsx: Adding symbol ${index + 1}/${updates.addSymbols.length}:`, symbolToAdd);
+                console.log(`🤖 App.tsx: Processing symbol ${index + 1}/${updates.addSymbols.length}:`, symbolToAdd);
+                console.log(`🤖 App.tsx: Symbol details:`, { symbol: symbolToAdd.symbol, name: symbolToAdd.name });
+                console.log(`🤖 App.tsx: About to call onAddSymbol...`);
+                
                 onAddSymbol(symbolToAdd);
-                console.log(`🤖 App.tsx: onAddSymbol called for:`, symbolToAdd);
+                
+                console.log(`🤖 App.tsx: onAddSymbol called for symbol:`, symbolToAdd.symbol);
+                
+                // Check immediately after adding
+                setTimeout(() => {
+                    console.log(`🤖 App.tsx: Checking if ${symbolToAdd.symbol} was added...`);
+                    const wasAdded = selectedSymbols.find(s => s.symbol === symbolToAdd.symbol);
+                    if (wasAdded) {
+                        console.log(`✅ App.tsx: Symbol ${symbolToAdd.symbol} successfully found in selectedSymbols`);
+                    } else {
+                        console.log(`❌ App.tsx: Symbol ${symbolToAdd.symbol} NOT found in selectedSymbols`);
+                        console.log('❌ App.tsx: Current selectedSymbols after attempted add:', selectedSymbols.map(s => s.symbol));
+                    }
+                }, 50);
             });
             
             console.log('🤖 App.tsx: Finished processing all addSymbols');
+            
+            // Check overall state after all symbols processed
+            setTimeout(() => {
+                console.log('🤖 App.tsx: Final check - selectedSymbols after all additions:', selectedSymbols);
+                console.log('🤖 App.tsx: Final selectedSymbols count:', selectedSymbols.length);
+            }, 100);
         }
         
         // Handle market type changes
@@ -669,13 +695,7 @@ function App() {
                     analysisResults={analyses}
                     profitMaxResult={profitMaxResult}
                     proFlowStatus={proFlowStatus}
-                    onUpdateInputs={(updates) => {
-                        if (updates.walletAmount) setWalletAmount(updates.walletAmount);
-                        if (updates.selectedIndicators) setSelectedIndicators(updates.selectedIndicators);
-                        if (updates.selectedTimeframe) handleTimeframeChange(updates.selectedTimeframe);
-                        if (updates.selectedMarketType) handleMarketTypeChange(updates.selectedMarketType);
-                        if (updates.selectedMarket) handleMarketChange(updates.selectedMarket);
-                    }}
+                    onUpdateInputs={handleChatbotInputUpdates}
                 />
 
                 {/* ProFlow Controls */}

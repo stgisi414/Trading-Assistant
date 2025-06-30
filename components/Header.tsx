@@ -119,7 +119,7 @@ export const Header: React.FC<HeaderProps> = ({ theme, toggleTheme, currentInput
                 analysisResults={analysisResults}
                 profitMaxResult={profitMaxResult}
                 proFlowStatus={proFlowStatus}
-                onUpdateInputs={handleChatbotInputUpdates}
+                onUpdateInputs={onUpdateInputs}
             />
         </>
     );
