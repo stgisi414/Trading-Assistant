@@ -11,6 +11,7 @@ import type { ProFlowToast } from './services/proFlowService.ts';
 import { getTradingPosition } from "./services/geminiService.ts";
 import { fetchHistoricalData } from "./services/marketDataService.ts";
 import { analyzeChartPatterns } from "./services/patternAnalysisService.ts";
+import { proFlowService } from "./services/proFlowService.ts";
 import type {
     HistoricalData,
     AnalysisResult,
@@ -118,8 +119,8 @@ function App() {
     // ProFlow state
     const [proFlowToasts, setProFlowToasts] = useState<ProFlowToast[]>([]);
     const [proFlowStatus, setProFlowStatus] = useState(() => {
-        const { proFlowService } = require('./services/proFlowService.ts');
-        return proFlowService.getStatus();
+        // Import at the top level instead of using require
+        return { isRunning: false, currentStep: 0, totalSteps: 0, currentStepName: 'Idle', mode: 'auto', isPaused: false };
     });
 
     useEffect(() => {
@@ -329,7 +330,6 @@ function App() {
 
     // Update ProFlow status periodically
     useEffect(() => {
-        const { proFlowService } = require('./services/proFlowService.ts');
         const interval = setInterval(() => {
             setProFlowStatus(proFlowService.getStatus());
         }, 500);
