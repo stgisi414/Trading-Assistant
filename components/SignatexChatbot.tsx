@@ -1260,4 +1260,4 @@ I'm ready for fresh insights and still fully synced with your Signatex setup!
             </div>
         </div>
     );
-};```typescript
+};
