@@ -12,32 +12,79 @@ class PaperTradingService {
     return PaperTradingService.instance;
   }
 
-  // Get current market price for a symbol (mock implementation)
+  // Get current market price for a symbol using FMP Quote API
   private async getMarketPrice(symbol: string): Promise<number> {
-    try {
-      // In a real implementation, you would fetch from a market data API
-      // For now, we'll simulate market prices
-      const mockPrices: { [key: string]: number } = {
-        'AAPL': 175.50,
-        'GOOGL': 2800.25,
-        'MSFT': 375.80,
-        'TSLA': 245.90,
-        'AMZN': 3200.15,
-        'NVDA': 450.30,
-        'META': 320.75,
-        'NFLX': 425.60,
-        'AMD': 105.40,
-        'INTC': 45.20
-      };
+    const FMP_API_KEY = import.meta.env.VITE_FMP_API_KEY || process.env.FMP_API_KEY;
+    const FMP_BASE_URL = 'https://financialmodelingprep.com/api/v3';
 
-      // Add some random variation to simulate market movement
+    // Fallback mock prices if API is unavailable
+    const mockPrices: { [key: string]: number } = {
+      'AAPL': 175.50,
+      'GOOGL': 2800.25,
+      'MSFT': 375.80,
+      'TSLA': 245.90,
+      'AMZN': 3200.15,
+      'NVDA': 450.30,
+      'META': 320.75,
+      'NFLX': 425.60,
+      'AMD': 105.40,
+      'INTC': 45.20
+    };
+
+    // If no API key, use mock data with variation
+    if (!FMP_API_KEY) {
+      console.warn(`No FMP API key available for paper trading, using mock price for ${symbol}`);
       const basePrice = mockPrices[symbol] || 100;
       const variation = (Math.random() - 0.5) * 0.1; // ±5% variation
       return basePrice * (1 + variation);
-    } catch (error) {
-      console.error('Error fetching market price:', error);
-      return 100; // Default price
     }
+
+    try {
+      // Use FMP Quote API to get real-time price
+      const url = `${FMP_BASE_URL}/quote/${symbol}?apikey=${FMP_API_KEY}`;
+      
+      // Add timeout for faster fallback
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 3000); // 3 second timeout
+
+      const response = await fetch(url, { 
+        signal: controller.signal,
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        }
+      });
+
+      clearTimeout(timeoutId);
+
+      if (response.ok) {
+        const data = await response.json();
+        
+        if (Array.isArray(data) && data.length > 0 && data[0].price) {
+          const price = Number(data[0].price);
+          if (price > 0) {
+            console.log(`✅ Real market price for ${symbol}: $${price}`);
+            return price;
+          }
+        }
+        
+        console.warn(`Invalid price data from FMP API for ${symbol}:`, data);
+      } else {
+        console.warn(`FMP Quote API returned ${response.status}: ${response.statusText} for ${symbol}`);
+      }
+    } catch (error) {
+      if (error.name === 'AbortError') {
+        console.warn(`Request timeout for ${symbol} market price, falling back to mock data`);
+      } else {
+        console.warn(`Failed to fetch real market price for ${symbol}:`, error);
+      }
+    }
+
+    // Fallback to mock data with variation
+    console.log(`Using mock price for ${symbol} paper trading`);
+    const basePrice = mockPrices[symbol] || 100;
+    const variation = (Math.random() - 0.5) * 0.1; // ±5% variation
+    return basePrice * (1 + variation);
   }
 
   // Black-Scholes option pricing model (simplified)
