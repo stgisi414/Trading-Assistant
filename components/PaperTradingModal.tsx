@@ -1,47 +1,74 @@
-
-import React, { useState, useEffect } from 'react';
-import { X, TrendingUp, TrendingDown, DollarSign, PieChart, BarChart3, Plus, Trash2, Eye, RefreshCw, Search } from 'lucide-react';
-import { useAuth } from '../contexts/AuthContext';
-import { PaperTrade, PaperTradingPortfolio, OptionsChain, FmpSearchResult } from '../types';
-import { paperTradingService } from '../services/paperTradingService';
-import { symbolValidationService } from '../services/symbolValidationService';
+import React, { useState, useEffect } from "react";
+import {
+  X,
+  TrendingUp,
+  TrendingDown,
+  DollarSign,
+  PieChart,
+  BarChart3,
+  Plus,
+  Trash2,
+  Eye,
+  RefreshCw,
+  Search,
+} from "lucide-react";
+import { useAuth } from "../contexts/AuthContext";
+import {
+  PaperTrade,
+  PaperTradingPortfolio,
+  OptionsChain,
+  FmpSearchResult,
+} from "../types";
+import { paperTradingService } from "../services/paperTradingService";
+import { symbolValidationService } from "../services/symbolValidationService";
 
 interface PaperTradingModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-export const PaperTradingModal: React.FC<PaperTradingModalProps> = ({ isOpen, onClose }) => {
+export const PaperTradingModal: React.FC<PaperTradingModalProps> = ({
+  isOpen,
+  onClose,
+}) => {
   const { user } = useAuth();
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'positions' | 'orders' | 'history'>('dashboard');
-  const [portfolio, setPortfolio] = useState<PaperTradingPortfolio | null>(null);
+  const [activeTab, setActiveTab] = useState<
+    "dashboard" | "positions" | "orders" | "history"
+  >("dashboard");
+  const [portfolio, setPortfolio] = useState<PaperTradingPortfolio | null>(
+    null,
+  );
   const [trades, setTrades] = useState<PaperTrade[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [showNewTradeForm, setShowNewTradeForm] = useState(false);
   const [newTrade, setNewTrade] = useState({
-    symbol: '',
-    action: 'BUY' as 'BUY' | 'SELL',
+    symbol: "",
+    action: "BUY" as "BUY" | "SELL",
     quantity: 0,
-    orderType: 'MARKET' as 'MARKET' | 'LIMIT',
+    orderType: "MARKET" as "MARKET" | "LIMIT",
     limitPrice: 0,
     stopLoss: 0,
     takeProfit: 0,
-    reasoning: '',
+    reasoning: "",
     // Options fields
     isOptions: false,
-    optionType: 'CALL' as 'CALL' | 'PUT',
+    optionType: "CALL" as "CALL" | "PUT",
     strikePrice: 0,
-    expirationDate: ''
+    expirationDate: "",
   });
   const [availableStrikes, setAvailableStrikes] = useState<number[]>([]);
   const [availableExpirations, setAvailableExpirations] = useState<Date[]>([]);
   const [showPortfolioSummary, setShowPortfolioSummary] = useState(false);
   const [loadingOptionsChain, setLoadingOptionsChain] = useState(false);
-  
+
   // Symbol search and validation
-  const [symbolQuery, setSymbolQuery] = useState('');
-  const [symbolSuggestions, setSymbolSuggestions] = useState<FmpSearchResult[]>([]);
-  const [selectedSymbol, setSelectedSymbol] = useState<FmpSearchResult | null>(null);
+  const [symbolQuery, setSymbolQuery] = useState("");
+  const [symbolSuggestions, setSymbolSuggestions] = useState<FmpSearchResult[]>(
+    [],
+  );
+  const [selectedSymbol, setSelectedSymbol] = useState<FmpSearchResult | null>(
+    null,
+  );
   const [isSymbolValid, setIsSymbolValid] = useState(false);
   const [symbolValidationLoading, setSymbolValidationLoading] = useState(false);
 
@@ -53,17 +80,17 @@ export const PaperTradingModal: React.FC<PaperTradingModalProps> = ({ isOpen, on
 
   const loadPortfolioData = async () => {
     if (!user) return;
-    
+
     setIsLoading(true);
     try {
       const [portfolioData, tradesData] = await Promise.all([
         paperTradingService.getPortfolio(),
-        paperTradingService.getTrades()
+        paperTradingService.getTrades(),
       ]);
       setPortfolio(portfolioData);
       setTrades(tradesData);
     } catch (error) {
-      console.error('Error loading portfolio data:', error);
+      console.error("Error loading portfolio data:", error);
     } finally {
       setIsLoading(false);
     }
@@ -79,7 +106,7 @@ export const PaperTradingModal: React.FC<PaperTradingModalProps> = ({ isOpen, on
       const suggestions = await symbolValidationService.searchSymbols(query, 5);
       setSymbolSuggestions(suggestions);
     } catch (error) {
-      console.error('Error searching symbols:', error);
+      console.error("Error searching symbols:", error);
       setSymbolSuggestions([]);
     }
   };
@@ -97,13 +124,13 @@ export const PaperTradingModal: React.FC<PaperTradingModalProps> = ({ isOpen, on
       if (validSymbol) {
         setSelectedSymbol(validSymbol);
         setIsSymbolValid(true);
-        setNewTrade(prev => ({ ...prev, symbol: validSymbol.symbol }));
+        setNewTrade((prev) => ({ ...prev, symbol: validSymbol.symbol }));
       } else {
         setSelectedSymbol(null);
         setIsSymbolValid(false);
       }
     } catch (error) {
-      console.error('Error validating symbol:', error);
+      console.error("Error validating symbol:", error);
       setSelectedSymbol(null);
       setIsSymbolValid(false);
     } finally {
@@ -114,10 +141,10 @@ export const PaperTradingModal: React.FC<PaperTradingModalProps> = ({ isOpen, on
   const handleSymbolSelect = (symbol: FmpSearchResult) => {
     setSelectedSymbol(symbol);
     setSymbolQuery(symbol.symbol);
-    setNewTrade(prev => ({ ...prev, symbol: symbol.symbol }));
+    setNewTrade((prev) => ({ ...prev, symbol: symbol.symbol }));
     setSymbolSuggestions([]);
     setIsSymbolValid(true);
-    
+
     // Load options chain if needed
     if (newTrade.isOptions) {
       loadOptionsChain(symbol.symbol);
@@ -126,31 +153,45 @@ export const PaperTradingModal: React.FC<PaperTradingModalProps> = ({ isOpen, on
 
   const loadOptionsChain = async (symbol: string) => {
     if (!symbol || !newTrade.isOptions) return;
-    
+
     setLoadingOptionsChain(true);
     try {
       const chains = await paperTradingService.getOptionsChain(symbol);
       if (chains.length > 0) {
-        const strikes = chains[0].calls.map(c => c.strike).sort((a, b) => a - b);
-        const expirations = chains.map(c => c.expirationDate).sort((a, b) => a.getTime() - b.getTime());
+        const strikes = chains[0].calls
+          .map((c) => c.strike)
+          .sort((a, b) => a - b);
+        const expirations = chains
+          .map((c) => c.expirationDate)
+          .sort((a, b) => a.getTime() - b.getTime());
         setAvailableStrikes(strikes);
         setAvailableExpirations(expirations);
-        
+
         // Set default values only if not already set
         if (strikes.length > 0 && newTrade.strikePrice === 0) {
-          setNewTrade(prev => ({ ...prev, strikePrice: strikes[Math.floor(strikes.length / 2)] }));
+          setNewTrade((prev) => ({
+            ...prev,
+            strikePrice: strikes[Math.floor(strikes.length / 2)],
+          }));
         }
         if (expirations.length > 0 && !newTrade.expirationDate) {
-          setNewTrade(prev => ({ ...prev, expirationDate: expirations[0].toISOString().split('T')[0] }));
+          setNewTrade((prev) => ({
+            ...prev,
+            expirationDate: expirations[0].toISOString().split("T")[0],
+          }));
         }
       } else {
         // No options available for this symbol
         setAvailableStrikes([]);
         setAvailableExpirations([]);
-        setNewTrade(prev => ({ ...prev, strikePrice: 0, expirationDate: '' }));
+        setNewTrade((prev) => ({
+          ...prev,
+          strikePrice: 0,
+          expirationDate: "",
+        }));
       }
     } catch (error) {
-      console.error('Error loading options chain:', error);
+      console.error("Error loading options chain:", error);
       setAvailableStrikes([]);
       setAvailableExpirations([]);
     } finally {
@@ -177,28 +218,33 @@ export const PaperTradingModal: React.FC<PaperTradingModalProps> = ({ isOpen, on
       // Clear options data when switching to stocks
       setAvailableStrikes([]);
       setAvailableExpirations([]);
-      setNewTrade(prev => ({ 
-        ...prev, 
-        strikePrice: 0, 
-        expirationDate: '',
-        optionType: 'CALL' 
+      setNewTrade((prev) => ({
+        ...prev,
+        strikePrice: 0,
+        expirationDate: "",
+        optionType: "CALL",
       }));
     }
   }, [newTrade.isOptions, selectedSymbol]);
 
   const handlePlaceTrade = async () => {
     if (!user || !newTrade.symbol || newTrade.quantity <= 0) {
-      alert('Please enter a valid symbol and quantity');
+      alert("Please enter a valid symbol and quantity");
       return;
     }
 
     if (!isSymbolValid || !selectedSymbol) {
-      alert('Please select a valid symbol from the suggestions');
+      alert("Please select a valid symbol from the suggestions");
       return;
     }
-    
-    if (newTrade.isOptions && (!newTrade.strikePrice || !newTrade.expirationDate)) {
-      alert('Please select strike price and expiration date for options trades');
+
+    if (
+      newTrade.isOptions &&
+      (!newTrade.strikePrice || !newTrade.expirationDate)
+    ) {
+      alert(
+        "Please select strike price and expiration date for options trades",
+      );
       return;
     }
 
@@ -207,7 +253,9 @@ export const PaperTradingModal: React.FC<PaperTradingModalProps> = ({ isOpen, on
       const expDate = new Date(newTrade.expirationDate);
       const today = new Date();
       if (expDate <= today) {
-        alert('Cannot trade expired options. Please select a future expiration date.');
+        alert(
+          "Cannot trade expired options. Please select a future expiration date.",
+        );
         return;
       }
     }
@@ -219,7 +267,8 @@ export const PaperTradingModal: React.FC<PaperTradingModalProps> = ({ isOpen, on
         action: newTrade.action,
         quantity: newTrade.quantity,
         orderType: newTrade.orderType,
-        limitPrice: newTrade.orderType === 'LIMIT' ? newTrade.limitPrice : undefined,
+        limitPrice:
+          newTrade.orderType === "LIMIT" ? newTrade.limitPrice : undefined,
         stopLoss: newTrade.stopLoss > 0 ? newTrade.stopLoss : undefined,
         takeProfit: newTrade.takeProfit > 0 ? newTrade.takeProfit : undefined,
         reasoning: newTrade.reasoning,
@@ -227,35 +276,37 @@ export const PaperTradingModal: React.FC<PaperTradingModalProps> = ({ isOpen, on
         isOptions: newTrade.isOptions,
         optionType: newTrade.isOptions ? newTrade.optionType : undefined,
         strikePrice: newTrade.isOptions ? newTrade.strikePrice : undefined,
-        expirationDate: newTrade.isOptions ? new Date(newTrade.expirationDate) : undefined
+        expirationDate: newTrade.isOptions
+          ? new Date(newTrade.expirationDate)
+          : undefined,
       });
 
       // Reset form and reload data
       setNewTrade({
-        symbol: '',
-        action: 'BUY',
+        symbol: "",
+        action: "BUY",
         quantity: 0,
-        orderType: 'MARKET',
+        orderType: "MARKET",
         limitPrice: 0,
         stopLoss: 0,
         takeProfit: 0,
-        reasoning: '',
+        reasoning: "",
         isOptions: false,
-        optionType: 'CALL',
+        optionType: "CALL",
         strikePrice: 0,
-        expirationDate: ''
+        expirationDate: "",
       });
       setAvailableStrikes([]);
       setAvailableExpirations([]);
-      setSymbolQuery('');
+      setSymbolQuery("");
       setSymbolSuggestions([]);
       setSelectedSymbol(null);
       setIsSymbolValid(false);
       setShowNewTradeForm(false);
       await loadPortfolioData();
     } catch (error) {
-      console.error('Error placing trade:', error);
-      alert('Error placing trade: ' + (error as Error).message);
+      console.error("Error placing trade:", error);
+      alert("Error placing trade: " + (error as Error).message);
     } finally {
       setIsLoading(false);
     }
@@ -267,14 +318,18 @@ export const PaperTradingModal: React.FC<PaperTradingModalProps> = ({ isOpen, on
       await paperTradingService.closeTrade(tradeId);
       await loadPortfolioData();
     } catch (error) {
-      console.error('Error closing trade:', error);
+      console.error("Error closing trade:", error);
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleResetPortfolio = async () => {
-    if (!window.confirm('Are you sure you want to reset your paper trading portfolio? This will delete all trades and positions and reset your balance to $100,000. This action cannot be undone.')) {
+    if (
+      !window.confirm(
+        "Are you sure you want to reset your paper trading portfolio? This will delete all trades and positions and reset your balance to $100,000. This action cannot be undone.",
+      )
+    ) {
       return;
     }
 
@@ -282,32 +337,36 @@ export const PaperTradingModal: React.FC<PaperTradingModalProps> = ({ isOpen, on
       setIsLoading(true);
       await paperTradingService.resetPortfolio();
       await loadPortfolioData();
-      alert('Portfolio has been reset successfully!');
+      alert("Portfolio has been reset successfully!");
     } catch (error) {
-      console.error('Error resetting portfolio:', error);
-      alert('Error resetting portfolio: ' + (error as Error).message);
+      console.error("Error resetting portfolio:", error);
+      alert("Error resetting portfolio: " + (error as Error).message);
     } finally {
       setIsLoading(false);
     }
   };
 
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD'
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
     }).format(amount);
   };
 
   const formatPercentage = (value: number) => {
-    return `${value >= 0 ? '+' : ''}${value.toFixed(2)}%`;
+    return `${value >= 0 ? "+" : ""}${value.toFixed(2)}%`;
   };
 
   if (!isOpen) return null;
 
-  const activeTrades = trades.filter(t => t.status === 'active');
-  const closedTrades = trades.filter(t => t.status === 'closed');
-  const totalPnL = portfolio?.totalValue ? portfolio.totalValue - portfolio.initialBalance : 0;
-  const totalPnLPercent = portfolio?.initialBalance ? (totalPnL / portfolio.initialBalance) * 100 : 0;
+  const activeTrades = trades.filter((t) => t.status === "active");
+  const closedTrades = trades.filter((t) => t.status === "closed");
+  const totalPnL = portfolio?.totalValue
+    ? portfolio.totalValue - portfolio.initialBalance
+    : 0;
+  const totalPnLPercent = portfolio?.initialBalance
+    ? (totalPnL / portfolio.initialBalance) * 100
+    : 0;
 
   return (
     <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
@@ -319,8 +378,12 @@ export const PaperTradingModal: React.FC<PaperTradingModalProps> = ({ isOpen, on
               <TrendingUp className="w-6 h-6 text-white" />
             </div>
             <div>
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Paper Trading</h2>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Practice trading with virtual money</p>
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                Paper Trading
+              </h2>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                Practice trading with virtual money
+              </p>
             </div>
           </div>
           <button
@@ -345,17 +408,35 @@ export const PaperTradingModal: React.FC<PaperTradingModalProps> = ({ isOpen, on
                     <DollarSign className="w-5 h-5 text-white" />
                   </div>
                   <div>
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Portfolio Summary</h3>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">{formatCurrency(portfolio.totalValue)}</p>
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                      Portfolio Summary
+                    </h3>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      {formatCurrency(portfolio.totalValue)}
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <span className={`text-sm font-medium ${totalPnL >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                  <span
+                    className={`text-sm font-medium ${totalPnL >= 0 ? "text-green-600" : "text-red-600"}`}
+                  >
                     {formatPercentage(totalPnLPercent)}
                   </span>
-                  <div className={`transition-transform duration-200 ${showPortfolioSummary ? 'rotate-180' : ''}`}>
-                    <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  <div
+                    className={`transition-transform duration-200 ${showPortfolioSummary ? "rotate-180" : ""}`}
+                  >
+                    <svg
+                      className="w-5 h-5 text-gray-400"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 9l-7 7-7-7"
+                      />
                     </svg>
                   </div>
                 </div>
@@ -363,12 +444,16 @@ export const PaperTradingModal: React.FC<PaperTradingModalProps> = ({ isOpen, on
             </div>
 
             {/* Portfolio Details */}
-            <div className={`p-6 ${showPortfolioSummary ? 'block' : 'hidden md:block'}`}>
+            <div
+              className={`p-6 ${showPortfolioSummary ? "block" : "hidden md:block"}`}
+            >
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">Total Value</p>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                        Total Value
+                      </p>
                       <p className="text-2xl font-bold text-gray-900 dark:text-white">
                         {formatCurrency(portfolio.totalValue)}
                       </p>
@@ -376,11 +461,13 @@ export const PaperTradingModal: React.FC<PaperTradingModalProps> = ({ isOpen, on
                     <DollarSign className="w-8 h-8 text-blue-600" />
                   </div>
                 </div>
-                
+
                 <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">Cash Balance</p>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                        Cash Balance
+                      </p>
                       <p className="text-xl font-bold text-gray-900 dark:text-white">
                         {formatCurrency(portfolio.cashBalance)}
                       </p>
@@ -392,8 +479,12 @@ export const PaperTradingModal: React.FC<PaperTradingModalProps> = ({ isOpen, on
                 <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">Total P&L</p>
-                      <p className={`text-xl font-bold ${totalPnL >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                        Total P&L
+                      </p>
+                      <p
+                        className={`text-xl font-bold ${totalPnL >= 0 ? "text-green-600" : "text-red-600"}`}
+                      >
                         {formatCurrency(totalPnL)}
                       </p>
                     </div>
@@ -408,8 +499,12 @@ export const PaperTradingModal: React.FC<PaperTradingModalProps> = ({ isOpen, on
                 <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">Return %</p>
-                      <p className={`text-xl font-bold ${totalPnLPercent >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                        Return %
+                      </p>
+                      <p
+                        className={`text-xl font-bold ${totalPnLPercent >= 0 ? "text-green-600" : "text-red-600"}`}
+                      >
                         {formatPercentage(totalPnLPercent)}
                       </p>
                     </div>
@@ -425,27 +520,27 @@ export const PaperTradingModal: React.FC<PaperTradingModalProps> = ({ isOpen, on
         <div className="border-b border-gray-200 dark:border-gray-700 overflow-x-auto">
           <div className="flex min-w-max">
             {[
-              { id: 'dashboard', label: 'Dashboard', icon: PieChart },
-              { id: 'positions', label: 'Active Positions', icon: TrendingUp },
-              { id: 'orders', label: 'Place Order', icon: Plus },
-              { id: 'history', label: 'Trade History', icon: BarChart3 }
-            ].map(tab => (
+              { id: "dashboard", label: "Dashboard", icon: PieChart },
+              { id: "positions", label: "Active Positions", icon: TrendingUp },
+              { id: "orders", label: "Place Order", icon: Plus },
+              { id: "history", label: "Trade History", icon: BarChart3 },
+            ].map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id as any)}
                 className={`flex items-center space-x-2 px-4 md:px-6 py-4 font-medium transition-colors whitespace-nowrap ${
                   activeTab === tab.id
-                    ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50 dark:bg-blue-900/20'
-                    : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
+                    ? "text-blue-600 border-b-2 border-blue-600 bg-blue-50 dark:bg-blue-900/20"
+                    : "text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
                 }`}
               >
                 <tab.icon className="w-5 h-5" />
                 <span className="hidden sm:inline">{tab.label}</span>
                 <span className="sm:hidden">
-                  {tab.id === 'dashboard' && 'Home'}
-                  {tab.id === 'positions' && 'Positions'}
-                  {tab.id === 'orders' && 'Order'}
-                  {tab.id === 'history' && 'History'}
+                  {tab.id === "dashboard" && "Home"}
+                  {tab.id === "positions" && "Positions"}
+                  {tab.id === "orders" && "Order"}
+                  {tab.id === "history" && "History"}
                 </span>
               </button>
             ))}
@@ -454,10 +549,12 @@ export const PaperTradingModal: React.FC<PaperTradingModalProps> = ({ isOpen, on
 
         {/* Content Area */}
         <div className="flex-1 overflow-auto p-6">
-          {activeTab === 'dashboard' && (
+          {activeTab === "dashboard" && (
             <div className="space-y-6">
               <div className="flex items-center justify-between">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Portfolio Overview</h3>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                  Portfolio Overview
+                </h3>
                 <div className="flex items-center space-x-2">
                   <button
                     onClick={handleResetPortfolio}
@@ -472,7 +569,9 @@ export const PaperTradingModal: React.FC<PaperTradingModalProps> = ({ isOpen, on
                     disabled={isLoading}
                     className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
                   >
-                    <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
+                    <RefreshCw
+                      className={`w-4 h-4 ${isLoading ? "animate-spin" : ""}`}
+                    />
                     <span>Refresh</span>
                   </button>
                 </div>
@@ -481,35 +580,53 @@ export const PaperTradingModal: React.FC<PaperTradingModalProps> = ({ isOpen, on
               {portfolio?.positions && portfolio.positions.length > 0 ? (
                 <div className="grid gap-4">
                   {portfolio.positions.map((position, index) => (
-                    <div key={index} className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
+                    <div
+                      key={index}
+                      className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4"
+                    >
                       <div className="flex items-center justify-between">
                         <div>
                           <div className="flex items-center space-x-2">
-                            <h4 className="font-semibold text-gray-900 dark:text-white">{position.symbol}</h4>
+                            <h4 className="font-semibold text-gray-900 dark:text-white">
+                              {position.symbol}
+                            </h4>
                             {position.isOptions && (
-                              <span className={`px-2 py-1 rounded text-xs font-medium ${
-                                position.optionType === 'CALL' 
-                                  ? 'bg-green-100 text-green-600 dark:bg-green-900/20 dark:text-green-400' 
-                                  : 'bg-red-100 text-red-600 dark:bg-red-900/20 dark:text-red-400'
-                              }`}>
+                              <span
+                                className={`px-2 py-1 rounded text-xs font-medium ${
+                                  position.optionType === "CALL"
+                                    ? "bg-green-100 text-green-600 dark:bg-green-900/20 dark:text-green-400"
+                                    : "bg-red-100 text-red-600 dark:bg-red-900/20 dark:text-red-400"
+                                }`}
+                              >
                                 {position.optionType}
                               </span>
                             )}
                           </div>
                           <p className="text-sm text-gray-500">
-                            {position.quantity} {position.isOptions ? 'contracts' : 'shares'} @ {formatCurrency(position.averagePrice)}
+                            {position.quantity}{" "}
+                            {position.isOptions ? "contracts" : "shares"} @{" "}
+                            {formatCurrency(position.averagePrice)}
                           </p>
                           {position.isOptions && (
                             <p className="text-xs text-gray-400">
-                              Strike: ${position.strikePrice} | Exp: {position.expirationDate ? new Date(position.expirationDate).toLocaleDateString() : 'N/A'}
+                              Strike: ${position.strikePrice} | Exp:{" "}
+                              {position.expirationDate
+                                ? new Date(
+                                    position.expirationDate,
+                                  ).toLocaleDateString()
+                                : "N/A"}
                             </p>
                           )}
                         </div>
                         <div className="text-right">
-                          <p className={`font-semibold ${position.unrealizedPnL >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                          <p
+                            className={`font-semibold ${position.unrealizedPnL >= 0 ? "text-green-600" : "text-red-600"}`}
+                          >
                             {formatCurrency(position.unrealizedPnL)}
                           </p>
-                          <p className={`text-sm ${position.unrealizedPnLPercent >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                          <p
+                            className={`text-sm ${position.unrealizedPnLPercent >= 0 ? "text-green-600" : "text-red-600"}`}
+                          >
                             {formatPercentage(position.unrealizedPnLPercent)}
                           </p>
                           {position.isOptions && position.delta && (
@@ -525,63 +642,185 @@ export const PaperTradingModal: React.FC<PaperTradingModalProps> = ({ isOpen, on
               ) : (
                 <div className="text-center py-12">
                   <PieChart className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                  <p className="text-gray-500 dark:text-gray-400">No positions yet. Place your first trade!</p>
+                  <p className="text-gray-500 dark:text-gray-400">
+                    No positions yet. Place your first trade!
+                  </p>
                 </div>
               )}
             </div>
           )}
 
-          {activeTab === 'positions' && (
+          {activeTab === "positions" && (
             <div className="space-y-6">
               {/* Pending Orders Section */}
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Pending Orders</h3>
-                {trades.filter(t => t.status === 'pending').length > 0 ? (
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                  Pending Orders
+                </h3>
+                {trades.filter((t) => t.status === "pending").length > 0 ? (
                   <div className="space-y-3">
-                    {trades.filter(t => t.status === 'pending').map(trade => (
-                      <div key={trade.id} className="bg-yellow-50 dark:bg-yellow-900/20 rounded-lg p-4 border border-yellow-200 dark:border-yellow-700">
+                    {trades
+                      .filter((t) => t.status === "pending")
+                      .map((trade) => (
+                        <div
+                          key={trade.id}
+                          className="bg-yellow-50 dark:bg-yellow-900/20 rounded-lg p-4 border border-yellow-200 dark:border-yellow-700"
+                        >
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <div className="flex items-center space-x-2">
+                                <span className="font-semibold text-gray-900 dark:text-white">
+                                  {trade.symbol}
+                                </span>
+                                <span
+                                  className={`px-2 py-1 rounded text-xs font-medium ${
+                                    trade.action === "BUY"
+                                      ? "bg-green-100 text-green-600 dark:bg-green-900/20 dark:text-green-400"
+                                      : "bg-red-100 text-red-600 dark:bg-red-900/20 dark:text-red-400"
+                                  }`}
+                                >
+                                  {trade.action}
+                                </span>
+                                <span className="px-2 py-1 rounded text-xs font-medium bg-yellow-100 text-yellow-600 dark:bg-yellow-900/20 dark:text-yellow-400">
+                                  PENDING
+                                </span>
+                                {trade.isOptions && (
+                                  <span
+                                    className={`px-2 py-1 rounded text-xs font-medium ${
+                                      trade.optionType === "CALL"
+                                        ? "bg-blue-100 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400"
+                                        : "bg-purple-100 text-purple-600 dark:bg-purple-900/20 dark:text-purple-400"
+                                    }`}
+                                  >
+                                    {trade.optionType}
+                                  </span>
+                                )}
+                              </div>
+                              <p className="text-sm text-gray-500">
+                                {trade.quantity}{" "}
+                                {trade.isOptions ? "contracts" : "shares"} @
+                                limit ${trade.limitPrice?.toFixed(2) || "N/A"}
+                              </p>
+                              {trade.isOptions && (
+                                <p className="text-xs text-gray-400">
+                                  Strike: ${trade.strikePrice} | Exp:{" "}
+                                  {trade.expirationDate
+                                    ? new Date(
+                                        trade.expirationDate,
+                                      ).toLocaleDateString()
+                                    : "N/A"}
+                                </p>
+                              )}
+                              <p className="text-xs text-yellow-600 dark:text-yellow-400 mt-1">
+                                Waiting for{" "}
+                                {trade.action === "BUY"
+                                  ? "price to drop to"
+                                  : "price to rise to"}{" "}
+                                ${trade.limitPrice?.toFixed(2)}
+                              </p>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <button
+                                onClick={() => handleCloseTrade(trade.id)}
+                                className="px-3 py-1 bg-gray-600 text-white rounded text-sm hover:bg-gray-700"
+                              >
+                                Cancel Order
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-8">
+                    <div className="w-12 h-12 bg-yellow-100 dark:bg-yellow-900/20 rounded-lg flex items-center justify-center mx-auto mb-3">
+                      <svg
+                        className="w-6 h-6 text-yellow-600"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                        />
+                      </svg>
+                    </div>
+                    <p className="text-gray-500 dark:text-gray-400">
+                      No pending limit orders
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              {/* Active Positions Section */}
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                  Active Positions
+                </h3>
+                {activeTrades.length > 0 ? (
+                  <div className="space-y-4">
+                    {activeTrades.map((trade) => (
+                      <div
+                        key={trade.id}
+                        className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4"
+                      >
                         <div className="flex items-center justify-between">
                           <div>
                             <div className="flex items-center space-x-2">
-                              <span className="font-semibold text-gray-900 dark:text-white">{trade.symbol}</span>
-                              <span className={`px-2 py-1 rounded text-xs font-medium ${
-                                trade.action === 'BUY' 
-                                  ? 'bg-green-100 text-green-600 dark:bg-green-900/20 dark:text-green-400' 
-                                  : 'bg-red-100 text-red-600 dark:bg-red-900/20 dark:text-red-400'
-                              }`}>
+                              <span className="font-semibold text-gray-900 dark:text-white">
+                                {trade.symbol}
+                              </span>
+                              <span
+                                className={`px-2 py-1 rounded text-xs font-medium ${
+                                  trade.action === "BUY"
+                                    ? "bg-green-100 text-green-600 dark:bg-green-900/20 dark:text-green-400"
+                                    : "bg-red-100 text-red-600 dark:bg-red-900/20 dark:text-red-400"
+                                }`}
+                              >
                                 {trade.action}
                               </span>
-                              <span className="px-2 py-1 rounded text-xs font-medium bg-yellow-100 text-yellow-600 dark:bg-yellow-900/20 dark:text-yellow-400">
-                                PENDING
-                              </span>
                               {trade.isOptions && (
-                                <span className={`px-2 py-1 rounded text-xs font-medium ${
-                                  trade.optionType === 'CALL' 
-                                    ? 'bg-blue-100 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400' 
-                                    : 'bg-purple-100 text-purple-600 dark:bg-purple-900/20 dark:text-purple-400'
-                                }`}>
+                                <span
+                                  className={`px-2 py-1 rounded text-xs font-medium ${
+                                    trade.optionType === "CALL"
+                                      ? "bg-blue-100 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400"
+                                      : "bg-purple-100 text-purple-600 dark:bg-purple-900/20 dark:text-purple-400"
+                                  }`}
+                                >
                                   {trade.optionType}
                                 </span>
                               )}
                             </div>
                             <p className="text-sm text-gray-500">
-                              {trade.quantity} {trade.isOptions ? 'contracts' : 'shares'} @ limit ${trade.limitPrice?.toFixed(2) || 'N/A'}
+                              {trade.quantity}{" "}
+                              {trade.isOptions ? "contracts" : "shares"} @{" "}
+                              {formatCurrency(trade.price)}
                             </p>
                             {trade.isOptions && (
                               <p className="text-xs text-gray-400">
-                                Strike: ${trade.strikePrice} | Exp: {trade.expirationDate ? new Date(trade.expirationDate).toLocaleDateString() : 'N/A'}
+                                Strike: ${trade.strikePrice} | Exp:{" "}
+                                {trade.expirationDate
+                                  ? new Date(
+                                      trade.expirationDate,
+                                    ).toLocaleDateString()
+                                  : "N/A"}
                               </p>
                             )}
-                            <p className="text-xs text-yellow-600 dark:text-yellow-400 mt-1">
-                              Waiting for {trade.action === 'BUY' ? 'price to drop to' : 'price to rise to'} ${trade.limitPrice?.toFixed(2)}
-                            </p>
+                            {trade.reasoning && (
+                              <p className="text-xs text-gray-400 mt-1">
+                                {trade.reasoning}
+                              </p>
+                            )}
                           </div>
                           <div className="flex items-center space-x-2">
                             <button
                               onClick={() => handleCloseTrade(trade.id)}
-                              className="px-3 py-1 bg-gray-600 text-white rounded text-sm hover:bg-gray-700"
+                              className="px-3 py-1 bg-red-600 text-white rounded text-sm hover:bg-red-700"
                             >
-                              Cancel Order
+                              Close Position
                             </button>
                           </div>
                         </div>
@@ -589,82 +828,23 @@ export const PaperTradingModal: React.FC<PaperTradingModalProps> = ({ isOpen, on
                     ))}
                   </div>
                 ) : (
-                  <div className="text-center py-8">
-                    <div className="w-12 h-12 bg-yellow-100 dark:bg-yellow-900/20 rounded-lg flex items-center justify-center mx-auto mb-3">
-                      <svg className="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                    </div>
-                    <p className="text-gray-500 dark:text-gray-400">No pending limit orders</p>
+                  <div className="text-center py-12">
+                    <TrendingUp className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                    <p className="text-gray-500 dark:text-gray-400">
+                      No active positions
+                    </p>
                   </div>
                 )}
               </div>
-
-              {/* Active Positions Section */}
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Active Positions</h3>
-                {activeTrades.length > 0 ? (
-                <div className="space-y-4">
-                  {activeTrades.map(trade => (
-                    <div key={trade.id} className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <div className="flex items-center space-x-2">
-                            <span className="font-semibold text-gray-900 dark:text-white">{trade.symbol}</span>
-                            <span className={`px-2 py-1 rounded text-xs font-medium ${
-                              trade.action === 'BUY' 
-                                ? 'bg-green-100 text-green-600 dark:bg-green-900/20 dark:text-green-400' 
-                                : 'bg-red-100 text-red-600 dark:bg-red-900/20 dark:text-red-400'
-                            }`}>
-                              {trade.action}
-                            </span>
-                            {trade.isOptions && (
-                              <span className={`px-2 py-1 rounded text-xs font-medium ${
-                                trade.optionType === 'CALL' 
-                                  ? 'bg-blue-100 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400' 
-                                  : 'bg-purple-100 text-purple-600 dark:bg-purple-900/20 dark:text-purple-400'
-                              }`}>
-                                {trade.optionType}
-                              </span>
-                            )}
-                          </div>
-                          <p className="text-sm text-gray-500">
-                            {trade.quantity} {trade.isOptions ? 'contracts' : 'shares'} @ {formatCurrency(trade.price)}
-                          </p>
-                          {trade.isOptions && (
-                            <p className="text-xs text-gray-400">
-                              Strike: ${trade.strikePrice} | Exp: {trade.expirationDate ? new Date(trade.expirationDate).toLocaleDateString() : 'N/A'}
-                            </p>
-                          )}
-                          {trade.reasoning && (
-                            <p className="text-xs text-gray-400 mt-1">{trade.reasoning}</p>
-                          )}
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <button
-                            onClick={() => handleCloseTrade(trade.id)}
-                            className="px-3 py-1 bg-red-600 text-white rounded text-sm hover:bg-red-700"
-                          >
-                            Close Position
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-12">
-                  <TrendingUp className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                  <p className="text-gray-500 dark:text-gray-400">No active positions</p>
-                </div>
-              )}
             </div>
           )}
 
-          {activeTab === 'orders' && (
+          {activeTab === "orders" && (
             <div className="max-w-2xl mx-auto">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">Place New Order</h3>
-              
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">
+                Place New Order
+              </h3>
+
               <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6 space-y-4">
                 {/* Trade Type Selection */}
                 <div className="flex items-center space-x-4 mb-4">
@@ -672,19 +852,27 @@ export const PaperTradingModal: React.FC<PaperTradingModalProps> = ({ isOpen, on
                     <input
                       type="radio"
                       checked={!newTrade.isOptions}
-                      onChange={() => setNewTrade({...newTrade, isOptions: false})}
+                      onChange={() =>
+                        setNewTrade({ ...newTrade, isOptions: false })
+                      }
                       className="mr-2"
                     />
-                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Stocks</span>
+                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                      Stocks
+                    </span>
                   </label>
                   <label className="flex items-center">
                     <input
                       type="radio"
                       checked={newTrade.isOptions}
-                      onChange={() => setNewTrade({...newTrade, isOptions: true})}
+                      onChange={() =>
+                        setNewTrade({ ...newTrade, isOptions: true })
+                      }
                       className="mr-2"
                     />
-                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Options</span>
+                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                      Options
+                    </span>
                   </label>
                 </div>
 
@@ -712,11 +900,11 @@ export const PaperTradingModal: React.FC<PaperTradingModalProps> = ({ isOpen, on
                         }}
                         placeholder="e.g., AAPL"
                         className={`w-full px-3 py-2 pr-10 border rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white ${
-                          isSymbolValid 
-                            ? 'border-green-500 dark:border-green-400' 
-                            : selectedSymbol === null && symbolQuery 
-                              ? 'border-red-500 dark:border-red-400'
-                              : 'border-gray-300 dark:border-gray-600'
+                          isSymbolValid
+                            ? "border-green-500 dark:border-green-400"
+                            : selectedSymbol === null && symbolQuery
+                              ? "border-red-500 dark:border-red-400"
+                              : "border-gray-300 dark:border-gray-600"
                         }`}
                       />
                       <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
@@ -724,8 +912,18 @@ export const PaperTradingModal: React.FC<PaperTradingModalProps> = ({ isOpen, on
                           <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
                         ) : isSymbolValid ? (
                           <div className="w-4 h-4 bg-green-500 rounded-full flex items-center justify-center">
-                            <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                            <svg
+                              className="w-3 h-3 text-white"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M5 13l4 4L19 7"
+                              />
                             </svg>
                           </div>
                         ) : (
@@ -733,7 +931,7 @@ export const PaperTradingModal: React.FC<PaperTradingModalProps> = ({ isOpen, on
                         )}
                       </div>
                     </div>
-                    
+
                     {/* Symbol suggestions dropdown */}
                     {symbolSuggestions.length > 0 && (
                       <div className="absolute z-10 w-full mt-1 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg max-h-60 overflow-y-auto">
@@ -743,14 +941,20 @@ export const PaperTradingModal: React.FC<PaperTradingModalProps> = ({ isOpen, on
                             onClick={() => handleSymbolSelect(suggestion)}
                             className="w-full px-3 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-600 first:rounded-t-lg last:rounded-b-lg"
                           >
-                            <div className="font-semibold text-gray-900 dark:text-white">{suggestion.symbol}</div>
-                            <div className="text-sm text-gray-500 dark:text-gray-400 truncate">{suggestion.name}</div>
-                            <div className="text-xs text-gray-400 dark:text-gray-500">{suggestion.exchangeShortName}</div>
+                            <div className="font-semibold text-gray-900 dark:text-white">
+                              {suggestion.symbol}
+                            </div>
+                            <div className="text-sm text-gray-500 dark:text-gray-400 truncate">
+                              {suggestion.name}
+                            </div>
+                            <div className="text-xs text-gray-400 dark:text-gray-500">
+                              {suggestion.exchangeShortName}
+                            </div>
                           </button>
                         ))}
                       </div>
                     )}
-                    
+
                     {selectedSymbol && (
                       <div className="mt-1 text-sm text-green-600 dark:text-green-400">
                         ✓ {selectedSymbol.symbol} - {selectedSymbol.name}
@@ -764,7 +968,12 @@ export const PaperTradingModal: React.FC<PaperTradingModalProps> = ({ isOpen, on
                     </label>
                     <select
                       value={newTrade.action}
-                      onChange={(e) => setNewTrade({...newTrade, action: e.target.value as 'BUY' | 'SELL'})}
+                      onChange={(e) =>
+                        setNewTrade({
+                          ...newTrade,
+                          action: e.target.value as "BUY" | "SELL",
+                        })
+                      }
                       className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                     >
                       <option value="BUY">Buy</option>
@@ -779,7 +988,12 @@ export const PaperTradingModal: React.FC<PaperTradingModalProps> = ({ isOpen, on
                     <input
                       type="number"
                       value={newTrade.quantity}
-                      onChange={(e) => setNewTrade({...newTrade, quantity: parseInt(e.target.value) || 0})}
+                      onChange={(e) =>
+                        setNewTrade({
+                          ...newTrade,
+                          quantity: parseInt(e.target.value) || 0,
+                        })
+                      }
                       min="1"
                       className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                     />
@@ -791,7 +1005,12 @@ export const PaperTradingModal: React.FC<PaperTradingModalProps> = ({ isOpen, on
                     </label>
                     <select
                       value={newTrade.orderType}
-                      onChange={(e) => setNewTrade({...newTrade, orderType: e.target.value as 'MARKET' | 'LIMIT'})}
+                      onChange={(e) =>
+                        setNewTrade({
+                          ...newTrade,
+                          orderType: e.target.value as "MARKET" | "LIMIT",
+                        })
+                      }
                       className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                     >
                       <option value="MARKET">Market Order</option>
@@ -809,7 +1028,12 @@ export const PaperTradingModal: React.FC<PaperTradingModalProps> = ({ isOpen, on
                       </label>
                       <select
                         value={newTrade.optionType}
-                        onChange={(e) => setNewTrade({...newTrade, optionType: e.target.value as 'CALL' | 'PUT'})}
+                        onChange={(e) =>
+                          setNewTrade({
+                            ...newTrade,
+                            optionType: e.target.value as "CALL" | "PUT",
+                          })
+                        }
                         className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                       >
                         <option value="CALL">Call</option>
@@ -821,105 +1045,189 @@ export const PaperTradingModal: React.FC<PaperTradingModalProps> = ({ isOpen, on
                       <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         Strike Price
                         {loadingOptionsChain && (
-                          <span className="ml-2 text-xs text-blue-600">Loading...</span>
+                          <span className="ml-2 text-xs text-blue-600">
+                            Loading...
+                          </span>
                         )}
                       </label>
                       <select
                         value={newTrade.strikePrice}
-                        onChange={(e) => setNewTrade({...newTrade, strikePrice: parseFloat(e.target.value)})}
-                        disabled={loadingOptionsChain || availableStrikes.length === 0}
+                        onChange={(e) =>
+                          setNewTrade({
+                            ...newTrade,
+                            strikePrice: parseFloat(e.target.value),
+                          })
+                        }
+                        disabled={
+                          loadingOptionsChain || availableStrikes.length === 0
+                        }
                         className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white disabled:opacity-50"
                       >
                         <option value="">
-                          {loadingOptionsChain ? 'Loading strikes...' : 
-                           availableStrikes.length === 0 ? 'No strikes available' : 'Select Strike'}
+                          {loadingOptionsChain
+                            ? "Loading strikes..."
+                            : availableStrikes.length === 0
+                              ? "No strikes available"
+                              : "Select Strike"}
                         </option>
-                        {availableStrikes.map(strike => (
-                          <option key={strike} value={strike}>${strike.toFixed(2)}</option>
+                        {availableStrikes.map((strike) => (
+                          <option key={strike} value={strike}>
+                            ${strike.toFixed(2)}
+                          </option>
                         ))}
                       </select>
-                      {availableStrikes.length === 0 && !loadingOptionsChain && selectedSymbol && (
-                        <p className="text-xs text-yellow-600 mt-1">
-                          No options available for {selectedSymbol.symbol}
-                        </p>
-                      )}
+                      {availableStrikes.length === 0 &&
+                        !loadingOptionsChain &&
+                        selectedSymbol && (
+                          <p className="text-xs text-yellow-600 mt-1">
+                            No options available for {selectedSymbol.symbol}
+                          </p>
+                        )}
                     </div>
 
                     <div>
                       <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         Expiration Date
                         {loadingOptionsChain && (
-                          <span className="ml-2 text-xs text-blue-600">Loading...</span>
+                          <span className="ml-2 text-xs text-blue-600">
+                            Loading...
+                          </span>
                         )}
                       </label>
                       <select
                         value={newTrade.expirationDate}
-                        onChange={(e) => setNewTrade({...newTrade, expirationDate: e.target.value})}
-                        disabled={loadingOptionsChain || availableExpirations.length === 0}
+                        onChange={(e) =>
+                          setNewTrade({
+                            ...newTrade,
+                            expirationDate: e.target.value,
+                          })
+                        }
+                        disabled={
+                          loadingOptionsChain ||
+                          availableExpirations.length === 0
+                        }
                         className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white disabled:opacity-50"
                       >
                         <option value="">
-                          {loadingOptionsChain ? 'Loading expirations...' : 
-                           availableExpirations.length === 0 ? 'No expirations available' : 'Select Expiration'}
+                          {loadingOptionsChain
+                            ? "Loading expirations..."
+                            : availableExpirations.length === 0
+                              ? "No expirations available"
+                              : "Select Expiration"}
                         </option>
-                        {availableExpirations.map(date => {
+                        {availableExpirations.map((date) => {
                           const today = new Date();
-                          const isExpiringSoon = (date.getTime() - today.getTime()) / (1000 * 60 * 60 * 24) < 7;
+                          const isExpiringSoon =
+                            (date.getTime() - today.getTime()) /
+                              (1000 * 60 * 60 * 24) <
+                            7;
                           return (
-                            <option key={date.toISOString()} value={date.toISOString().split('T')[0]}>
-                              {date.toLocaleDateString()} 
-                              {isExpiringSoon && ' (Expires Soon)'}
-                              {date <= today && ' (EXPIRED)'}
+                            <option
+                              key={date.toISOString()}
+                              value={date.toISOString().split("T")[0]}
+                            >
+                              {date.toLocaleDateString()}
+                              {isExpiringSoon && " (Expires Soon)"}
+                              {date <= today && " (EXPIRED)"}
                             </option>
                           );
                         })}
                       </select>
-                      {availableExpirations.length === 0 && !loadingOptionsChain && selectedSymbol && (
-                        <p className="text-xs text-yellow-600 mt-1">
-                          No expiration dates available for {selectedSymbol.symbol}
-                        </p>
-                      )}
+                      {availableExpirations.length === 0 &&
+                        !loadingOptionsChain &&
+                        selectedSymbol && (
+                          <p className="text-xs text-yellow-600 mt-1">
+                            No expiration dates available for{" "}
+                            {selectedSymbol.symbol}
+                          </p>
+                        )}
                     </div>
                   </div>
                 )}
 
                 <div className="text-xs text-gray-500 dark:text-gray-400 space-y-2 p-3 bg-blue-50 dark:bg-blue-900/20 rounded border border-blue-200 dark:border-blue-700">
                   <div className="space-y-1">
-                    <p className="font-medium text-blue-800 dark:text-blue-300">📚 Order Types Explained:</p>
-                    <p><strong>Market Order:</strong> Executes immediately at current market price</p>
-                    <p><strong>Limit Order:</strong> Only executes when price reaches your limit price or better</p>
-                    <p className="text-blue-600 dark:text-blue-400">💡 For options, limit orders are recommended due to wide bid-ask spreads!</p>
+                    <p className="font-medium text-blue-800 dark:text-blue-300">
+                      📚 Order Types Explained:
+                    </p>
+                    <p>
+                      <strong>Market Order:</strong> Executes immediately at
+                      current market price
+                    </p>
+                    <p>
+                      <strong>Limit Order:</strong> Only executes when price
+                      reaches your limit price or better
+                    </p>
+                    <p className="text-blue-600 dark:text-blue-400">
+                      💡 For options, limit orders are recommended due to wide
+                      bid-ask spreads!
+                    </p>
                   </div>
-                  
+
                   <div className="space-y-1">
-                    <p className="font-medium text-blue-800 dark:text-blue-300">🛡️ Risk Management:</p>
-                    <p><strong>Stop Loss:</strong> Automatically sells if price drops to this level (limits losses)</p>
-                    <p><strong>Take Profit:</strong> Automatically sells if price rises to this level (locks in gains)</p>
-                    <p className="text-green-600 dark:text-green-400">✅ These work independently and monitor your position 24/7</p>
+                    <p className="font-medium text-blue-800 dark:text-blue-300">
+                      🛡️ Risk Management:
+                    </p>
+                    <p>
+                      <strong>Stop Loss:</strong> Automatically sells if price
+                      drops to this level (limits losses)
+                    </p>
+                    <p>
+                      <strong>Take Profit:</strong> Automatically sells if price
+                      rises to this level (locks in gains)
+                    </p>
+                    <p className="text-green-600 dark:text-green-400">
+                      ✅ These work independently and monitor your position 24/7
+                    </p>
                   </div>
-                  
+
                   {newTrade.isOptions && (
                     <div className="space-y-1">
-                      <p className="font-medium text-yellow-800 dark:text-yellow-300">⚠️ Options Trading:</p>
-                      <p>Each contract = 100 shares. Quantity = number of contracts.</p>
-                      <p>Options expire automatically - ITM options settle at intrinsic value.</p>
-                      {newTrade.expirationDate && (() => {
-                        const expDate = new Date(newTrade.expirationDate);
-                        const today = new Date();
-                        const daysToExpiry = Math.ceil((expDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-                        
-                        if (daysToExpiry <= 0) {
-                          return <p className="text-red-600 font-medium">⚠️ This option has already expired!</p>;
-                        } else if (daysToExpiry <= 7) {
-                          return <p className="text-orange-600 font-medium">⚠️ This option expires in {daysToExpiry} day{daysToExpiry !== 1 ? 's' : ''}!</p>;
-                        }
-                        return <p className="text-blue-600">Option expires in {daysToExpiry} days</p>;
-                      })()}
+                      <p className="font-medium text-yellow-800 dark:text-yellow-300">
+                        ⚠️ Options Trading:
+                      </p>
+                      <p>
+                        Each contract = 100 shares. Quantity = number of
+                        contracts.
+                      </p>
+                      <p>
+                        Options expire automatically - ITM options settle at
+                        intrinsic value.
+                      </p>
+                      {newTrade.expirationDate &&
+                        (() => {
+                          const expDate = new Date(newTrade.expirationDate);
+                          const today = new Date();
+                          const daysToExpiry = Math.ceil(
+                            (expDate.getTime() - today.getTime()) /
+                              (1000 * 60 * 60 * 24),
+                          );
+
+                          if (daysToExpiry <= 0) {
+                            return (
+                              <p className="text-red-600 font-medium">
+                                ⚠️ This option has already expired!
+                              </p>
+                            );
+                          } else if (daysToExpiry <= 7) {
+                            return (
+                              <p className="text-orange-600 font-medium">
+                                ⚠️ This option expires in {daysToExpiry} day
+                                {daysToExpiry !== 1 ? "s" : ""}!
+                              </p>
+                            );
+                          }
+                          return (
+                            <p className="text-blue-600">
+                              Option expires in {daysToExpiry} days
+                            </p>
+                          );
+                        })()}
                     </div>
                   )}
                 </div>
 
-                {newTrade.orderType === 'LIMIT' && (
+                {newTrade.orderType === "LIMIT" && (
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                       Limit Price
@@ -927,7 +1235,12 @@ export const PaperTradingModal: React.FC<PaperTradingModalProps> = ({ isOpen, on
                     <input
                       type="number"
                       value={newTrade.limitPrice}
-                      onChange={(e) => setNewTrade({...newTrade, limitPrice: parseFloat(e.target.value) || 0})}
+                      onChange={(e) =>
+                        setNewTrade({
+                          ...newTrade,
+                          limitPrice: parseFloat(e.target.value) || 0,
+                        })
+                      }
                       step="0.01"
                       min="0"
                       className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
@@ -943,7 +1256,12 @@ export const PaperTradingModal: React.FC<PaperTradingModalProps> = ({ isOpen, on
                     <input
                       type="number"
                       value={newTrade.stopLoss}
-                      onChange={(e) => setNewTrade({...newTrade, stopLoss: parseFloat(e.target.value) || 0})}
+                      onChange={(e) =>
+                        setNewTrade({
+                          ...newTrade,
+                          stopLoss: parseFloat(e.target.value) || 0,
+                        })
+                      }
                       step="0.01"
                       min="0"
                       className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
@@ -957,7 +1275,12 @@ export const PaperTradingModal: React.FC<PaperTradingModalProps> = ({ isOpen, on
                     <input
                       type="number"
                       value={newTrade.takeProfit}
-                      onChange={(e) => setNewTrade({...newTrade, takeProfit: parseFloat(e.target.value) || 0})}
+                      onChange={(e) =>
+                        setNewTrade({
+                          ...newTrade,
+                          takeProfit: parseFloat(e.target.value) || 0,
+                        })
+                      }
                       step="0.01"
                       min="0"
                       className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
@@ -971,7 +1294,9 @@ export const PaperTradingModal: React.FC<PaperTradingModalProps> = ({ isOpen, on
                   </label>
                   <textarea
                     value={newTrade.reasoning}
-                    onChange={(e) => setNewTrade({...newTrade, reasoning: e.target.value})}
+                    onChange={(e) =>
+                      setNewTrade({ ...newTrade, reasoning: e.target.value })
+                    }
                     placeholder="Why are you making this trade?"
                     rows={3}
                     className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
@@ -980,31 +1305,45 @@ export const PaperTradingModal: React.FC<PaperTradingModalProps> = ({ isOpen, on
 
                 <button
                   onClick={handlePlaceTrade}
-                  disabled={isLoading || !isSymbolValid || !selectedSymbol || newTrade.quantity <= 0}
+                  disabled={
+                    isLoading ||
+                    !isSymbolValid ||
+                    !selectedSymbol ||
+                    newTrade.quantity <= 0
+                  }
                   className="w-full py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {isLoading ? 'Placing Order...' : 'Place Order'}
+                  {isLoading ? "Placing Order..." : "Place Order"}
                 </button>
               </div>
             </div>
           )}
 
-          {activeTab === 'history' && (
+          {activeTab === "history" && (
             <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Trade History</h3>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                Trade History
+              </h3>
               {closedTrades.length > 0 ? (
                 <div className="space-y-4">
-                  {closedTrades.map(trade => (
-                    <div key={trade.id} className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
+                  {closedTrades.map((trade) => (
+                    <div
+                      key={trade.id}
+                      className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4"
+                    >
                       <div className="flex items-center justify-between">
                         <div>
                           <div className="flex items-center space-x-2">
-                            <span className="font-semibold text-gray-900 dark:text-white">{trade.symbol}</span>
-                            <span className={`px-2 py-1 rounded text-xs font-medium ${
-                              trade.action === 'BUY' 
-                                ? 'bg-green-100 text-green-600 dark:bg-green-900/20 dark:text-green-400' 
-                                : 'bg-red-100 text-red-600 dark:bg-red-900/20 dark:text-red-400'
-                            }`}>
+                            <span className="font-semibold text-gray-900 dark:text-white">
+                              {trade.symbol}
+                            </span>
+                            <span
+                              className={`px-2 py-1 rounded text-xs font-medium ${
+                                trade.action === "BUY"
+                                  ? "bg-green-100 text-green-600 dark:bg-green-900/20 dark:text-green-400"
+                                  : "bg-red-100 text-red-600 dark:bg-red-900/20 dark:text-red-400"
+                              }`}
+                            >
                               {trade.action}
                             </span>
                             <span className="px-2 py-1 rounded text-xs font-medium bg-gray-200 text-gray-600 dark:bg-gray-700 dark:text-gray-300">
@@ -1012,7 +1351,8 @@ export const PaperTradingModal: React.FC<PaperTradingModalProps> = ({ isOpen, on
                             </span>
                           </div>
                           <p className="text-sm text-gray-500">
-                            {trade.quantity} shares @ {formatCurrency(trade.price)}
+                            {trade.quantity} shares @{" "}
+                            {formatCurrency(trade.price)}
                           </p>
                           <p className="text-xs text-gray-400">
                             {new Date(trade.timestamp).toLocaleDateString()}
@@ -1020,7 +1360,9 @@ export const PaperTradingModal: React.FC<PaperTradingModalProps> = ({ isOpen, on
                         </div>
                         <div className="text-right">
                           {trade.realizedPnL !== undefined && (
-                            <p className={`font-semibold ${trade.realizedPnL >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                            <p
+                              className={`font-semibold ${trade.realizedPnL >= 0 ? "text-green-600" : "text-red-600"}`}
+                            >
                               {formatCurrency(trade.realizedPnL)}
                             </p>
                           )}
@@ -1032,7 +1374,9 @@ export const PaperTradingModal: React.FC<PaperTradingModalProps> = ({ isOpen, on
               ) : (
                 <div className="text-center py-12">
                   <BarChart3 className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                  <p className="text-gray-500 dark:text-gray-400">No trade history yet</p>
+                  <p className="text-gray-500 dark:text-gray-400">
+                    No trade history yet
+                  </p>
                 </div>
               )}
             </div>
