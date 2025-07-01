@@ -9,7 +9,7 @@ export const LoadingOverlay: React.FC<LoadingOverlayProps> = ({ isVisible }) => 
     if (!isVisible) return null;
 
     return (
-        <div className="fixed inset-0 bg-gradient-to-br from-slate-800 to-slate-200 flex items-center justify-center z-[9999] transition-opacity duration-500">
+        <div className="fixed inset-0 bg-gradient-to-br from-slate-800 to-slate-200 flex items-center justify-center transition-opacity duration-500 loading-overlay">
             {/* Animated background particles */}
             <div className="absolute inset-0 overflow-hidden">
                 <div className="shooting-streaks">
