@@ -785,7 +785,7 @@ export const PaperTradingModal: React.FC<PaperTradingModalProps> = ({
                       }`}>
                         {marketHours.isMarketOpen ? "Market Open" : "Market Closed"}
                       </h4>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
+                      <div className="space-y-1 text-sm">
                         <p className={`${
                           marketHours.isMarketOpen 
                             ? "text-green-700 dark:text-green-300"
@@ -798,16 +798,65 @@ export const PaperTradingModal: React.FC<PaperTradingModalProps> = ({
                             ? "text-green-700 dark:text-green-300"
                             : "text-red-700 dark:text-red-300"
                         }`}>
-                          📅 Trading Hours: {marketHours.openingHour} - {marketHours.closingHour}
+                          📅 Trading Hours: {(() => {
+                            // Convert market hours to user's local timezone
+                            const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+                            const today = new Date();
+                            
+                            try {
+                              // Parse opening time
+                              const openingTime = new Date();
+                              openingTime.setHours(9, 30, 0, 0); // 9:30 AM EST
+                              
+                              // Parse closing time  
+                              const closingTime = new Date();
+                              closingTime.setHours(16, 0, 0, 0); // 4:00 PM EST
+                              
+                              // Convert to EST first, then to user's timezone
+                              const openingEST = new Date(openingTime.toLocaleString('en-US', { timeZone: 'America/New_York' }));
+                              const closingEST = new Date(closingTime.toLocaleString('en-US', { timeZone: 'America/New_York' }));
+                              
+                              // Format in user's timezone
+                              const openingLocal = openingEST.toLocaleTimeString('en-US', {
+                                timeZone: userTimeZone,
+                                hour: '2-digit',
+                                minute: '2-digit',
+                                hour12: true
+                              });
+                              
+                              const closingLocal = closingEST.toLocaleTimeString('en-US', {
+                                timeZone: userTimeZone,
+                                hour: '2-digit',
+                                minute: '2-digit',
+                                hour12: true
+                              });
+                              
+                              if (userTimeZone === 'America/New_York') {
+                                return '9:30 AM - 4:00 PM (EST)';
+                              } else {
+                                return `${openingLocal} - ${closingLocal} (Local Time)`;
+                              }
+                            } catch (error) {
+                              // Fallback to original display
+                              return '9:30 AM - 4:00 PM (EST)';
+                            }
+                          })()}
+                        </p>
+                        <p className={`text-xs ${
+                          marketHours.isMarketOpen 
+                            ? "text-green-600 dark:text-green-400"
+                            : "text-red-600 dark:text-red-400"
+                        }`}>
+                          🌍 Market Timezone: {marketHours.timezone}
+                          {(() => {
+                            const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+                            if (userTimeZone !== 'America/New_York') {
+                              return ` | Your Timezone: ${userTimeZone}`;
+                            }
+                            return '';
+                          })()}
                         </p>
                       </div>
-                      <p className={`text-xs mt-1 ${
-                        marketHours.isMarketOpen 
-                          ? "text-green-600 dark:text-green-400"
-                          : "text-red-600 dark:text-red-400"
-                      }`}>
-                        🌍 {marketHours.timezone}
-                      </p>
                     </div>
                   </div>
                 </div>
@@ -1055,27 +1104,77 @@ export const PaperTradingModal: React.FC<PaperTradingModalProps> = ({
                       }`}>
                         {marketHours.isMarketOpen ? "Market Open" : "Market Closed"}
                       </h4>
-                      <p className={`text-sm ${
-                        marketHours.isMarketOpen 
-                          ? "text-green-700 dark:text-green-300"
-                          : "text-amber-700 dark:text-amber-300"
-                      }`}>
-                        <strong>{marketHours.name}</strong> ({marketHours.exchange})
-                      </p>
-                      <p className={`text-sm ${
-                        marketHours.isMarketOpen 
-                          ? "text-green-700 dark:text-green-300"
-                          : "text-amber-700 dark:text-amber-300"
-                      }`}>
-                        📅 Trading Hours: {marketHours.openingHour} - {marketHours.closingHour}
-                      </p>
-                      <p className={`text-sm ${
-                        marketHours.isMarketOpen 
-                          ? "text-green-700 dark:text-green-300"
-                          : "text-amber-700 dark:text-amber-300"
-                      }`}>
-                        🌍 Timezone: {marketHours.timezone}
-                      </p>
+                      <div className="space-y-1">
+                        <p className={`text-sm ${
+                          marketHours.isMarketOpen 
+                            ? "text-green-700 dark:text-green-300"
+                            : "text-amber-700 dark:text-amber-300"
+                        }`}>
+                          <strong>{marketHours.name}</strong> ({marketHours.exchange})
+                        </p>
+                        <p className={`text-sm ${
+                          marketHours.isMarketOpen 
+                            ? "text-green-700 dark:text-green-300"
+                            : "text-amber-700 dark:text-amber-300"
+                        }`}>
+                          📅 Trading Hours: {(() => {
+                            // Convert market hours to user's local timezone
+                            const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+                            
+                            try {
+                              // Parse opening time
+                              const openingTime = new Date();
+                              openingTime.setHours(9, 30, 0, 0); // 9:30 AM EST
+                              
+                              // Parse closing time  
+                              const closingTime = new Date();
+                              closingTime.setHours(16, 0, 0, 0); // 4:00 PM EST
+                              
+                              // Convert to EST first, then to user's timezone
+                              const openingEST = new Date(openingTime.toLocaleString('en-US', { timeZone: 'America/New_York' }));
+                              const closingEST = new Date(closingTime.toLocaleString('en-US', { timeZone: 'America/New_York' }));
+                              
+                              // Format in user's timezone
+                              const openingLocal = openingEST.toLocaleTimeString('en-US', {
+                                timeZone: userTimeZone,
+                                hour: '2-digit',
+                                minute: '2-digit',
+                                hour12: true
+                              });
+                              
+                              const closingLocal = closingEST.toLocaleTimeString('en-US', {
+                                timeZone: userTimeZone,
+                                hour: '2-digit',
+                                minute: '2-digit',
+                                hour12: true
+                              });
+                              
+                              if (userTimeZone === 'America/New_York') {
+                                return '9:30 AM - 4:00 PM (EST)';
+                              } else {
+                                return `${openingLocal} - ${closingLocal} (Local Time)`;
+                              }
+                            } catch (error) {
+                              // Fallback to original display
+                              return '9:30 AM - 4:00 PM (EST)';
+                            }
+                          })()}
+                        </p>
+                        <p className={`text-xs ${
+                          marketHours.isMarketOpen 
+                            ? "text-green-600 dark:text-green-400"
+                            : "text-amber-600 dark:text-amber-400"
+                        }`}>
+                          🌍 Market Timezone: {marketHours.timezone}
+                          {(() => {
+                            const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+                            if (userTimeZone !== 'America/New_York') {
+                              return ` | Your Timezone: ${userTimeZone}`;
+                            }
+                            return '';
+                          })()}
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>
