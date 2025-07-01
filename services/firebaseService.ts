@@ -674,11 +674,15 @@ export class FirebaseService {
       const q = query(tradesRef, orderBy('timestamp', 'desc'));
       const querySnapshot = await getDocs(q);
 
-      return querySnapshot.docs.map(doc => ({
-        ...doc.data(),
-        timestamp: doc.data().timestamp?.toDate() || new Date(),
-        closedAt: doc.data().closedAt?.toDate()
-      }));
+      return querySnapshot.docs.map(doc => {
+        const data = doc.data();
+        return {
+          ...data,
+          timestamp: data.timestamp?.toDate ? data.timestamp.toDate() : new Date(),
+          closedAt: data.closedAt?.toDate ? data.closedAt.toDate() : null,
+          expirationDate: data.expirationDate?.toDate ? data.expirationDate.toDate() : data.expirationDate
+        };
+      });
     } catch (error) {
       console.error('Error loading paper trades:', error);
       return [];
@@ -696,8 +700,9 @@ export class FirebaseService {
         const data = tradeDoc.data();
         return {
           ...data,
-          timestamp: data.timestamp?.toDate() || new Date(),
-          closedAt: data.closedAt?.toDate()
+          timestamp: data.timestamp?.toDate ? data.timestamp.toDate() : new Date(),
+          closedAt: data.closedAt?.toDate ? data.closedAt.toDate() : null,
+          expirationDate: data.expirationDate?.toDate ? data.expirationDate.toDate() : data.expirationDate
         };
       }
       return null;
@@ -727,8 +732,12 @@ export class FirebaseService {
         const data = portfolioDoc.data();
         return {
           ...data,
-          createdAt: data.createdAt?.toDate() || new Date(),
-          updatedAt: data.updatedAt?.toDate() || new Date()
+          createdAt: data.createdAt?.toDate ? data.createdAt.toDate() : new Date(),
+          updatedAt: data.updatedAt?.toDate ? data.updatedAt.toDate() : new Date(),
+          positions: (data.positions || []).map((pos: any) => ({
+            ...pos,
+            expirationDate: pos.expirationDate?.toDate ? pos.expirationDate.toDate() : pos.expirationDate
+          }))
         };
       }
       return null;

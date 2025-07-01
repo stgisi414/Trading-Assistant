@@ -1,9 +1,10 @@
 
 import React, { useState, useEffect } from 'react';
-import { X, TrendingUp, TrendingDown, DollarSign, PieChart, BarChart3, Plus, Trash2, Eye, RefreshCw } from 'lucide-react';
+import { X, TrendingUp, TrendingDown, DollarSign, PieChart, BarChart3, Plus, Trash2, Eye, RefreshCw, Search } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
-import { PaperTrade, PaperTradingPortfolio, OptionsChain } from '../types';
+import { PaperTrade, PaperTradingPortfolio, OptionsChain, FmpSearchResult } from '../types';
 import { paperTradingService } from '../services/paperTradingService';
+import { symbolValidationService } from '../services/symbolValidationService';
 
 interface PaperTradingModalProps {
   isOpen: boolean;
@@ -35,6 +36,13 @@ export const PaperTradingModal: React.FC<PaperTradingModalProps> = ({ isOpen, on
   const [availableStrikes, setAvailableStrikes] = useState<number[]>([]);
   const [availableExpirations, setAvailableExpirations] = useState<Date[]>([]);
   const [showPortfolioSummary, setShowPortfolioSummary] = useState(false);
+  
+  // Symbol search and validation
+  const [symbolQuery, setSymbolQuery] = useState('');
+  const [symbolSuggestions, setSymbolSuggestions] = useState<FmpSearchResult[]>([]);
+  const [selectedSymbol, setSelectedSymbol] = useState<FmpSearchResult | null>(null);
+  const [isSymbolValid, setIsSymbolValid] = useState(false);
+  const [symbolValidationLoading, setSymbolValidationLoading] = useState(false);
 
   useEffect(() => {
     if (isOpen && user) {
@@ -57,6 +65,61 @@ export const PaperTradingModal: React.FC<PaperTradingModalProps> = ({ isOpen, on
       console.error('Error loading portfolio data:', error);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const searchSymbols = async (query: string) => {
+    if (!query || query.trim().length < 1) {
+      setSymbolSuggestions([]);
+      return;
+    }
+
+    try {
+      const suggestions = await symbolValidationService.searchSymbols(query, 5);
+      setSymbolSuggestions(suggestions);
+    } catch (error) {
+      console.error('Error searching symbols:', error);
+      setSymbolSuggestions([]);
+    }
+  };
+
+  const validateSelectedSymbol = async (symbol: string) => {
+    if (!symbol) {
+      setIsSymbolValid(false);
+      setSelectedSymbol(null);
+      return;
+    }
+
+    setSymbolValidationLoading(true);
+    try {
+      const validSymbol = await symbolValidationService.validateSymbol(symbol);
+      if (validSymbol) {
+        setSelectedSymbol(validSymbol);
+        setIsSymbolValid(true);
+        setNewTrade(prev => ({ ...prev, symbol: validSymbol.symbol }));
+      } else {
+        setSelectedSymbol(null);
+        setIsSymbolValid(false);
+      }
+    } catch (error) {
+      console.error('Error validating symbol:', error);
+      setSelectedSymbol(null);
+      setIsSymbolValid(false);
+    } finally {
+      setSymbolValidationLoading(false);
+    }
+  };
+
+  const handleSymbolSelect = (symbol: FmpSearchResult) => {
+    setSelectedSymbol(symbol);
+    setSymbolQuery(symbol.symbol);
+    setNewTrade(prev => ({ ...prev, symbol: symbol.symbol }));
+    setSymbolSuggestions([]);
+    setIsSymbolValid(true);
+    
+    // Load options chain if needed
+    if (newTrade.isOptions) {
+      loadOptionsChain(symbol.symbol);
     }
   };
 
@@ -84,8 +147,27 @@ export const PaperTradingModal: React.FC<PaperTradingModalProps> = ({ isOpen, on
     }
   };
 
+  // Debounced symbol search
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      if (symbolQuery) {
+        searchSymbols(symbolQuery);
+      }
+    }, 300);
+
+    return () => clearTimeout(timeoutId);
+  }, [symbolQuery]);
+
   const handlePlaceTrade = async () => {
-    if (!user || !newTrade.symbol || newTrade.quantity <= 0) return;
+    if (!user || !newTrade.symbol || newTrade.quantity <= 0) {
+      alert('Please enter a valid symbol and quantity');
+      return;
+    }
+
+    if (!isSymbolValid || !selectedSymbol) {
+      alert('Please select a valid symbol from the suggestions');
+      return;
+    }
     
     if (newTrade.isOptions && (!newTrade.strikePrice || !newTrade.expirationDate)) {
       alert('Please select strike price and expiration date for options trades');
@@ -127,6 +209,10 @@ export const PaperTradingModal: React.FC<PaperTradingModalProps> = ({ isOpen, on
       });
       setAvailableStrikes([]);
       setAvailableExpirations([]);
+      setSymbolQuery('');
+      setSymbolSuggestions([]);
+      setSelectedSymbol(null);
+      setIsSymbolValid(false);
       setShowNewTradeForm(false);
       await loadPortfolioData();
     } catch (error) {
@@ -468,23 +554,73 @@ export const PaperTradingModal: React.FC<PaperTradingModalProps> = ({ isOpen, on
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
+                  <div className="relative">
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                       Symbol
                     </label>
-                    <input
-                      type="text"
-                      value={newTrade.symbol}
-                      onChange={(e) => {
-                        const symbol = e.target.value.toUpperCase();
-                        setNewTrade({...newTrade, symbol});
-                        if (newTrade.isOptions) {
-                          loadOptionsChain(symbol);
-                        }
-                      }}
-                      placeholder="e.g., AAPL"
-                      className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                    />
+                    <div className="relative">
+                      <input
+                        type="text"
+                        value={symbolQuery}
+                        onChange={(e) => {
+                          const query = e.target.value.toUpperCase();
+                          setSymbolQuery(query);
+                          if (query !== selectedSymbol?.symbol) {
+                            setIsSymbolValid(false);
+                            setSelectedSymbol(null);
+                          }
+                        }}
+                        onBlur={() => {
+                          if (symbolQuery && !selectedSymbol) {
+                            validateSelectedSymbol(symbolQuery);
+                          }
+                        }}
+                        placeholder="e.g., AAPL"
+                        className={`w-full px-3 py-2 pr-10 border rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white ${
+                          isSymbolValid 
+                            ? 'border-green-500 dark:border-green-400' 
+                            : selectedSymbol === null && symbolQuery 
+                              ? 'border-red-500 dark:border-red-400'
+                              : 'border-gray-300 dark:border-gray-600'
+                        }`}
+                      />
+                      <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                        {symbolValidationLoading ? (
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+                        ) : isSymbolValid ? (
+                          <div className="w-4 h-4 bg-green-500 rounded-full flex items-center justify-center">
+                            <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                            </svg>
+                          </div>
+                        ) : (
+                          <Search className="w-4 h-4 text-gray-400" />
+                        )}
+                      </div>
+                    </div>
+                    
+                    {/* Symbol suggestions dropdown */}
+                    {symbolSuggestions.length > 0 && (
+                      <div className="absolute z-10 w-full mt-1 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                        {symbolSuggestions.map((suggestion, index) => (
+                          <button
+                            key={index}
+                            onClick={() => handleSymbolSelect(suggestion)}
+                            className="w-full px-3 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-600 first:rounded-t-lg last:rounded-b-lg"
+                          >
+                            <div className="font-semibold text-gray-900 dark:text-white">{suggestion.symbol}</div>
+                            <div className="text-sm text-gray-500 dark:text-gray-400 truncate">{suggestion.name}</div>
+                            <div className="text-xs text-gray-400 dark:text-gray-500">{suggestion.exchangeShortName}</div>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                    
+                    {selectedSymbol && (
+                      <div className="mt-1 text-sm text-green-600 dark:text-green-400">
+                        ✓ {selectedSymbol.symbol} - {selectedSymbol.name}
+                      </div>
+                    )}
                   </div>
 
                   <div>
@@ -649,7 +785,7 @@ export const PaperTradingModal: React.FC<PaperTradingModalProps> = ({ isOpen, on
 
                 <button
                   onClick={handlePlaceTrade}
-                  disabled={isLoading || !newTrade.symbol || newTrade.quantity <= 0}
+                  disabled={isLoading || !isSymbolValid || !selectedSymbol || newTrade.quantity <= 0}
                   className="w-full py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isLoading ? 'Placing Order...' : 'Place Order'}

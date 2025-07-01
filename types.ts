@@ -125,6 +125,15 @@ export interface FmpSearchResult {
     name: string;
 }
 
+// Symbol search result from FMP API
+export interface FmpSearchResult {
+    symbol: string;
+    name: string;
+    currency: string;
+    stockExchange: string;
+    exchangeShortName: string;
+}
+
 // New type to hold all info for a single asset analysis
 export interface PatternDetails {
     patternType: 'HeadAndShouldersTop' | 'HeadAndShouldersBottom' | 'DoubleTop' | 'DoubleBottom';
