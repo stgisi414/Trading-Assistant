@@ -103,7 +103,7 @@ body.dark {
   background: var(--color-primary);
 }
 
-/* NEON GRID BACKGROUND - SUBTLE AND VISIBLE */
+/* NEON GRID BACKGROUND - CLEARLY VISIBLE */
 .neon-grid-background {
   position: fixed;
   top: 0;
@@ -113,20 +113,20 @@ body.dark {
   z-index: 1;
   pointer-events: none;
   background: 
-    linear-gradient(rgba(99, 102, 241, 0.15) 1px, transparent 1px) 0 0 / 40px 40px,
-    linear-gradient(90deg, rgba(99, 102, 241, 0.15) 1px, transparent 1px) 0 0 / 40px 40px;
+    linear-gradient(rgba(99, 102, 241, 0.4) 1px, transparent 1px) 0 0 / 40px 40px,
+    linear-gradient(90deg, rgba(99, 102, 241, 0.4) 1px, transparent 1px) 0 0 / 40px 40px;
   animation: neon-grid-pulse 4s ease-in-out infinite;
 }
 
 .dark .neon-grid-background {
   background: 
-    linear-gradient(rgba(129, 140, 248, 0.2) 1px, transparent 1px) 0 0 / 40px 40px,
-    linear-gradient(90deg, rgba(129, 140, 248, 0.2) 1px, transparent 1px) 0 0 / 40px 40px;
+    linear-gradient(rgba(129, 140, 248, 0.5) 1px, transparent 1px) 0 0 / 40px 40px,
+    linear-gradient(90deg, rgba(129, 140, 248, 0.5) 1px, transparent 1px) 0 0 / 40px 40px;
 }
 
 @keyframes neon-grid-pulse {
-  0%, 100% { opacity: 0.3; }
-  50% { opacity: 0.6; }
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; }
 }
 
 /* Base styles */
