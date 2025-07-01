@@ -103,6 +103,58 @@ body.dark {
   background: var(--color-primary);
 }
 
+/* Neon Grid Background */
+.neon-grid-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  opacity: 0.3;
+  background-image: 
+    linear-gradient(rgba(99, 102, 241, 0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(99, 102, 241, 0.1) 1px, transparent 1px);
+  background-size: 50px 50px;
+  animation: grid-move 20s linear infinite;
+}
+
+.dark .neon-grid-background {
+  opacity: 0.2;
+  background-image: 
+    linear-gradient(rgba(129, 140, 248, 0.2) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(129, 140, 248, 0.2) 1px, transparent 1px);
+}
+
+@keyframes grid-move {
+  0% { transform: translate(0, 0); }
+  100% { transform: translate(50px, 50px); }
+}
+
+/* Neon glow effect for grid intersections */
+.neon-grid-background::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    radial-gradient(circle at 25px 25px, rgba(99, 102, 241, 0.15) 1px, transparent 1px);
+  background-size: 50px 50px;
+  animation: grid-glow 8s ease-in-out infinite alternate;
+}
+
+.dark .neon-grid-background::before {
+  background-image: 
+    radial-gradient(circle at 25px 25px, rgba(129, 140, 248, 0.25) 1px, transparent 1px);
+}
+
+@keyframes grid-glow {
+  0% { opacity: 0.3; }
+  100% { opacity: 0.8; }
+}
+
 /* Base styles */
 html {
   color-scheme: light dark;
@@ -115,6 +167,7 @@ body {
   font-size: 14px;
   line-height: 1.5;
   transition: background-color 0.3s ease, color 0.3s ease;
+  position: relative;
 }
 
 /* Ensure all text elements use proper theme colors */

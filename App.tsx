@@ -182,14 +182,14 @@ function App() {
         // Add the current theme class to both html and body
         html.classList.add(theme);
         body.classList.add(theme);
-        
+
         // Also set the data attribute for additional CSS targeting
         html.setAttribute('data-theme', theme);
         body.setAttribute('data-theme', theme);
 
         // Update localStorage
         localStorage.setItem("theme", theme);
-        
+
         console.log(`Theme switched to: ${theme}`);
         console.log('HTML classes:', html.className);
         console.log('Body classes:', body.className);
