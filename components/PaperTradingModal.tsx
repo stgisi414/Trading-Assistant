@@ -90,7 +90,7 @@ export const PaperTradingModal: React.FC<PaperTradingModalProps> = ({
 
   const fetchMarketHours = async () => {
     const FMP_API_KEY = import.meta.env.VITE_FMP_API_KEY || process.env.FMP_API_KEY;
-    const exchange = portfolio?.positions[0]?.exchange || 'NYSE'; // Default to NYSE if no positions
+    const exchange = portfolio?.positions[0]?.exchange || 'NASDAQ'; // Default to NASDAQ
 
     if (!FMP_API_KEY) {
       console.warn("FMP API key not available. Using estimated market hours.");
@@ -114,23 +114,67 @@ export const PaperTradingModal: React.FC<PaperTradingModalProps> = ({
     }
 
     try {
-      const response = await fetch(`https://financialmodelingprep.com/api/v3/market-hours/${exchange}?apikey=${FMP_API_KEY}`);
+      const response = await fetch(`https://financialmodelingprep.com/api/v3/market-hours?exchange=${exchange}&apikey=${FMP_API_KEY}`);
       if (response.ok) {
         const data = await response.json();
         if (Array.isArray(data) && data.length > 0) {
           setMarketHours(data[0]);
         } else {
           // If API returns empty array, use fallback
-          fetchMarketHours();
+          console.warn(`No market hours data returned for ${exchange}, using fallback.`);
+          const now = new Date();
+          const estTime = new Date(now.toLocaleString('en-US', { timeZone: 'America/New_York' }));
+          const currentHour = estTime.getHours();
+          const marketOpen = 9;
+          const marketClose = 16;
+          const isWeekday = estTime.getDay() >= 1 && estTime.getDay() <= 5;
+
+          setMarketHours({
+            exchange: exchange,
+            name: `${exchange} (Estimated)`,
+            openingHour: "09:30 AM",
+            closingHour: "04:00 PM",
+            timezone: "America/New_York",
+            isMarketOpen: isWeekday && currentHour >= marketOpen && currentHour < marketClose
+          });
         }
       } else {
         // If API call fails, use fallback
-        console.warn(`Failed to fetch market hours for ${exchange}, using fallback.`);
-        fetchMarketHours();
+        console.warn(`Failed to fetch market hours for ${exchange}: ${response.status} ${response.statusText}`);
+        const now = new Date();
+        const estTime = new Date(now.toLocaleString('en-US', { timeZone: 'America/New_York' }));
+        const currentHour = estTime.getHours();
+        const marketOpen = 9;
+        const marketClose = 16;
+        const isWeekday = estTime.getDay() >= 1 && estTime.getDay() <= 5;
+
+        setMarketHours({
+          exchange: exchange,
+          name: `${exchange} (Estimated)`,
+          openingHour: "09:30 AM",
+          closingHour: "04:00 PM",
+          timezone: "America/New_York",
+          isMarketOpen: isWeekday && currentHour >= marketOpen && currentHour < marketClose
+        });
       }
     } catch (error) {
       console.error('Error fetching market hours:', error);
-      fetchMarketHours(); // Use fallback on any error
+      // Use fallback on any error
+      const now = new Date();
+      const estTime = new Date(now.toLocaleString('en-US', { timeZone: 'America/New_York' }));
+      const currentHour = estTime.getHours();
+      const marketOpen = 9;
+      const marketClose = 16;
+      const isWeekday = estTime.getDay() >= 1 && estTime.getDay() <= 5;
+
+      setMarketHours({
+        exchange: exchange,
+        name: `${exchange} (Estimated)`,
+        openingHour: "09:30 AM",
+        closingHour: "04:00 PM",
+        timezone: "America/New_York",
+        isMarketOpen: isWeekday && currentHour >= marketOpen && currentHour < marketClose
+      });
     }
   };
 
