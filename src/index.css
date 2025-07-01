@@ -103,7 +103,7 @@ body.dark {
   background: var(--color-primary);
 }
 
-/* Subtle neon grid background */
+/* Visible neon grid background */
 .neon-grid-background {
   position: fixed;
   top: 0;
@@ -112,26 +112,32 @@ body.dark {
   height: 100vh;
   z-index: -1;
   pointer-events: none;
-  opacity: 0.05;
+  opacity: 0.15;
   background: 
-    linear-gradient(rgba(99, 102, 241, 0.3) 1px, transparent 1px) 0 0 / 60px 60px,
-    linear-gradient(90deg, rgba(99, 102, 241, 0.3) 1px, transparent 1px) 0 0 / 60px 60px;
-  animation: subtle-grid-pulse 8s ease-in-out infinite;
+    linear-gradient(rgba(99, 102, 241, 0.6) 1px, transparent 1px) 0 0 / 50px 50px,
+    linear-gradient(90deg, rgba(99, 102, 241, 0.6) 1px, transparent 1px) 0 0 / 50px 50px,
+    radial-gradient(circle at 25px 25px, rgba(139, 92, 246, 0.4) 2px, transparent 2px) 0 0 / 50px 50px;
+  animation: neon-grid-pulse 6s ease-in-out infinite;
+  filter: drop-shadow(0 0 5px rgba(99, 102, 241, 0.3));
 }
 
 .dark .neon-grid-background {
-  opacity: 0.08;
+  opacity: 0.2;
   background: 
-    linear-gradient(rgba(129, 140, 248, 0.4) 1px, transparent 1px) 0 0 / 60px 60px,
-    linear-gradient(90deg, rgba(129, 140, 248, 0.4) 1px, transparent 1px) 0 0 / 60px 60px;
+    linear-gradient(rgba(129, 140, 248, 0.7) 1px, transparent 1px) 0 0 / 50px 50px,
+    linear-gradient(90deg, rgba(129, 140, 248, 0.7) 1px, transparent 1px) 0 0 / 50px 50px,
+    radial-gradient(circle at 25px 25px, rgba(168, 85, 247, 0.5) 2px, transparent 2px) 0 0 / 50px 50px;
+  filter: drop-shadow(0 0 8px rgba(129, 140, 248, 0.4));
 }
 
-@keyframes subtle-grid-pulse {
+@keyframes neon-grid-pulse {
   0%, 100% { 
-    opacity: 0.05;
+    opacity: 0.15;
+    filter: drop-shadow(0 0 5px rgba(99, 102, 241, 0.3));
   }
   50% { 
-    opacity: 0.08;
+    opacity: 0.25;
+    filter: drop-shadow(0 0 10px rgba(99, 102, 241, 0.5));
   }
 }
 
