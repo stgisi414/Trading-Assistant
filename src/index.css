@@ -103,41 +103,41 @@ body.dark {
   background: var(--color-primary);
 }
 
-/* Visible neon grid background */
+/* Properly layered neon grid background */
 .neon-grid-background {
   position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
   height: 100vh;
-  z-index: -1;
+  z-index: 0;
   pointer-events: none;
-  opacity: 0.15;
+  opacity: 0.3;
   background: 
-    linear-gradient(rgba(99, 102, 241, 0.6) 1px, transparent 1px) 0 0 / 50px 50px,
-    linear-gradient(90deg, rgba(99, 102, 241, 0.6) 1px, transparent 1px) 0 0 / 50px 50px,
-    radial-gradient(circle at 25px 25px, rgba(139, 92, 246, 0.4) 2px, transparent 2px) 0 0 / 50px 50px;
-  animation: neon-grid-pulse 6s ease-in-out infinite;
-  filter: drop-shadow(0 0 5px rgba(99, 102, 241, 0.3));
+    linear-gradient(rgba(99, 102, 241, 0.8) 1px, transparent 1px) 0 0 / 40px 40px,
+    linear-gradient(90deg, rgba(99, 102, 241, 0.8) 1px, transparent 1px) 0 0 / 40px 40px,
+    radial-gradient(circle at 20px 20px, rgba(139, 92, 246, 0.6) 2px, transparent 2px) 0 0 / 40px 40px;
+  animation: neon-grid-pulse 4s ease-in-out infinite;
+  filter: drop-shadow(0 0 8px rgba(99, 102, 241, 0.5)) blur(0.5px);
 }
 
 .dark .neon-grid-background {
-  opacity: 0.2;
+  opacity: 0.4;
   background: 
-    linear-gradient(rgba(129, 140, 248, 0.7) 1px, transparent 1px) 0 0 / 50px 50px,
-    linear-gradient(90deg, rgba(129, 140, 248, 0.7) 1px, transparent 1px) 0 0 / 50px 50px,
-    radial-gradient(circle at 25px 25px, rgba(168, 85, 247, 0.5) 2px, transparent 2px) 0 0 / 50px 50px;
-  filter: drop-shadow(0 0 8px rgba(129, 140, 248, 0.4));
+    linear-gradient(rgba(129, 140, 248, 0.9) 1px, transparent 1px) 0 0 / 40px 40px,
+    linear-gradient(90deg, rgba(129, 140, 248, 0.9) 1px, transparent 1px) 0 0 / 40px 40px,
+    radial-gradient(circle at 20px 20px, rgba(168, 85, 247, 0.7) 2px, transparent 2px) 0 0 / 40px 40px;
+  filter: drop-shadow(0 0 12px rgba(129, 140, 248, 0.6)) blur(0.5px);
 }
 
 @keyframes neon-grid-pulse {
   0%, 100% { 
-    opacity: 0.15;
-    filter: drop-shadow(0 0 5px rgba(99, 102, 241, 0.3));
+    opacity: 0.3;
+    filter: drop-shadow(0 0 8px rgba(99, 102, 241, 0.5)) blur(0.5px);
   }
   50% { 
-    opacity: 0.25;
-    filter: drop-shadow(0 0 10px rgba(99, 102, 241, 0.5));
+    opacity: 0.5;
+    filter: drop-shadow(0 0 15px rgba(99, 102, 241, 0.8)) blur(0.5px);
   }
 }
 
@@ -154,6 +154,24 @@ body {
   line-height: 1.5;
   transition: background-color 0.3s ease, color 0.3s ease;
   position: relative;
+}
+
+/* Ensure all main content is layered above the neon grid */
+#root {
+  position: relative;
+  z-index: 1;
+}
+
+/* Make sure all major UI components are properly layered */
+.card, 
+.modal-backdrop,
+.toast,
+header,
+nav,
+main,
+footer {
+  position: relative;
+  z-index: 2;
 }
 
 /* Ensure all text elements use proper theme colors */
