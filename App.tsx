@@ -873,6 +873,37 @@ function App() {
     // Authentication using useAuth hook
     const { user, signIn, signOut, signUp, resetPassword, verifyEmail, handleSyncData, handleDeleteAnalysis, loadAnalysisHistory } = useAuth();
 
+    const { user, saveDataToCloud, loadDataFromCloud } = useAuth();
+      const [cloudSyncStatus, setCloudSyncStatus] = useState('idle'); // 'idle', 'syncing', 'success', 'error'
+
+      const handleSyncData = useCallback(async () => {
+        if (!user) {
+          console.warn("User not signed in. Cannot sync data.");
+          // Optionally, show a toast notification to the user to sign in.
+          return;
+        }
+
+        setCloudSyncStatus('syncing');
+        try {
+          // Get the current state of user inputs to save to the cloud.
+          const currentUserData = getCurrentUserData(); // You already have this function
+          await saveDataToCloud(currentUserData);
+
+          // Optionally, load the latest data from the cloud after saving.
+          const cloudData = await loadDataFromCloud();
+          if (cloudData) {
+            applyUserData(cloudData); // You also have this function
+          }
+
+          setCloudSyncStatus('success');
+          setTimeout(() => setCloudSyncStatus('idle'), 3000); // Reset status after 3s
+        } catch (error) {
+          console.error('Data sync failed:', error);
+          setCloudSyncStatus('error');
+          setTimeout(() => setCloudSyncStatus('idle'), 3000);
+        }
+      }, [user, saveDataToCloud, loadDataFromCloud, getCurrentUserData, applyUserData]);
+
     return (
         <>
             <LoadingOverlay isVisible={isInitialLoading} />
@@ -909,6 +940,10 @@ function App() {
                     userProfile={
                                 <UserProfile
                                     onSyncData={handleSyncData}
+                                    onViewHistory={handleViewHistory}
+                                    onViewChatrooms={handleViewChatrooms}
+                                    onOpenPaperTrading={handleOpenPaperTrading}
+                                    onSyncData={handleSyncData} // This should now work
                                     onViewHistory={handleViewHistory}
                                     onViewChatrooms={handleViewChatrooms}
                                     onOpenPaperTrading={handleOpenPaperTrading}
