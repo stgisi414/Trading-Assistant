@@ -9,6 +9,7 @@ import { PatternAnalysisSection } from './PatternAnalysisSection';
 import { OptionsAnalysisSection } from './OptionsAnalysisSection.tsx';
 import { OrderAnalysisSection } from './OrderAnalysisSection.tsx';
 import { OpenInterestSection } from './OpenInterestSection.tsx';
+import { TenKAnalysisSection } from './TenKAnalysisSection.tsx';
 import { CompanyProfileComponent } from './CompanyProfile.tsx';
 
 interface AssetResultCardProps {
@@ -58,6 +59,9 @@ export const AssetResultCard: React.FC<AssetResultCardProps> = ({ analysis, them
                     )}
                     {analysisResult.openInterestAnalysis && (
                         <OpenInterestSection openInterestAnalysis={analysisResult.openInterestAnalysis} />
+                    )}
+                    {analysisResult.tenKAnalysis && (
+                        <TenKAnalysisSection tenKAnalysis={analysisResult.tenKAnalysis} />
                     )}
                 </div>
             );

@@ -37,6 +37,8 @@ interface InputSectionProps {
     setIncludePutOptions: (include: boolean) => void;
     includeOrderAnalysis: boolean;
     setIncludeOrderAnalysis: (include: boolean) => void;
+    include10KAnalysis: boolean;
+    setInclude10KAnalysis: (include: boolean) => void;
     onAnalyze: () => void;
     isLoading: boolean;
     onProfitMaxClick: () => void;
@@ -55,6 +57,7 @@ export const InputSection: React.FC<InputSectionProps> = ({
     includeCallOptions, setIncludeCallOptions,
     includePutOptions, setIncludePutOptions,
     includeOrderAnalysis, setIncludeOrderAnalysis,
+    include10KAnalysis, setInclude10KAnalysis,
     onAnalyze, isLoading, onProfitMaxClick, onClearResults, hasResults
 }) => {
     const handleIndicatorChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -268,7 +271,7 @@ export const InputSection: React.FC<InputSectionProps> = ({
                                         </div>
                                     )}
                                 </div>
-                                <div>
+                                <div className="space-y-3">
                                     <div className="flex items-center">
                                         <input
                                             type="checkbox"
@@ -280,6 +283,19 @@ export const InputSection: React.FC<InputSectionProps> = ({
                                         />
                                         <label htmlFor="includeOrderAnalysis" className="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300">
                                             Include Stop & Limit Order Analysis
+                                        </label>
+                                    </div>
+                                    <div className="flex items-center">
+                                        <input
+                                            type="checkbox"
+                                            id="include10KAnalysis"
+                                            checked={include10KAnalysis}
+                                            onChange={(e) => setInclude10KAnalysis(e.target.checked)}
+                                            className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                                            disabled={isLoading}
+                                        />
+                                        <label htmlFor="include10KAnalysis" className="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                                            Include 10-K Fundamental Analysis
                                         </label>
                                     </div>
                                 </div>

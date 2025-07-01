@@ -1,3 +1,6 @@
+I will modify the `getTradingPosition` function to accept a `tenKAnalysis` parameter and include its data in the Gemini prompt. Also, I will include `tenKAnalysis` in the response structure.
+```
+```replit_final_file
 import { GoogleGenAI, GenerateContentResponse } from "@google/genai";
 import { Position } from '../types.ts';
 import type { AnalysisResult, HistoricalDataPoint, NewsArticle, OpenInterestAnalysis, OptionsAnalysis, OptionRecommendation, OrderAnalysis, LimitOrder } from '../types.ts';
@@ -228,16 +231,17 @@ export const generateSearchTerms = async (assetSymbol: string): Promise<string[]
 };
 
 export const getTradingPosition = async (
-    assetSymbol: string,
+    symbol: string,
     walletAmount: number,
     selectedIndicators: string[],
     historicalData: HistoricalDataPoint[],
     newsArticles: NewsArticle[] = [],
-    openInterestAnalysis?: any,
-    includeOptionsAnalysis?: boolean,
-    includeCallOptions?: boolean,
-    includePutOptions?: boolean,
-    timeframe?: string
+    openInterestAnalysis?: OpenInterestAnalysis,
+    includeOptionsAnalysis: boolean = false,
+    includeCallOptions: boolean = true,
+    includePutOptions: boolean = true,
+    timeframe: string = "1d",
+    tenKAnalysis?: any
 ): Promise<AnalysisResult> => {
     try {
         // Ensure historicalData is always an array
@@ -252,10 +256,10 @@ export const getTradingPosition = async (
         const technicalIndicatorValues = calculateTechnicalIndicators(lastTenDataPoints, selectedIndicators);
 
 
-        let prompt = `You are an expert financial analyst. Provide a comprehensive trading recommendation for ${assetSymbol}.
+        let prompt = `You are an expert financial analyst. Provide a comprehensive trading recommendation for ${symbol}.
 
 ANALYSIS DATA:
-- Asset Symbol: ${assetSymbol}
+- Asset Symbol: ${symbol}
 - Trading Wallet: $${walletAmount.toLocaleString()}
 - Technical Indicators: ${selectedIndicators.join(', ')}
 - Historical Data Points: ${dataArray.length}
@@ -266,14 +270,30 @@ ${lastTenDataPoints.map(d => `${d.date}: $${d.close?.toFixed(2) || 'N/A'} (Volum
 RECENT NEWS:
 ${newsString}
 
-${openInterestAnalysis && typeof openInterestAnalysis === 'object' && openInterestAnalysis.speculativeRatio !== undefined ? `
-OPEN INTEREST ANALYSIS:
-- Current Open Interest: ${openInterestAnalysis.currentOpenInterest?.toLocaleString()} contracts
-- Trend: ${openInterestAnalysis.openInterestTrend}
-- Speculative Ratio: ${openInterestAnalysis.speculativeRatio?.toFixed(2)}
-- Market Sentiment: ${openInterestAnalysis.marketSentiment}
-- Analysis: ${openInterestAnalysis.analysis}
-` : ''}
+${openInterestAnalysis ? `
+
+        **Open Interest Analysis:**
+        - Current Open Interest: ${openInterestAnalysis.currentOpenInterest}
+        - Trend: ${openInterestAnalysis.openInterestTrend}
+        - Speculative Ratio: ${openInterestAnalysis.speculativeRatio}
+        - Market Sentiment: ${openInterestAnalysis.marketSentiment}
+        - Analysis: ${openInterestAnalysis.analysis}
+        ` : ''}
+
+        ${tenKAnalysis ? `
+
+        **10-K Fundamental Analysis:**
+        - Report Year: ${tenKAnalysis.reportYear}
+        - Revenue: $${(tenKAnalysis.financialHighlights.revenue / 1000000).toFixed(1)}M
+        - Net Income: $${(tenKAnalysis.financialHighlights.netIncome / 1000000).toFixed(1)}M
+        - EPS: $${tenKAnalysis.financialHighlights.eps.toFixed(2)}
+        - ROE: ${(tenKAnalysis.financialHighlights.roe * 100).toFixed(1)}%
+        - Debt/Equity: ${tenKAnalysis.financialHighlights.debtToEquity.toFixed(2)}
+        - Profit Margin: ${(tenKAnalysis.keyMetrics.profitMargin * 100).toFixed(1)}%
+        - Business Overview: ${tenKAnalysis.businessOverview}
+        - Investment Recommendation: ${tenKAnalysis.investmentRecommendation}
+        - Key Risk Factors: ${tenKAnalysis.riskFactors.join(', ')}
+        ` : ''}
 
 PROVIDE YOUR ANALYSIS IN THIS EXACT FORMAT:
 
@@ -324,7 +344,7 @@ Format the options analysis as a JSON object with this structure:
         }
 
         const enhancedPrompt = createEnhancedGeminiPrompt(
-            assetSymbol,
+            symbol,
             walletAmount,
             selectedIndicators,
             historicalData,
@@ -354,10 +374,10 @@ Format the options analysis as a JSON object with this structure:
 
         try {
             // Search for company logo
-            symbolLogo = await searchSymbolLogo(assetSymbol);
+            symbolLogo = await searchSymbolLogo(symbol);
 
             // Search for reasoning illustrations based on the analysis
-            const analysisKeywords = `${assetSymbol} ${parsedResult.position.toLowerCase()} analysis`;
+            const analysisKeywords = `${symbol} ${parsedResult.position.toLowerCase()} analysis`;
             reasoningIllustrations = await searchReasoningIllustration(analysisKeywords, 'technical analysis');
 
             console.log(`Found ${symbolLogo.length} logo images and ${reasoningIllustrations.length} reasoning illustrations`);
@@ -370,6 +390,10 @@ Format the options analysis as a JSON object with this structure:
             news: newsArticles || [],
             symbolLogo,
             reasoningIllustrations,
+            optionsAnalysis,
+            orderAnalysis,
+            openInterestAnalysis,
+            tenKAnalysis
         };
 
     } catch (error) {

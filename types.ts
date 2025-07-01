@@ -48,6 +48,31 @@ export interface AnalysisResult {
     optionsAnalysis?: OptionsAnalysis;
     orderAnalysis?: OrderAnalysis;
     openInterestAnalysis?: OpenInterestAnalysis;
+    tenKAnalysis?: TenKAnalysis;
+}
+
+export interface TenKAnalysis {
+    symbol: string;
+    reportYear: string;
+    businessOverview: string;
+    riskFactors: string[];
+    financialHighlights: {
+        revenue: number;
+        netIncome: number;
+        eps: number;
+        roe: number;
+        debtToEquity: number;
+    };
+    managementDiscussion: string;
+    competitivePosition: string;
+    growthStrategy: string;
+    keyMetrics: {
+        profitMargin: number;
+        assetTurnover: number;
+        leverageRatio: number;
+    };
+    investmentRecommendation: string;
+    analysisDate: string;
 }
 
 export interface OpenInterestAnalysis {

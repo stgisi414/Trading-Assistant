@@ -119,6 +119,10 @@ function App() {
         const saved = localStorage.getItem("tradingApp_includeOrderAnalysis");
         return saved ? JSON.parse(saved) : false;
     });
+    const [include10KAnalysis, setInclude10KAnalysis] = useState(() => {
+        const saved = localStorage.getItem("tradingApp_include10KAnalysis");
+        return saved ? JSON.parse(saved) : false;
+    });
     const [selectedMarketType, setSelectedMarketType] = useState<MarketType>(
         () => {
             const saved = localStorage.getItem("tradingApp_selectedMarketType");
@@ -260,6 +264,13 @@ function App() {
             JSON.stringify(includeOrderAnalysis),
         );
     }, [includeOrderAnalysis]);
+
+    useEffect(() => {
+        localStorage.setItem(
+            "tradingApp_include10KAnalysis",
+            JSON.stringify(include10KAnalysis),
+        );
+    }, [include10KAnalysis]);
 
     useEffect(() => {
         localStorage.setItem(
@@ -669,6 +680,28 @@ function App() {
                             );
                         }
 
+                        // Get 10-K analysis if enabled
+                        let tenKAnalysis = null;
+                        if (include10KAnalysis && selectedMarketType === MarketType.STOCKS) {
+                            try {
+                                const { analyze10KReport } = await import(
+                                    "./services/tenKAnalysisService.ts"
+                                );
+                                console.log(`Analyzing 10-K report for ${symbol.symbol}...`);
+                                tenKAnalysis = await analyze10KReport(symbol.symbol, companyProfile);
+                                if (tenKAnalysis) {
+                                    console.log(`10-K analysis completed for ${symbol.symbol}`);
+                                } else {
+                                    console.log(`No 10-K data available for ${symbol.symbol}`);
+                                }
+                            } catch (tenKError) {
+                                console.warn(
+                                    `Failed to analyze 10-K for ${symbol.symbol}:`,
+                                    tenKError,
+                                );
+                            }
+                        }
+
                         const result = await getTradingPosition(
                             symbol.symbol,
                             parseFloat(walletAmount),
@@ -680,6 +713,7 @@ function App() {
                             false, // includeCallOptions
                             false, // includePutOptions
                             selectedTimeframe,
+                            tenKAnalysis,
                         );
                         const patterns = await analyzeChartPatterns(
                             symbol.symbol,
@@ -1018,6 +1052,8 @@ function App() {
                                         setIncludeOrderAnalysis={
                                             setIncludeOrderAnalysis
                                         }
+                                        include10KAnalysis={include10KAnalysis}
+                                        setInclude10KAnalysis={setInclude10KAnalysis}
                                         onAnalyze={handleAnalyze}
                                         isLoading={isLoading}
                                         onProfitMaxClick={() => setIsProfitMaxModalOpen(true)}
