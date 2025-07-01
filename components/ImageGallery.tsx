@@ -21,10 +21,29 @@ export const ImageGallery: React.FC<ImageGalleryProps> = ({ images, title, class
 
     const validImages = images.filter(img => !imageErrors.has(img.url));
 
+    // Dynamic icon selection based on title
+    const getIconForTitle = (title: string): string => {
+        const lowerTitle = title.toLowerCase();
+        
+        if (lowerTitle.includes('logo') || lowerTitle.includes('company')) {
+            return 'business_center';
+        } else if (lowerTitle.includes('analysis') || lowerTitle.includes('illustration') || lowerTitle.includes('reasoning')) {
+            return 'image_search';
+        } else if (lowerTitle.includes('chart') || lowerTitle.includes('graph')) {
+            return 'analytics';
+        } else if (lowerTitle.includes('news') || lowerTitle.includes('article')) {
+            return 'newspaper';
+        } else if (lowerTitle.includes('technical') || lowerTitle.includes('indicator')) {
+            return 'trending_up';
+        } else {
+            return 'image_search'; // default fallback
+        }
+    };
+
     return (
         <div className={className}>
             <h3 className="text-lg font-semibold mb-3 flex items-center text-primary">
-                <span className="material-symbols-outlined mr-2">image_search</span>
+                <span className="material-symbols-outlined mr-2">{getIconForTitle(title)}</span>
                 {title}
             </h3>
 
