@@ -799,32 +799,39 @@ export const PaperTradingModal: React.FC<PaperTradingModalProps> = ({
                             : "text-red-700 dark:text-red-300"
                         }`}>
                           📅 Trading Hours: {(() => {
-                            // Convert market hours to user's local timezone
                             const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-                            const today = new Date();
                             
                             try {
-                              // Parse opening time
-                              const openingTime = new Date();
-                              openingTime.setHours(9, 30, 0, 0); // 9:30 AM EST
+                              // Create today's date for market hours in EST
+                              const today = new Date();
+                              const year = today.getFullYear();
+                              const month = today.getMonth();
+                              const date = today.getDate();
                               
-                              // Parse closing time  
-                              const closingTime = new Date();
-                              closingTime.setHours(16, 0, 0, 0); // 4:00 PM EST
+                              // Create times in EST timezone (using a known EST date)
+                              const openingEST = new Date(`${year}-${String(month + 1).padStart(2, '0')}-${String(date).padStart(2, '0')}T13:30:00.000Z`); // 9:30 AM EST = 13:30 UTC (standard time)
+                              const closingEST = new Date(`${year}-${String(month + 1).padStart(2, '0')}-${String(date).padStart(2, '0')}T21:00:00.000Z`); // 4:00 PM EST = 21:00 UTC (standard time)
                               
-                              // Convert to EST first, then to user's timezone
-                              const openingEST = new Date(openingTime.toLocaleString('en-US', { timeZone: 'America/New_York' }));
-                              const closingEST = new Date(closingTime.toLocaleString('en-US', { timeZone: 'America/New_York' }));
+                              // Adjust for daylight saving time (EST is UTC-5, EDT is UTC-4)
+                              const isDST = (date) => {
+                                const jan = new Date(date.getFullYear(), 0, 1).getTimezoneOffset();
+                                const jul = new Date(date.getFullYear(), 6, 1).getTimezoneOffset();
+                                return Math.max(jan, jul) !== date.getTimezoneOffset();
+                              };
+                              
+                              const estOffset = isDST(today) ? 4 : 5; // EDT is UTC-4, EST is UTC-5
+                              const adjustedOpening = new Date(`${year}-${String(month + 1).padStart(2, '0')}-${String(date).padStart(2, '0')}T${13 + estOffset}:30:00.000Z`);
+                              const adjustedClosing = new Date(`${year}-${String(month + 1).padStart(2, '0')}-${String(date).padStart(2, '0')}T${21 + estOffset}:00:00.000Z`);
                               
                               // Format in user's timezone
-                              const openingLocal = openingEST.toLocaleTimeString('en-US', {
+                              const openingFormatted = adjustedOpening.toLocaleTimeString('en-US', {
                                 timeZone: userTimeZone,
                                 hour: '2-digit',
                                 minute: '2-digit',
                                 hour12: true
                               });
                               
-                              const closingLocal = closingEST.toLocaleTimeString('en-US', {
+                              const closingFormatted = adjustedClosing.toLocaleTimeString('en-US', {
                                 timeZone: userTimeZone,
                                 hour: '2-digit',
                                 minute: '2-digit',
@@ -834,10 +841,9 @@ export const PaperTradingModal: React.FC<PaperTradingModalProps> = ({
                               if (userTimeZone === 'America/New_York') {
                                 return '9:30 AM - 4:00 PM (EST)';
                               } else {
-                                return `${openingLocal} - ${closingLocal} (Local Time)`;
+                                return `${openingFormatted} - ${closingFormatted} (Local Time)`;
                               }
                             } catch (error) {
-                              // Fallback to original display
                               return '9:30 AM - 4:00 PM (EST)';
                             }
                           })()}
@@ -1118,31 +1124,39 @@ export const PaperTradingModal: React.FC<PaperTradingModalProps> = ({
                             : "text-amber-700 dark:text-amber-300"
                         }`}>
                           📅 Trading Hours: {(() => {
-                            // Convert market hours to user's local timezone
                             const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
                             
                             try {
-                              // Parse opening time
-                              const openingTime = new Date();
-                              openingTime.setHours(9, 30, 0, 0); // 9:30 AM EST
+                              // Create today's date for market hours in EST
+                              const today = new Date();
+                              const year = today.getFullYear();
+                              const month = today.getMonth();
+                              const date = today.getDate();
                               
-                              // Parse closing time  
-                              const closingTime = new Date();
-                              closingTime.setHours(16, 0, 0, 0); // 4:00 PM EST
+                              // Create times in EST timezone (using a known EST date)
+                              const openingEST = new Date(`${year}-${String(month + 1).padStart(2, '0')}-${String(date).padStart(2, '0')}T13:30:00.000Z`); // 9:30 AM EST = 13:30 UTC (standard time)
+                              const closingEST = new Date(`${year}-${String(month + 1).padStart(2, '0')}-${String(date).padStart(2, '0')}T21:00:00.000Z`); // 4:00 PM EST = 21:00 UTC (standard time)
                               
-                              // Convert to EST first, then to user's timezone
-                              const openingEST = new Date(openingTime.toLocaleString('en-US', { timeZone: 'America/New_York' }));
-                              const closingEST = new Date(closingTime.toLocaleString('en-US', { timeZone: 'America/New_York' }));
+                              // Adjust for daylight saving time (EST is UTC-5, EDT is UTC-4)
+                              const isDST = (date) => {
+                                const jan = new Date(date.getFullYear(), 0, 1).getTimezoneOffset();
+                                const jul = new Date(date.getFullYear(), 6, 1).getTimezoneOffset();
+                                return Math.max(jan, jul) !== date.getTimezoneOffset();
+                              };
+                              
+                              const estOffset = isDST(today) ? 4 : 5; // EDT is UTC-4, EST is UTC-5
+                              const adjustedOpening = new Date(`${year}-${String(month + 1).padStart(2, '0')}-${String(date).padStart(2, '0')}T${13 + estOffset}:30:00.000Z`);
+                              const adjustedClosing = new Date(`${year}-${String(month + 1).padStart(2, '0')}-${String(date).padStart(2, '0')}T${21 + estOffset}:00:00.000Z`);
                               
                               // Format in user's timezone
-                              const openingLocal = openingEST.toLocaleTimeString('en-US', {
+                              const openingFormatted = adjustedOpening.toLocaleTimeString('en-US', {
                                 timeZone: userTimeZone,
                                 hour: '2-digit',
                                 minute: '2-digit',
                                 hour12: true
                               });
                               
-                              const closingLocal = closingEST.toLocaleTimeString('en-US', {
+                              const closingFormatted = adjustedClosing.toLocaleTimeString('en-US', {
                                 timeZone: userTimeZone,
                                 hour: '2-digit',
                                 minute: '2-digit',
@@ -1152,10 +1166,9 @@ export const PaperTradingModal: React.FC<PaperTradingModalProps> = ({
                               if (userTimeZone === 'America/New_York') {
                                 return '9:30 AM - 4:00 PM (EST)';
                               } else {
-                                return `${openingLocal} - ${closingLocal} (Local Time)`;
+                                return `${openingFormatted} - ${closingFormatted} (Local Time)`;
                               }
                             } catch (error) {
-                              // Fallback to original display
                               return '9:30 AM - 4:00 PM (EST)';
                             }
                           })()}
