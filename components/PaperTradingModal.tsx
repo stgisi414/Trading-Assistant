@@ -34,6 +34,7 @@ export const PaperTradingModal: React.FC<PaperTradingModalProps> = ({ isOpen, on
   });
   const [availableStrikes, setAvailableStrikes] = useState<number[]>([]);
   const [availableExpirations, setAvailableExpirations] = useState<Date[]>([]);
+  const [showPortfolioSummary, setShowPortfolioSummary] = useState(false);
 
   useEffect(() => {
     if (isOpen && user) {
@@ -190,57 +191,88 @@ export const PaperTradingModal: React.FC<PaperTradingModalProps> = ({ isOpen, on
 
         {/* Portfolio Summary */}
         {portfolio && (
-          <div className="p-6 border-b border-gray-200 dark:border-gray-700">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">Total Value</p>
-                    <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                      {formatCurrency(portfolio.totalValue)}
-                    </p>
+          <div className="border-b border-gray-200 dark:border-gray-700">
+            {/* Mobile Toggle Button */}
+            <div className="md:hidden p-4 border-b border-gray-200 dark:border-gray-700">
+              <button
+                onClick={() => setShowPortfolioSummary(!showPortfolioSummary)}
+                className="flex items-center justify-between w-full text-left"
+              >
+                <div className="flex items-center space-x-3">
+                  <div className="w-8 h-8 bg-gradient-to-r from-green-500 to-blue-600 rounded-lg flex items-center justify-center">
+                    <DollarSign className="w-5 h-5 text-white" />
                   </div>
-                  <DollarSign className="w-8 h-8 text-blue-600" />
-                </div>
-              </div>
-              
-              <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
-                <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">Cash Balance</p>
-                    <p className="text-xl font-bold text-gray-900 dark:text-white">
-                      {formatCurrency(portfolio.cashBalance)}
-                    </p>
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Portfolio Summary</h3>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">{formatCurrency(portfolio.totalValue)}</p>
                   </div>
-                  <PieChart className="w-8 h-8 text-green-600" />
                 </div>
-              </div>
+                <div className="flex items-center space-x-2">
+                  <span className={`text-sm font-medium ${totalPnL >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                    {formatPercentage(totalPnLPercent)}
+                  </span>
+                  <div className={`transition-transform duration-200 ${showPortfolioSummary ? 'rotate-180' : ''}`}>
+                    <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </div>
+                </div>
+              </button>
+            </div>
 
-              <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">Total P&L</p>
-                    <p className={`text-xl font-bold ${totalPnL >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                      {formatCurrency(totalPnL)}
-                    </p>
+            {/* Portfolio Details */}
+            <div className={`p-6 ${showPortfolioSummary ? 'block' : 'hidden md:block'}`}>
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">Total Value</p>
+                      <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                        {formatCurrency(portfolio.totalValue)}
+                      </p>
+                    </div>
+                    <DollarSign className="w-8 h-8 text-blue-600" />
                   </div>
-                  {totalPnL >= 0 ? (
-                    <TrendingUp className="w-8 h-8 text-green-600" />
-                  ) : (
-                    <TrendingDown className="w-8 h-8 text-red-600" />
-                  )}
                 </div>
-              </div>
-
-              <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">Return %</p>
-                    <p className={`text-xl font-bold ${totalPnLPercent >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                      {formatPercentage(totalPnLPercent)}
-                    </p>
+                
+                <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">Cash Balance</p>
+                      <p className="text-xl font-bold text-gray-900 dark:text-white">
+                        {formatCurrency(portfolio.cashBalance)}
+                      </p>
+                    </div>
+                    <PieChart className="w-8 h-8 text-green-600" />
                   </div>
-                  <BarChart3 className="w-8 h-8 text-purple-600" />
+                </div>
+
+                <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">Total P&L</p>
+                      <p className={`text-xl font-bold ${totalPnL >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                        {formatCurrency(totalPnL)}
+                      </p>
+                    </div>
+                    {totalPnL >= 0 ? (
+                      <TrendingUp className="w-8 h-8 text-green-600" />
+                    ) : (
+                      <TrendingDown className="w-8 h-8 text-red-600" />
+                    )}
+                  </div>
+                </div>
+
+                <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">Return %</p>
+                      <p className={`text-xl font-bold ${totalPnLPercent >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                        {formatPercentage(totalPnLPercent)}
+                      </p>
+                    </div>
+                    <BarChart3 className="w-8 h-8 text-purple-600" />
+                  </div>
                 </div>
               </div>
             </div>
@@ -248,26 +280,34 @@ export const PaperTradingModal: React.FC<PaperTradingModalProps> = ({ isOpen, on
         )}
 
         {/* Navigation Tabs */}
-        <div className="flex border-b border-gray-200 dark:border-gray-700">
-          {[
-            { id: 'dashboard', label: 'Dashboard', icon: PieChart },
-            { id: 'positions', label: 'Active Positions', icon: TrendingUp },
-            { id: 'orders', label: 'Place Order', icon: Plus },
-            { id: 'history', label: 'Trade History', icon: BarChart3 }
-          ].map(tab => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id as any)}
-              className={`flex items-center space-x-2 px-6 py-4 font-medium transition-colors ${
-                activeTab === tab.id
-                  ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50 dark:bg-blue-900/20'
-                  : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
-              }`}
-            >
-              <tab.icon className="w-5 h-5" />
-              <span>{tab.label}</span>
-            </button>
-          ))}
+        <div className="border-b border-gray-200 dark:border-gray-700 overflow-x-auto">
+          <div className="flex min-w-max">
+            {[
+              { id: 'dashboard', label: 'Dashboard', icon: PieChart },
+              { id: 'positions', label: 'Active Positions', icon: TrendingUp },
+              { id: 'orders', label: 'Place Order', icon: Plus },
+              { id: 'history', label: 'Trade History', icon: BarChart3 }
+            ].map(tab => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id as any)}
+                className={`flex items-center space-x-2 px-4 md:px-6 py-4 font-medium transition-colors whitespace-nowrap ${
+                  activeTab === tab.id
+                    ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50 dark:bg-blue-900/20'
+                    : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
+                }`}
+              >
+                <tab.icon className="w-5 h-5" />
+                <span className="hidden sm:inline">{tab.label}</span>
+                <span className="sm:hidden">
+                  {tab.id === 'dashboard' && 'Home'}
+                  {tab.id === 'positions' && 'Positions'}
+                  {tab.id === 'orders' && 'Order'}
+                  {tab.id === 'history' && 'History'}
+                </span>
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Content Area */}
