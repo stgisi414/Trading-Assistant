@@ -1,0 +1,117 @@
+🟢 Market open time object: Tue Jul 01 2025 08:30:00 GMT-0500 (Central Daylight Time)
+PaperTradingModal.tsx:930 🔴 Market close time object: Tue Jul 01 2025 15:00:00 GMT-0500 (Central Daylight Time)
+PaperTradingModal.tsx:940 🕐 Formatted time for America/Chicago: 8:30 AM
+PaperTradingModal.tsx:940 🕐 Formatted time for America/Chicago: 3:00 PM
+PaperTradingModal.tsx:948 ✅ Final result: 8:30 AM - 3:00 PM (Local)
+PaperTradingModal.tsx:949 🕐 === TRADING HOURS CONVERSION DEBUG END ===
+PaperTradingModal.tsx:875 🕐 === TRADING HOURS CONVERSION DEBUG START ===
+PaperTradingModal.tsx:877 🌍 User timezone: America/Chicago
+PaperTradingModal.tsx:886 🌎 User is NOT in Eastern Time, converting...
+PaperTradingModal.tsx:890 📅 Current date/time: Tue Jul 01 2025 02:50:55 GMT-0500 (Central Daylight Time)
+PaperTradingModal.tsx:904 🗽 Creating ET time 9:30 on date 2025-07-01
+PaperTradingModal.tsx:908 ⏰ Time string before timezone: 2025-07-01T09:30:00
+PaperTradingModal.tsx:917 🕰️ ET offset from UTC: 0 hours
+PaperTradingModal.tsx:921 🕐 Full time string: 2025-07-01T09:30:00-04:00
+PaperTradingModal.tsx:904 🗽 Creating ET time 16:00 on date 2025-07-01
+PaperTradingModal.tsx:908 ⏰ Time string before timezone: 2025-07-01T16:00:00
+PaperTradingModal.tsx:917 🕰️ ET offset from UTC: 0 hours
+PaperTradingModal.tsx:921 🕐 Full time string: 2025-07-01T16:00:00-04:00
+PaperTradingModal.tsx:929 🟢 Market open time object: Tue Jul 01 2025 08:30:00 GMT-0500 (Central Daylight Time)
+PaperTradingModal.tsx:930 🔴 Market close time object: Tue Jul 01 2025 15:00:00 GMT-0500 (Central Daylight Time)
+PaperTradingModal.tsx:940 🕐 Formatted time for America/Chicago: 8:30 AM
+PaperTradingModal.tsx:940 🕐 Formatted time for America/Chicago: 3:00 PM
+PaperTradingModal.tsx:948 ✅ Final result: 8:30 AM - 3:00 PM (Local)
+PaperTradingModal.tsx:949 🕐 === TRADING HOURS CONVERSION DEBUG END ===
+PaperTradingModal.tsx:875 🕐 === TRADING HOURS CONVERSION DEBUG START ===
+PaperTradingModal.tsx:877 🌍 User timezone: America/Chicago
+PaperTradingModal.tsx:886 🌎 User is NOT in Eastern Time, converting...
+PaperTradingModal.tsx:890 📅 Current date/time: Tue Jul 01 2025 02:50:55 GMT-0500 (Central Daylight Time)
+PaperTradingModal.tsx:904 🗽 Creating ET time 9:30 on date 2025-07-01
+PaperTradingModal.tsx:908 ⏰ Time string before timezone: 2025-07-01T09:30:00
+PaperTradingModal.tsx:917 🕰️ ET offset from UTC: 0 hours
+PaperTradingModal.tsx:921 🕐 Full time string: 2025-07-01T09:30:00-04:00
+PaperTradingModal.tsx:904 🗽 Creating ET time 16:00 on date 2025-07-01
+PaperTradingModal.tsx:908 ⏰ Time string before timezone: 2025-07-01T16:00:00
+PaperTradingModal.tsx:917 🕰️ ET offset from UTC: 0 hours
+PaperTradingModal.tsx:921 🕐 Full time string: 2025-07-01T16:00:00-04:00
+PaperTradingModal.tsx:929 🟢 Market open time object: Tue Jul 01 2025 08:30:00 GMT-0500 (Central Daylight Time)
+PaperTradingModal.tsx:930 🔴 Market close time object: Tue Jul 01 2025 15:00:00 GMT-0500 (Central Daylight Time)
+PaperTradingModal.tsx:940 🕐 Formatted time for America/Chicago: 8:30 AM
+PaperTradingModal.tsx:940 🕐 Formatted time for America/Chicago: 3:00 PM
+PaperTradingModal.tsx:948 ✅ Final result: 8:30 AM - 3:00 PM (Local)
+PaperTradingModal.tsx:949 🕐 === TRADING HOURS CONVERSION DEBUG END ===
+PaperTradingModal.tsx:875 🕐 === TRADING HOURS CONVERSION DEBUG START ===
+PaperTradingModal.tsx:877 🌍 User timezone: America/Chicago
+PaperTradingModal.tsx:886 🌎 User is NOT in Eastern Time, converting...
+PaperTradingModal.tsx:890 📅 Current date/time: Tue Jul 01 2025 02:50:55 GMT-0500 (Central Daylight Time)
+PaperTradingModal.tsx:904 🗽 Creating ET time 9:30 on date 2025-07-01
+PaperTradingModal.tsx:908 ⏰ Time string before timezone: 2025-07-01T09:30:00
+PaperTradingModal.tsx:917 🕰️ ET offset from UTC: 0 hours
+PaperTradingModal.tsx:921 🕐 Full time string: 2025-07-01T09:30:00-04:00
+PaperTradingModal.tsx:904 🗽 Creating ET time 16:00 on date 2025-07-01
+PaperTradingModal.tsx:908 ⏰ Time string before timezone: 2025-07-01T16:00:00
+PaperTradingModal.tsx:917 🕰️ ET offset from UTC: 0 hours
+PaperTradingModal.tsx:921 🕐 Full time string: 2025-07-01T16:00:00-04:00
+PaperTradingModal.tsx:929 🟢 Market open time object: Tue Jul 01 2025 08:30:00 GMT-0500 (Central Daylight Time)
+PaperTradingModal.tsx:930 🔴 Market close time object: Tue Jul 01 2025 15:00:00 GMT-0500 (Central Daylight Time)
+PaperTradingModal.tsx:940 🕐 Formatted time for America/Chicago: 8:30 AM
+PaperTradingModal.tsx:940 🕐 Formatted time for America/Chicago: 3:00 PM
+PaperTradingModal.tsx:948 ✅ Final result: 8:30 AM - 3:00 PM (Local)
+PaperTradingModal.tsx:949 🕐 === TRADING HOURS CONVERSION DEBUG END ===
+PaperTradingModal.tsx:875 🕐 === TRADING HOURS CONVERSION DEBUG START ===
+PaperTradingModal.tsx:877 🌍 User timezone: America/Chicago
+PaperTradingModal.tsx:886 🌎 User is NOT in Eastern Time, converting...
+PaperTradingModal.tsx:890 📅 Current date/time: Tue Jul 01 2025 02:50:55 GMT-0500 (Central Daylight Time)
+PaperTradingModal.tsx:904 🗽 Creating ET time 9:30 on date 2025-07-01
+PaperTradingModal.tsx:908 ⏰ Time string before timezone: 2025-07-01T09:30:00
+PaperTradingModal.tsx:917 🕰️ ET offset from UTC: 0 hours
+PaperTradingModal.tsx:921 🕐 Full time string: 2025-07-01T09:30:00-04:00
+PaperTradingModal.tsx:904 🗽 Creating ET time 16:00 on date 2025-07-01
+PaperTradingModal.tsx:908 ⏰ Time string before timezone: 2025-07-01T16:00:00
+PaperTradingModal.tsx:917 🕰️ ET offset from UTC: 0 hours
+PaperTradingModal.tsx:921 🕐 Full time string: 2025-07-01T16:00:00-04:00
+PaperTradingModal.tsx:929 🟢 Market open time object: Tue Jul 01 2025 08:30:00 GMT-0500 (Central Daylight Time)
+PaperTradingModal.tsx:930 🔴 Market close time object: Tue Jul 01 2025 15:00:00 GMT-0500 (Central Daylight Time)
+PaperTradingModal.tsx:940 🕐 Formatted time for America/Chicago: 8:30 AM
+PaperTradingModal.tsx:940 🕐 Formatted time for America/Chicago: 3:00 PM
+PaperTradingModal.tsx:948 ✅ Final result: 8:30 AM - 3:00 PM (Local)
+PaperTradingModal.tsx:949 🕐 === TRADING HOURS CONVERSION DEBUG END ===
+PaperTradingModal.tsx:875 🕐 === TRADING HOURS CONVERSION DEBUG START ===
+PaperTradingModal.tsx:877 🌍 User timezone: America/Chicago
+PaperTradingModal.tsx:886 🌎 User is NOT in Eastern Time, converting...
+PaperTradingModal.tsx:890 📅 Current date/time: Tue Jul 01 2025 02:50:56 GMT-0500 (Central Daylight Time)
+PaperTradingModal.tsx:904 🗽 Creating ET time 9:30 on date 2025-07-01
+PaperTradingModal.tsx:908 ⏰ Time string before timezone: 2025-07-01T09:30:00
+PaperTradingModal.tsx:917 🕰️ ET offset from UTC: 0 hours
+PaperTradingModal.tsx:921 🕐 Full time string: 2025-07-01T09:30:00-04:00
+PaperTradingModal.tsx:904 🗽 Creating ET time 16:00 on date 2025-07-01
+PaperTradingModal.tsx:908 ⏰ Time string before timezone: 2025-07-01T16:00:00
+PaperTradingModal.tsx:917 🕰️ ET offset from UTC: 0 hours
+PaperTradingModal.tsx:921 🕐 Full time string: 2025-07-01T16:00:00-04:00
+PaperTradingModal.tsx:929 🟢 Market open time object: Tue Jul 01 2025 08:30:00 GMT-0500 (Central Daylight Time)
+PaperTradingModal.tsx:930 🔴 Market close time object: Tue Jul 01 2025 15:00:00 GMT-0500 (Central Daylight Time)
+PaperTradingModal.tsx:940 🕐 Formatted time for America/Chicago: 8:30 AM
+PaperTradingModal.tsx:940 🕐 Formatted time for America/Chicago: 3:00 PM
+PaperTradingModal.tsx:948 ✅ Final result: 8:30 AM - 3:00 PM (Local)
+PaperTradingModal.tsx:949 🕐 === TRADING HOURS CONVERSION DEBUG END ===
+PaperTradingModal.tsx:875 🕐 === TRADING HOURS CONVERSION DEBUG START ===
+PaperTradingModal.tsx:877 🌍 User timezone: America/Chicago
+PaperTradingModal.tsx:886 🌎 User is NOT in Eastern Time, converting...
+PaperTradingModal.tsx:890 📅 Current date/time: Tue Jul 01 2025 02:50:56 GMT-0500 (Central Daylight Time)
+PaperTradingModal.tsx:904 🗽 Creating ET time 9:30 on date 2025-07-01
+PaperTradingModal.tsx:908 ⏰ Time string before timezone: 2025-07-01T09:30:00
+PaperTradingModal.tsx:917 🕰️ ET offset from UTC: 0 hours
+PaperTradingModal.tsx:921 🕐 Full time string: 2025-07-01T09:30:00-04:00
+PaperTradingModal.tsx:904 🗽 Creating ET time 16:00 on date 2025-07-01
+PaperTradingModal.tsx:908 ⏰ Time string before timezone: 2025-07-01T16:00:00
+PaperTradingModal.tsx:917 🕰️ ET offset from UTC: 0 hours
+PaperTradingModal.tsx:921 🕐 Full time string: 2025-07-01T16:00:00-04:00
+PaperTradingModal.tsx:929 🟢 Market open time object: Tue Jul 01 2025 08:30:00 GMT-0500 (Central Daylight Time)
+PaperTradingModal.tsx:930 🔴 Market close time object: Tue Jul 01 2025 15:00:00 GMT-0500 (Central Daylight Time)
+PaperTradingModal.tsx:940 🕐 Formatted time for America/Chicago: 8:30 AM
+PaperTradingModal.tsx:940 🕐 Formatted time for America/Chicago: 3:00 PM
+PaperTradingModal.tsx:948 ✅ Final result: 8:30 AM - 3:00 PM (Local)
+PaperTradingModal.tsx:949 🕐 === TRADING HOURS CONVERSION DEBUG END ===
+PaperTradingModal.tsx:875 🕐 === TRADING HOURS CONVERSION DEBUG START ===
+PaperTradingModal.tsx:877 🌍 User timezone: America/Chicago
+PaperTradingModal.tsx:886 🌎 User is NOT in Eastern Time, converting...
