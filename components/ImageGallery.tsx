@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import type { ImageResult } from '../types.ts';
+import { ProxyImage } from './ProxyImage.tsx';
+import type { ImageResult } from '../services/imageSearchService.ts';
 
 interface ImageGalleryProps {
     images: ImageResult[];
@@ -43,21 +44,11 @@ export const ImageGallery: React.FC<ImageGalleryProps> = ({ images, title, class
                         className="relative group cursor-pointer rounded-lg overflow-hidden glass-effect hover:shadow-lg transition-all duration-300"
                         onClick={() => handleImageClick(image)}
                     >
-                        <img
+                        <ProxyImage
                             src={image.thumbnail || image.url}
                             alt={image.title}
                             className="w-full h-24 object-cover group-hover:scale-105 transition-transform duration-300"
-                            onError={(e) => {
-                                const target = e.target as HTMLImageElement;
-                                // Try fallback to main URL if thumbnail fails
-                                if (target.src === image.thumbnail && image.url !== image.thumbnail) {
-                                    target.src = image.url;
-                                } else {
-                                    target.style.display = 'none';
-                                    console.warn('Failed to load image:', target.src);
-                                }
-                            }}
-                            loading="lazy"
+                            fallbackSrc={image.url !== image.thumbnail ? image.url : undefined}
                         />
 
                         <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all duration-300 flex items-center justify-center">

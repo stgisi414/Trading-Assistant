@@ -27,27 +27,50 @@ const searchGoogleImages = async (query: string, limit: number = 5): Promise<Ima
 
     try {
         const searchQuery = encodeURIComponent(query);
-        const url = `${GOOGLE_CUSTOM_SEARCH_URL}?key=${GOOGLE_CUSTOM_SEARCH_API_KEY}&cx=${IMAGE_CUSTOM_SEARCH_CX}&q=${searchQuery}&searchType=image&num=${limit}&imgType=photo&imgSize=medium&safe=active`;
+        const url = `${GOOGLE_CUSTOM_SEARCH_URL}?key=${GOOGLE_CUSTOM_SEARCH_API_KEY}&cx=${IMAGE_CUSTOM_SEARCH_CX}&q=${searchQuery}&searchType=image&num=${limit}&imgType=photo&imgSize=medium&safe=active&fileType=jpg,png,gif,webp`;
         
         console.log(`Searching Google Images for: "${query}"`);
+        console.log('Search URL:', url);
         
         const response = await fetch(url);
         if (!response.ok) {
-            console.error(`Google Image search failed: ${response.status}`);
+            const errorText = await response.text();
+            console.error(`Google Image search failed: ${response.status}`, errorText);
             return [];
         }
 
         const data = await response.json();
         if (data.items && Array.isArray(data.items)) {
-            const images = data.items.map((item: any) => ({
-                url: item.link || item.image?.thumbnailLink,
-                title: item.title || 'Untitled',
-                source: 'google' as const,
-                thumbnail: item.image?.thumbnailLink,
-                contextLink: item.image?.contextLink
-            }));
+            const images = data.items
+                .filter((item: any) => {
+                    // Filter out items without valid image URLs
+                    const hasValidUrl = item.link || item.image?.thumbnailLink;
+                    const hasValidFormat = item.link && 
+                        (item.link.match(/\.(jpg|jpeg|png|gif|webp|svg)$/i) || 
+                         item.image?.thumbnailLink);
+                    return hasValidUrl && hasValidFormat;
+                })
+                .map((item: any) => {
+                    // Prefer direct image links over thumbnails for better quality
+                    let imageUrl = item.link;
+                    let thumbnailUrl = item.image?.thumbnailLink;
+                    
+                    // If the main link is not a direct image, use thumbnail
+                    if (!imageUrl?.match(/\.(jpg|jpeg|png|gif|webp|svg)$/i)) {
+                        imageUrl = thumbnailUrl;
+                    }
+                    
+                    return {
+                        url: imageUrl || thumbnailUrl,
+                        title: item.title || 'Untitled',
+                        source: 'google' as const,
+                        thumbnail: thumbnailUrl || imageUrl,
+                        contextLink: item.image?.contextLink
+                    };
+                })
+                .filter((image: any) => image.url); // Remove any items without URLs
             
-            console.log(`Found ${images.length} images from Google`);
+            console.log(`Found ${images.length} valid images from Google`);
             return images;
         }
     } catch (error) {
