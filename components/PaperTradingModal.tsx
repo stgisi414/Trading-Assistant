@@ -36,6 +36,7 @@ export const PaperTradingModal: React.FC<PaperTradingModalProps> = ({ isOpen, on
   const [availableStrikes, setAvailableStrikes] = useState<number[]>([]);
   const [availableExpirations, setAvailableExpirations] = useState<Date[]>([]);
   const [showPortfolioSummary, setShowPortfolioSummary] = useState(false);
+  const [loadingOptionsChain, setLoadingOptionsChain] = useState(false);
   
   // Symbol search and validation
   const [symbolQuery, setSymbolQuery] = useState('');
@@ -126,24 +127,34 @@ export const PaperTradingModal: React.FC<PaperTradingModalProps> = ({ isOpen, on
   const loadOptionsChain = async (symbol: string) => {
     if (!symbol || !newTrade.isOptions) return;
     
+    setLoadingOptionsChain(true);
     try {
       const chains = await paperTradingService.getOptionsChain(symbol);
       if (chains.length > 0) {
-        const strikes = chains[0].calls.map(c => c.strike);
-        const expirations = chains.map(c => c.expirationDate);
+        const strikes = chains[0].calls.map(c => c.strike).sort((a, b) => a - b);
+        const expirations = chains.map(c => c.expirationDate).sort((a, b) => a.getTime() - b.getTime());
         setAvailableStrikes(strikes);
         setAvailableExpirations(expirations);
         
-        // Set default values
-        if (strikes.length > 0 && !newTrade.strikePrice) {
+        // Set default values only if not already set
+        if (strikes.length > 0 && newTrade.strikePrice === 0) {
           setNewTrade(prev => ({ ...prev, strikePrice: strikes[Math.floor(strikes.length / 2)] }));
         }
         if (expirations.length > 0 && !newTrade.expirationDate) {
           setNewTrade(prev => ({ ...prev, expirationDate: expirations[0].toISOString().split('T')[0] }));
         }
+      } else {
+        // No options available for this symbol
+        setAvailableStrikes([]);
+        setAvailableExpirations([]);
+        setNewTrade(prev => ({ ...prev, strikePrice: 0, expirationDate: '' }));
       }
     } catch (error) {
       console.error('Error loading options chain:', error);
+      setAvailableStrikes([]);
+      setAvailableExpirations([]);
+    } finally {
+      setLoadingOptionsChain(false);
     }
   };
 
@@ -157,6 +168,23 @@ export const PaperTradingModal: React.FC<PaperTradingModalProps> = ({ isOpen, on
 
     return () => clearTimeout(timeoutId);
   }, [symbolQuery]);
+
+  // Load options chain when options toggle is changed or symbol is selected
+  useEffect(() => {
+    if (newTrade.isOptions && selectedSymbol) {
+      loadOptionsChain(selectedSymbol.symbol);
+    } else if (!newTrade.isOptions) {
+      // Clear options data when switching to stocks
+      setAvailableStrikes([]);
+      setAvailableExpirations([]);
+      setNewTrade(prev => ({ 
+        ...prev, 
+        strikePrice: 0, 
+        expirationDate: '',
+        optionType: 'CALL' 
+      }));
+    }
+  }, [newTrade.isOptions, selectedSymbol]);
 
   const handlePlaceTrade = async () => {
     if (!user || !newTrade.symbol || newTrade.quantity <= 0) {
@@ -172,6 +200,16 @@ export const PaperTradingModal: React.FC<PaperTradingModalProps> = ({ isOpen, on
     if (newTrade.isOptions && (!newTrade.strikePrice || !newTrade.expirationDate)) {
       alert('Please select strike price and expiration date for options trades');
       return;
+    }
+
+    // Check if option has already expired
+    if (newTrade.isOptions && newTrade.expirationDate) {
+      const expDate = new Date(newTrade.expirationDate);
+      const today = new Date();
+      if (expDate <= today) {
+        alert('Cannot trade expired options. Please select a future expiration date.');
+        return;
+      }
     }
 
     try {
@@ -713,42 +751,90 @@ export const PaperTradingModal: React.FC<PaperTradingModalProps> = ({ isOpen, on
                     <div>
                       <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         Strike Price
+                        {loadingOptionsChain && (
+                          <span className="ml-2 text-xs text-blue-600">Loading...</span>
+                        )}
                       </label>
                       <select
                         value={newTrade.strikePrice}
                         onChange={(e) => setNewTrade({...newTrade, strikePrice: parseFloat(e.target.value)})}
-                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                        disabled={loadingOptionsChain || availableStrikes.length === 0}
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white disabled:opacity-50"
                       >
-                        <option value="">Select Strike</option>
+                        <option value="">
+                          {loadingOptionsChain ? 'Loading strikes...' : 
+                           availableStrikes.length === 0 ? 'No strikes available' : 'Select Strike'}
+                        </option>
                         {availableStrikes.map(strike => (
-                          <option key={strike} value={strike}>${strike}</option>
+                          <option key={strike} value={strike}>${strike.toFixed(2)}</option>
                         ))}
                       </select>
+                      {availableStrikes.length === 0 && !loadingOptionsChain && selectedSymbol && (
+                        <p className="text-xs text-yellow-600 mt-1">
+                          No options available for {selectedSymbol.symbol}
+                        </p>
+                      )}
                     </div>
 
                     <div>
                       <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         Expiration Date
+                        {loadingOptionsChain && (
+                          <span className="ml-2 text-xs text-blue-600">Loading...</span>
+                        )}
                       </label>
                       <select
                         value={newTrade.expirationDate}
                         onChange={(e) => setNewTrade({...newTrade, expirationDate: e.target.value})}
-                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                        disabled={loadingOptionsChain || availableExpirations.length === 0}
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white disabled:opacity-50"
                       >
-                        <option value="">Select Expiration</option>
-                        {availableExpirations.map(date => (
-                          <option key={date.toISOString()} value={date.toISOString().split('T')[0]}>
-                            {date.toLocaleDateString()}
-                          </option>
-                        ))}
+                        <option value="">
+                          {loadingOptionsChain ? 'Loading expirations...' : 
+                           availableExpirations.length === 0 ? 'No expirations available' : 'Select Expiration'}
+                        </option>
+                        {availableExpirations.map(date => {
+                          const today = new Date();
+                          const isExpiringSoon = (date.getTime() - today.getTime()) / (1000 * 60 * 60 * 24) < 7;
+                          return (
+                            <option key={date.toISOString()} value={date.toISOString().split('T')[0]}>
+                              {date.toLocaleDateString()} 
+                              {isExpiringSoon && ' (Expires Soon)'}
+                              {date <= today && ' (EXPIRED)'}
+                            </option>
+                          );
+                        })}
                       </select>
+                      {availableExpirations.length === 0 && !loadingOptionsChain && selectedSymbol && (
+                        <p className="text-xs text-yellow-600 mt-1">
+                          No expiration dates available for {selectedSymbol.symbol}
+                        </p>
+                      )}
                     </div>
                   </div>
                 )}
 
-                <div className="text-xs text-gray-500 dark:text-gray-400">
+                <div className="text-xs text-gray-500 dark:text-gray-400 space-y-1">
                   {newTrade.isOptions && (
-                    <p>Note: Each option contract represents 100 shares. Quantity refers to number of contracts.</p>
+                    <>
+                      <p>Note: Each option contract represents 100 shares. Quantity refers to number of contracts.</p>
+                      <p className="text-yellow-600 dark:text-yellow-400">
+                        ⚠️ Options automatically expire at market close on expiration date. 
+                        Worthless options (OTM) are removed, ITM options settle at intrinsic value.
+                      </p>
+                      {newTrade.expirationDate && (() => {
+                        const expDate = new Date(newTrade.expirationDate);
+                        const today = new Date();
+                        const daysToExpiry = Math.ceil((expDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+                        
+                        if (daysToExpiry <= 0) {
+                          return <p className="text-red-600 font-medium">⚠️ This option has already expired!</p>;
+                        } else if (daysToExpiry <= 7) {
+                          return <p className="text-orange-600 font-medium">⚠️ This option expires in {daysToExpiry} day{daysToExpiry !== 1 ? 's' : ''}!</p>;
+                        }
+                        return <p className="text-blue-600">Option expires in {daysToExpiry} days</p>;
+                      })()}
+                    </>
                   )}
                 </div>
 

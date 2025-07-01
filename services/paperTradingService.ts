@@ -222,7 +222,10 @@ class PaperTradingService {
         return await this.initializePortfolio();
       }
 
-      // Update positions with current market prices
+      const now = new Date();
+      let expiredOptionsFound = false;
+
+      // Update positions with current market prices and check for expired options
       const updatedPositions = await Promise.all(
         portfolio.positions.map(async (position) => {
           let currentPrice: number;
@@ -230,34 +233,71 @@ class PaperTradingService {
           const contractSize = position.contractSize || (position.isOptions ? 100 : 1);
 
           if (position.isOptions && position.optionType && position.strikePrice && position.expirationDate) {
-            // Update options position
-            const optionData = await this.getOptionPrice(
-              position.symbol,
-              position.optionType,
-              position.strikePrice,
-              new Date(position.expirationDate)
-            );
-            currentPrice = optionData.price;
-            marketValue = currentPrice * position.quantity * contractSize;
+            const expirationDate = new Date(position.expirationDate);
+            
+            // Check if option has expired
+            if (expirationDate <= now) {
+              expiredOptionsFound = true;
+              // Calculate final intrinsic value at expiration
+              const stockPrice = await this.getMarketPrice(position.symbol);
+              const intrinsicValue = position.optionType === 'CALL' 
+                ? Math.max(stockPrice - position.strikePrice, 0)
+                : Math.max(position.strikePrice - stockPrice, 0);
+              
+              currentPrice = intrinsicValue;
+              marketValue = intrinsicValue * position.quantity * contractSize;
 
-            return {
-              ...position,
-              currentPrice,
-              marketValue,
-              unrealizedPnL: marketValue - (position.averagePrice * position.quantity * contractSize),
-              unrealizedPnLPercent: ((marketValue - (position.averagePrice * position.quantity * contractSize)) / (position.averagePrice * position.quantity * contractSize)) * 100,
-              // Update Greeks
-              delta: optionData.greeks.delta,
-              gamma: optionData.greeks.gamma,
-              theta: optionData.greeks.theta,
-              vega: optionData.greeks.vega,
-              intrinsicValue: position.optionType === 'CALL' 
-                ? Math.max((await this.getMarketPrice(position.symbol)) - position.strikePrice, 0)
-                : Math.max(position.strikePrice - (await this.getMarketPrice(position.symbol)), 0),
-              timeValue: currentPrice - (position.optionType === 'CALL' 
-                ? Math.max((await this.getMarketPrice(position.symbol)) - position.strikePrice, 0)
-                : Math.max(position.strikePrice - (await this.getMarketPrice(position.symbol)), 0))
-            };
+              // Auto-exercise if in-the-money, otherwise expire worthless
+              if (intrinsicValue > 0) {
+                console.log(`Option ${position.symbol} ${position.optionType} ${position.strikePrice} expired in-the-money with intrinsic value: $${intrinsicValue}`);
+              } else {
+                console.log(`Option ${position.symbol} ${position.optionType} ${position.strikePrice} expired worthless`);
+              }
+
+              return {
+                ...position,
+                currentPrice,
+                marketValue,
+                unrealizedPnL: marketValue - (position.averagePrice * position.quantity * contractSize),
+                unrealizedPnLPercent: marketValue > 0 ? ((marketValue - (position.averagePrice * position.quantity * contractSize)) / (position.averagePrice * position.quantity * contractSize)) * 100 : -100,
+                // Set Greeks to zero for expired options
+                delta: 0,
+                gamma: 0,
+                theta: 0,
+                vega: 0,
+                intrinsicValue,
+                timeValue: 0
+              };
+            } else {
+              // Update active options position
+              const optionData = await this.getOptionPrice(
+                position.symbol,
+                position.optionType,
+                position.strikePrice,
+                expirationDate
+              );
+              currentPrice = optionData.price;
+              marketValue = currentPrice * position.quantity * contractSize;
+
+              return {
+                ...position,
+                currentPrice,
+                marketValue,
+                unrealizedPnL: marketValue - (position.averagePrice * position.quantity * contractSize),
+                unrealizedPnLPercent: ((marketValue - (position.averagePrice * position.quantity * contractSize)) / (position.averagePrice * position.quantity * contractSize)) * 100,
+                // Update Greeks
+                delta: optionData.greeks.delta,
+                gamma: optionData.greeks.gamma,
+                theta: optionData.greeks.theta,
+                vega: optionData.greeks.vega,
+                intrinsicValue: position.optionType === 'CALL' 
+                  ? Math.max((await this.getMarketPrice(position.symbol)) - position.strikePrice, 0)
+                  : Math.max(position.strikePrice - (await this.getMarketPrice(position.symbol)), 0),
+                timeValue: currentPrice - (position.optionType === 'CALL' 
+                  ? Math.max((await this.getMarketPrice(position.symbol)) - position.strikePrice, 0)
+                  : Math.max(position.strikePrice - (await this.getMarketPrice(position.symbol)), 0))
+              };
+            }
           } else {
             // Update stock position
             currentPrice = await this.getMarketPrice(position.symbol);
@@ -276,13 +316,30 @@ class PaperTradingService {
         })
       );
 
-      const totalPositionValue = updatedPositions.reduce((sum, pos) => sum + pos.marketValue, 0);
+      // Auto-close expired worthless options
+      const activePositions = updatedPositions.filter(position => {
+        if (position.isOptions && position.expirationDate) {
+          const expirationDate = new Date(position.expirationDate);
+          if (expirationDate <= now && position.currentPrice === 0) {
+            console.log(`Auto-removing expired worthless option: ${position.symbol} ${position.optionType} ${position.strikePrice}`);
+            return false; // Remove worthless expired options
+          }
+        }
+        return true;
+      });
+
+      const totalPositionValue = activePositions.reduce((sum, pos) => sum + pos.marketValue, 0);
       const updatedPortfolio: PaperTradingPortfolio = {
         ...portfolio,
-        positions: updatedPositions,
+        positions: activePositions,
         totalValue: portfolio.cashBalance + totalPositionValue,
         updatedAt: new Date()
       };
+
+      // If expired options were found, also close any related active trades
+      if (expiredOptionsFound) {
+        await this.closeExpiredOptionTrades();
+      }
 
       // Save updated portfolio
       await firebaseService.savePaperTradingPortfolio(updatedPortfolio);
@@ -553,6 +610,46 @@ class PaperTradingService {
     
     // Create new portfolio
     return await this.initializePortfolio();
+  }
+
+  // Close expired option trades
+  private async closeExpiredOptionTrades(): Promise<void> {
+    try {
+      const trades = await firebaseService.loadPaperTrades();
+      const now = new Date();
+      
+      const expiredTrades = trades.filter(trade => 
+        trade.status === 'active' && 
+        trade.isOptions && 
+        trade.expirationDate && 
+        new Date(trade.expirationDate) <= now
+      );
+
+      for (const trade of expiredTrades) {
+        const stockPrice = await this.getMarketPrice(trade.symbol);
+        const intrinsicValue = trade.optionType === 'CALL' 
+          ? Math.max(stockPrice - (trade.strikePrice || 0), 0)
+          : Math.max((trade.strikePrice || 0) - stockPrice, 0);
+
+        const contractSize = trade.contractSize || 100;
+        const finalValue = intrinsicValue * trade.quantity * contractSize;
+        const realizedPnL = finalValue - (trade.price * trade.quantity * contractSize);
+
+        // Update trade status to closed
+        const updatedTrade = {
+          ...trade,
+          status: 'closed' as const,
+          closedAt: now,
+          realizedPnL,
+          reasoning: trade.reasoning + ` [Auto-closed on expiration: ${intrinsicValue > 0 ? 'ITM' : 'OTM'}]`
+        };
+
+        await firebaseService.savePaperTrade(updatedTrade);
+        console.log(`Auto-closed expired option trade: ${trade.symbol} ${trade.optionType} ${trade.strikePrice} with P&L: $${realizedPnL.toFixed(2)}`);
+      }
+    } catch (error) {
+      console.error('Error closing expired option trades:', error);
+    }
   }
 
   // Get portfolio performance metrics
