@@ -103,53 +103,35 @@ body.dark {
   background: var(--color-primary);
 }
 
-/* MAXIMUM VISIBILITY NEON GRID */
+/* Subtle neon grid background */
 .neon-grid-background {
   position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
   height: 100vh;
-  z-index: 9999;
+  z-index: -1;
   pointer-events: none;
-  opacity: 0.3;
+  opacity: 0.05;
   background: 
-    linear-gradient(rgba(0, 255, 255, 0.8) 1px, transparent 1px) 0 0 / 40px 40px,
-    linear-gradient(90deg, rgba(0, 255, 255, 0.8) 1px, transparent 1px) 0 0 / 40px 40px,
-    radial-gradient(circle at 20px 20px, rgba(255, 0, 255, 1) 2px, transparent 2px) 0 0 / 40px 40px;
-  animation: intense-grid-pulse 3s ease-in-out infinite;
-  filter: 
-    drop-shadow(0 0 10px rgba(0, 255, 255, 0.8))
-    drop-shadow(0 0 20px rgba(255, 0, 255, 0.6))
-    brightness(1.8);
+    linear-gradient(rgba(99, 102, 241, 0.3) 1px, transparent 1px) 0 0 / 60px 60px,
+    linear-gradient(90deg, rgba(99, 102, 241, 0.3) 1px, transparent 1px) 0 0 / 60px 60px;
+  animation: subtle-grid-pulse 8s ease-in-out infinite;
 }
 
 .dark .neon-grid-background {
-  opacity: 0.4;
+  opacity: 0.08;
   background: 
-    linear-gradient(rgba(0, 255, 255, 1) 1px, transparent 1px) 0 0 / 40px 40px,
-    linear-gradient(90deg, rgba(0, 255, 255, 1) 1px, transparent 1px) 0 0 / 40px 40px,
-    radial-gradient(circle at 20px 20px, rgba(255, 0, 255, 1) 2px, transparent 2px) 0 0 / 40px 40px;
-  filter: 
-    drop-shadow(0 0 15px rgba(0, 255, 255, 1))
-    drop-shadow(0 0 25px rgba(255, 0, 255, 0.8))
-    brightness(2.2);
+    linear-gradient(rgba(129, 140, 248, 0.4) 1px, transparent 1px) 0 0 / 60px 60px,
+    linear-gradient(90deg, rgba(129, 140, 248, 0.4) 1px, transparent 1px) 0 0 / 60px 60px;
 }
 
-@keyframes intense-grid-pulse {
+@keyframes subtle-grid-pulse {
   0%, 100% { 
-    opacity: 0.3;
-    filter: 
-      drop-shadow(0 0 10px rgba(0, 255, 255, 0.8))
-      drop-shadow(0 0 20px rgba(255, 0, 255, 0.6))
-      brightness(1.8);
+    opacity: 0.05;
   }
   50% { 
-    opacity: 0.6;
-    filter: 
-      drop-shadow(0 0 20px rgba(0, 255, 255, 1))
-      drop-shadow(0 0 40px rgba(255, 0, 255, 0.9))
-      brightness(2.5);
+    opacity: 0.08;
   }
 }
 
