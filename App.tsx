@@ -871,10 +871,7 @@ function App() {
     };
 
     // Authentication using useAuth hook
-    const { user, signIn, signOut, signUp, resetPassword, verifyEmail, handleSyncData, handleDeleteAnalysis, loadAnalysisHistory } = useAuth();
-
-    const { user, saveDataToCloud, loadDataFromCloud } = useAuth();
-      const [cloudSyncStatus, setCloudSyncStatus] = useState('idle'); // 'idle', 'syncing', 'success', 'error'
+    const { user, signIn, signOut, signUp, resetPassword, verifyEmail, handleDeleteAnalysis, loadAnalysisHistory, saveDataToCloud, loadDataFromCloud } = useAuth();
 
       const handleSyncData = useCallback(async () => {
         if (!user) {
