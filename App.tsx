@@ -877,7 +877,7 @@ function App() {
         <>
             <LoadingOverlay isVisible={isInitialLoading} />
             {/* Neon Grid Background */}
-            <div class="relative min-h-screen overflow-hidden bg-background p-2 text-foreground sm:p-4 md:p-6 lg:p-8 [background-image:linear-gradient(to_right,hsl(0_0%_50%_/_0.075)_1px,transparent_1px),linear-gradient(to_bottom,hsl(0_0%_50%_/_0.075)_1px,transparent_1px)] [background-size:8rem_8rem]">
+            <div className="relative min-h-screen overflow-hidden bg-background p-2 text-foreground sm:p-4 md:p-6 lg:p-8 [background-image:linear-gradient(to_right,hsl(0_0%_50%_/_0.075)_1px,transparent_1px),linear-gradient(to_bottom,hsl(0_0%_50%_/_0.075)_1px,transparent_1px)] [background-size:8rem_8rem]">
 
 
 
