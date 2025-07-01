@@ -1,6 +1,3 @@
-I will modify the `getTradingPosition` function to accept a `tenKAnalysis` parameter and include its data in the Gemini prompt. Also, I will include `tenKAnalysis` in the response structure.
-```
-```replit_final_file
 import { GoogleGenAI, GenerateContentResponse } from "@google/genai";
 import { Position } from '../types.ts';
 import type { AnalysisResult, HistoricalDataPoint, NewsArticle, OpenInterestAnalysis, OptionsAnalysis, OptionRecommendation, OrderAnalysis, LimitOrder } from '../types.ts';
