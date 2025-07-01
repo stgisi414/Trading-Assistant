@@ -22,26 +22,67 @@ if (!FMP_API_KEY) {
 const decodeHtmlEntities = (text: string): string => {
     if (!text) return text;
     
-    // Create a temporary DOM element to decode HTML entities
-    const textarea = document.createElement('textarea');
-    textarea.innerHTML = text;
-    const decoded = textarea.value;
+    // First, try the DOM method if available
+    let decoded = text;
+    try {
+        const textarea = document.createElement('textarea');
+        textarea.innerHTML = text;
+        decoded = textarea.value;
+    } catch (error) {
+        // Fallback to manual decoding if DOM method fails
+        console.warn('DOM-based HTML entity decoding failed, using manual method');
+    }
     
-    // Additional manual replacements for common entities that might not be caught
+    // Comprehensive manual replacements for HTML entities
     return decoded
-        .replace(/&#8217;/g, "'")
-        .replace(/&#8216;/g, "'")
-        .replace(/&#8220;/g, '"')
-        .replace(/&#8221;/g, '"')
-        .replace(/&#8211;/g, '–')
-        .replace(/&#8212;/g, '—')
-        .replace(/&#8230;/g, '…')
-        .replace(/&amp;/g, '&')
-        .replace(/&lt;/g, '<')
-        .replace(/&gt;/g, '>')
-        .replace(/&quot;/g, '"')
-        .replace(/&#39;/g, "'")
-        .replace(/&nbsp;/g, ' ');
+        // Common quotation marks
+        .replace(/&#8217;/g, "'")      // Right single quotation mark
+        .replace(/&#8216;/g, "'")      // Left single quotation mark  
+        .replace(/&#8220;/g, '"')      // Left double quotation mark
+        .replace(/&#8221;/g, '"')      // Right double quotation mark
+        .replace(/&#39;/g, "'")        // Apostrophe
+        .replace(/&apos;/g, "'")       // Apostrophe (XML)
+        .replace(/&quot;/g, '"')       // Quotation mark
+        
+        // Dashes and hyphens
+        .replace(/&#8211;/g, '–')      // En dash
+        .replace(/&#8212;/g, '—')      // Em dash
+        .replace(/&#45;/g, '-')        // Hyphen-minus
+        
+        // Other punctuation
+        .replace(/&#8230;/g, '…')      // Horizontal ellipsis
+        .replace(/&#8226;/g, '•')      // Bullet
+        .replace(/&#8364;/g, '€')      // Euro sign
+        .replace(/&#169;/g, '©')       // Copyright
+        .replace(/&#174;/g, '®')       // Registered trademark
+        .replace(/&#8482;/g, '™')      // Trademark
+        
+        // Spaces and formatting
+        .replace(/&nbsp;/g, ' ')       // Non-breaking space
+        .replace(/&#160;/g, ' ')       // Non-breaking space (numeric)
+        
+        // Basic HTML entities (should be last to avoid double-decoding)
+        .replace(/&amp;/g, '&')        // Ampersand
+        .replace(/&lt;/g, '<')         // Less than
+        .replace(/&gt;/g, '>')         // Greater than
+        
+        // Clean up any remaining numeric character references (&#XXXX;)
+        .replace(/&#(\d+);/g, (match, dec) => {
+            try {
+                return String.fromCharCode(parseInt(dec, 10));
+            } catch (e) {
+                return match; // Return original if conversion fails
+            }
+        })
+        
+        // Clean up any remaining hex character references (&#xXXXX;)
+        .replace(/&#x([0-9A-Fa-f]+);/g, (match, hex) => {
+            try {
+                return String.fromCharCode(parseInt(hex, 16));
+            } catch (e) {
+                return match; // Return original if conversion fails
+            }
+        });
 };
 
 // Helper function to check if URL is a valid news article
