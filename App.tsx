@@ -876,6 +876,8 @@ function App() {
     return (
         <>
             <LoadingOverlay isVisible={isInitialLoading} />
+            {/* Neon Grid Background */}
+            <div className="neon-grid-background"></div>
             <div className="bg-background text-foreground min-h-screen p-2 sm:p-4 md:p-6 lg:p-8 relative overflow-hidden">
             {/* Animated shooting streaks background */}
             <div className="shooting-streaks">
