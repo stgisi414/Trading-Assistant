@@ -22,6 +22,15 @@ import {
 import { paperTradingService } from "../services/paperTradingService";
 import { symbolValidationService } from "../services/symbolValidationService";
 
+interface MarketHours {
+  exchange: string;
+  name: string;
+  openingHour: string;
+  closingHour: string;
+  timezone: string;
+  isMarketOpen: boolean;
+}
+
 interface PaperTradingModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -60,6 +69,7 @@ export const PaperTradingModal: React.FC<PaperTradingModalProps> = ({
   const [availableExpirations, setAvailableExpirations] = useState<Date[]>([]);
   const [showPortfolioSummary, setShowPortfolioSummary] = useState(false);
   const [loadingOptionsChain, setLoadingOptionsChain] = useState(false);
+  const [marketHours, setMarketHours] = useState<MarketHours | null>(null);
 
   // Symbol search and validation
   const [symbolQuery, setSymbolQuery] = useState("");
@@ -78,6 +88,60 @@ export const PaperTradingModal: React.FC<PaperTradingModalProps> = ({
     }
   }, [isOpen, user]);
 
+  const fetchMarketHours = async () => {
+    const FMP_API_KEY = import.meta.env.VITE_FMP_API_KEY || process.env.FMP_API_KEY;
+
+    if (!FMP_API_KEY) {
+      // Fallback to mock market hours if no API key
+      const now = new Date();
+      const currentHour = now.getHours();
+      const currentMinutes = now.getMinutes();
+      const currentTime = currentHour * 60 + currentMinutes; // Convert to minutes
+      const marketOpen = 9 * 60 + 30; // 9:30 AM
+      const marketClose = 16 * 60; // 4:00 PM
+      const isWeekday = now.getDay() >= 1 && now.getDay() <= 5;
+
+      setMarketHours({
+        exchange: "NASDAQ",
+        name: "NASDAQ Global Market",
+        openingHour: "09:30 AM -04:00",
+        closingHour: "04:00 PM -04:00",
+        timezone: "America/New_York",
+        isMarketOpen: isWeekday && currentTime >= marketOpen && currentTime < marketClose
+      });
+      return;
+    }
+
+    try {
+      const response = await fetch(`https://financialmodelingprep.com/api/v3/exchange-market-hours?exchange=NASDAQ&apikey=${FMP_API_KEY}`);
+      if (response.ok) {
+        const data = await response.json();
+        if (Array.isArray(data) && data.length > 0) {
+          setMarketHours(data[0]);
+        }
+      }
+    } catch (error) {
+      console.warn('Failed to fetch market hours:', error);
+      // Fallback to estimated market status
+      const now = new Date();
+      const currentHour = now.getHours();
+      const currentMinutes = now.getMinutes();
+      const currentTime = currentHour * 60 + currentMinutes;
+      const marketOpen = 9 * 60 + 30;
+      const marketClose = 16 * 60;
+      const isWeekday = now.getDay() >= 1 && now.getDay() <= 5;
+
+      setMarketHours({
+        exchange: "NASDAQ",
+        name: "NASDAQ Global Market", 
+        openingHour: "09:30 AM -04:00",
+        closingHour: "04:00 PM -04:00",
+        timezone: "America/New_York",
+        isMarketOpen: isWeekday && currentTime >= marketOpen && currentTime < marketClose
+      });
+    }
+  };
+
   const loadPortfolioData = async () => {
     if (!user) return;
 
@@ -89,6 +153,7 @@ export const PaperTradingModal: React.FC<PaperTradingModalProps> = ({
       ]);
       setPortfolio(portfolioData);
       setTrades(tradesData);
+      await fetchMarketHours();
     } catch (error) {
       console.error("Error loading portfolio data:", error);
     } finally {
@@ -844,6 +909,47 @@ export const PaperTradingModal: React.FC<PaperTradingModalProps> = ({
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">
                 Place New Order
               </h3>
+             <div className="space-y-4 mb-6">
+              <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+                <div className="flex items-start gap-3">
+                  <div className="flex-shrink-0">
+                    <svg className="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-medium text-blue-800 dark:text-blue-200 mb-1">
+                      Paper Trading Notice
+                    </h4>
+                    <p className="text-sm text-blue-700 dark:text-blue-300">
+                      This is a simulated trading environment using virtual money. 
+                      All trades are for educational purposes only and use {portfolio?.positions.some(p => p.isOptions) || trades.some(t => t.isOptions) ? 'mock option prices calculated using Black-Scholes model and real stock prices from FMP API.' : 'real market prices from FMP API.'}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {marketHours && !marketHours.isMarketOpen && (
+                <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg p-4">
+                  <div className="flex items-start gap-3">
+                    <div className="flex-shrink-0">
+                      <svg className="w-5 h-5 text-amber-600 dark:text-amber-400 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                      </svg>
+                    </div>
+                    <div>
+                      <h4 className="text-sm font-medium text-amber-800 dark:text-amber-200 mb-1">
+                        Market Closed
+                      </h4>
+                      <p className="text-sm text-amber-700 dark:text-amber-300">
+                        The {marketHours.name} market is currently closed. Trading will resume at {marketHours.openingHour} ({marketHours.timezone}). 
+                        You can still place orders that will be executed when the market opens.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
 
               <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6 space-y-4">
                 {/* Trade Type Selection */}
