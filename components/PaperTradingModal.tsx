@@ -847,105 +847,37 @@ export const PaperTradingModal: React.FC<PaperTradingModalProps> = ({
                         }`}>
                           📅 Trading Hours: {(() => {
                             const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-                            const marketTimeZone = 'America/New_York';
-
-                            console.log('=== MARKET HOURS DEBUG START ===');
-                            console.log('User timezone:', userTimeZone);
-                            console.log('Market timezone:', marketTimeZone);
-
+                            
                             try {
-                                // Get current date
-                                const now = new Date();
-                                console.log('Current UTC time:', now.toISOString());
-                                console.log('Current local time:', now.toString());
-
-                                // Create market opening time (9:30 AM EST/EDT)
-                                const marketOpen = new Date();
-                                marketOpen.setUTCHours(13, 30, 0, 0); // 9:30 AM EST = 13:30 UTC (standard time)
-                                
-                                // Check if we're in daylight saving time
-                                const jan = new Date(now.getFullYear(), 0, 1);
-                                const jul = new Date(now.getFullYear(), 6, 1);
-                                const isDST = now.getTimezoneOffset() < Math.max(jan.getTimezoneOffset(), jul.getTimezoneOffset());
-                                console.log('Is DST (local):', isDST);
-
-                                // Check if NYC is in daylight saving time
-                                const nycJan = new Date(now.toLocaleString('en-US', { timeZone: 'America/New_York', month: 'numeric', day: 'numeric', year: 'numeric' }));
-                                const nycJul = new Date(now.toLocaleString('en-US', { timeZone: 'America/New_York', month: 'numeric', day: 'numeric', year: 'numeric' }));
-                                const nycNow = new Date(now.toLocaleString('en-US', { timeZone: 'America/New_York' }));
-                                
-                                // Adjust for EDT (UTC-4) vs EST (UTC-5)
-                                const isEDT = now.getMonth() > 2 && now.getMonth() < 10; // Approximate DST period
-                                console.log('Is EDT (estimated):', isEDT);
-                                
-                                if (isEDT) {
-                                    marketOpen.setUTCHours(13, 30, 0, 0); // 9:30 AM EDT = 13:30 UTC
-                                } else {
-                                    marketOpen.setUTCHours(14, 30, 0, 0); // 9:30 AM EST = 14:30 UTC
-                                }
-
-                                const marketClose = new Date(marketOpen);
-                                marketClose.setUTCHours(marketOpen.getUTCHours() + 6, 30, 0, 0); // 6.5 hours later
-
-                                console.log('Market open UTC:', marketOpen.toISOString());
-                                console.log('Market close UTC:', marketClose.toISOString());
-
-                                // Format times in user's timezone
-                                const openTimeFormatted = marketOpen.toLocaleTimeString('en-US', {
-                                    timeZone: userTimeZone,
-                                    hour: 'numeric',
-                                    minute: '2-digit',
-                                    hour12: true
-                                });
-
-                                const closeTimeFormatted = marketClose.toLocaleTimeString('en-US', {
-                                    timeZone: userTimeZone,
-                                    hour: 'numeric',
-                                    minute: '2-digit',
-                                    hour12: true
-                                });
-
-                                console.log('Open time formatted:', openTimeFormatted);
-                                console.log('Close time formatted:', closeTimeFormatted);
-
-                                // Double-check with simpler approach
-                                const simpleOpen = new Date(`${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}T09:30:00-05:00`);
-                                const simpleClose = new Date(`${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}T16:00:00-05:00`);
-                                
-                                console.log('Simple open (EST):', simpleOpen.toISOString());
-                                console.log('Simple close (EST):', simpleClose.toISOString());
-
-                                const simpleOpenFormatted = simpleOpen.toLocaleTimeString('en-US', {
-                                    timeZone: userTimeZone,
-                                    hour: 'numeric',
-                                    minute: '2-digit',
-                                    hour12: true
-                                });
-
-                                const simpleCloseFormatted = simpleClose.toLocaleTimeString('en-US', {
-                                    timeZone: userTimeZone,
-                                    hour: 'numeric',
-                                    minute: '2-digit',
-                                    hour12: true
-                                });
-
-                                console.log('Simple open formatted:', simpleOpenFormatted);
-                                console.log('Simple close formatted:', simpleCloseFormatted);
-
-                                console.log('=== MARKET HOURS DEBUG END ===');
-
-                                // Use the simpler approach for now
+                                // If user is in ET, just show the simple format
                                 if (userTimeZone === 'America/New_York') {
-                                    return '9:30 AM - 4:00 PM (EST/EDT)';
-                                } else {
-                                    return `${simpleOpenFormatted} - ${simpleCloseFormatted} (Local Time)`;
+                                    return '9:30 AM - 4:00 PM (ET)';
                                 }
+                                
+                                // For other timezones, create market times and convert
+                                const now = new Date();
+                                const today = now.toISOString().split('T')[0]; // Get YYYY-MM-DD
+                                
+                                // Create market times in Eastern Time
+                                const marketOpen = new Date(`${today}T09:30:00-05:00`); // EST (will auto-adjust for DST)
+                                const marketClose = new Date(`${today}T16:00:00-05:00`); // EST (will auto-adjust for DST)
+                                
+                                // Format for user's timezone
+                                const formatTime = (date: Date) => {
+                                    return date.toLocaleTimeString('en-US', {
+                                        timeZone: userTimeZone,
+                                        hour: 'numeric',
+                                        minute: '2-digit',
+                                        hour12: true
+                                    });
+                                };
+                                
+                                return `${formatTime(marketOpen)} - ${formatTime(marketClose)} (Local)`;
                             } catch (e) {
                                 console.error("Error formatting market hours:", e);
-                                console.log('=== MARKET HOURS DEBUG END (ERROR) ===');
-                                return '9:30 AM - 4:00 PM (EST)';
+                                return '9:30 AM - 4:00 PM (ET)';
                             }
-                          })()}
+                        })()}
                         </p>
                       </div>
                     </div>
@@ -1211,47 +1143,34 @@ export const PaperTradingModal: React.FC<PaperTradingModalProps> = ({
                           📅 Trading Hours: {(() => {
                             const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
                             
-                            console.log('=== ORDERS SECTION MARKET HOURS DEBUG START ===');
-                            console.log('User timezone:', userTimeZone);
-                            
                             try {
-                              const today = new Date();
-                              console.log('Today:', today.toISOString());
-                              
-                              // Simple approach: Create market times in EST and convert
-                              const marketOpen = new Date(`${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}T09:30:00-05:00`);
-                              const marketClose = new Date(`${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}T16:00:00-05:00`);
-                              
-                              console.log('Market open (EST):', marketOpen.toISOString());
-                              console.log('Market close (EST):', marketClose.toISOString());
-                              
-                              const openingFormatted = marketOpen.toLocaleTimeString('en-US', {
-                                timeZone: userTimeZone,
-                                hour: 'numeric',
-                                minute: '2-digit',
-                                hour12: true
-                              });
-                              
-                              const closingFormatted = marketClose.toLocaleTimeString('en-US', {
-                                timeZone: userTimeZone,
-                                hour: 'numeric',
-                                minute: '2-digit',
-                                hour12: true
-                              });
-                              
-                              console.log('Opening formatted:', openingFormatted);
-                              console.log('Closing formatted:', closingFormatted);
-                              console.log('=== ORDERS SECTION MARKET HOURS DEBUG END ===');
-                              
+                              // If user is in ET, just show the simple format
                               if (userTimeZone === 'America/New_York') {
-                                return '9:30 AM - 4:00 PM (EST/EDT)';
-                              } else {
-                                return `${openingFormatted} - ${closingFormatted} (Local Time)`;
+                                return '9:30 AM - 4:00 PM (ET)';
                               }
+                              
+                              // For other timezones, create market times and convert
+                              const now = new Date();
+                              const today = now.toISOString().split('T')[0]; // Get YYYY-MM-DD
+                              
+                              // Create market times in Eastern Time
+                              const marketOpen = new Date(`${today}T09:30:00-05:00`); // EST (will auto-adjust for DST)
+                              const marketClose = new Date(`${today}T16:00:00-05:00`); // EST (will auto-adjust for DST)
+                              
+                              // Format for user's timezone
+                              const formatTime = (date: Date) => {
+                                return date.toLocaleTimeString('en-US', {
+                                  timeZone: userTimeZone,
+                                  hour: 'numeric',
+                                  minute: '2-digit',
+                                  hour12: true
+                                });
+                              };
+                              
+                              return `${formatTime(marketOpen)} - ${formatTime(marketClose)} (Local)`;
                             } catch (error) {
                               console.error('Orders section market hours error:', error);
-                              console.log('=== ORDERS SECTION MARKET HOURS DEBUG END (ERROR) ===');
-                              return '9:30 AM - 4:00 PM (EST)';
+                              return '9:30 AM - 4:00 PM (ET)';
                             }
                           })()}
                         </p>
