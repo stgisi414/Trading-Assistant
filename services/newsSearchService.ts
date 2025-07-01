@@ -18,6 +18,32 @@ if (!FMP_API_KEY) {
     console.warn("FMP_API_KEY not set. Some news sources may be unavailable.");
 }
 
+// Helper function to decode HTML entities
+const decodeHtmlEntities = (text: string): string => {
+    if (!text) return text;
+    
+    // Create a temporary DOM element to decode HTML entities
+    const textarea = document.createElement('textarea');
+    textarea.innerHTML = text;
+    const decoded = textarea.value;
+    
+    // Additional manual replacements for common entities that might not be caught
+    return decoded
+        .replace(/&#8217;/g, "'")
+        .replace(/&#8216;/g, "'")
+        .replace(/&#8220;/g, '"')
+        .replace(/&#8221;/g, '"')
+        .replace(/&#8211;/g, '–')
+        .replace(/&#8212;/g, '—')
+        .replace(/&#8230;/g, '…')
+        .replace(/&amp;/g, '&')
+        .replace(/&lt;/g, '<')
+        .replace(/&gt;/g, '>')
+        .replace(/&quot;/g, '"')
+        .replace(/&#39;/g, "'")
+        .replace(/&nbsp;/g, ' ');
+};
+
 // Helper function to check if URL is a valid news article
 const isValidNewsUrl = (url: string): boolean => {
     const invalidPatterns = [
@@ -198,10 +224,10 @@ const searchFMPStockNews = async (symbols: string[], dateRange: { from?: string,
                 const newsItems = data
                     .filter(item => item.title && item.url && isValidNewsUrl(item.url))
                     .map(item => ({
-                        title: item.title || 'Untitled',
+                        title: decodeHtmlEntities(item.title || 'Untitled'),
                         uri: item.url || '#',
-                        snippet: item.text || item.content || '',
-                        source: item.site || item.publisher || item.source || 'Unknown'
+                        snippet: decodeHtmlEntities(item.text || item.content || ''),
+                        source: decodeHtmlEntities(item.site || item.publisher || item.source || 'Unknown')
                     }));
                 
                 allNews.push(...newsItems);
@@ -246,10 +272,10 @@ const searchFMPGeneralNews = async (limit: number = 10): Promise<NewsArticle[]> 
             const newsItems = data
                 .filter(item => item.title && item.url && isValidNewsUrl(item.url))
                 .map(item => ({
-                    title: item.title || 'Untitled',
+                    title: decodeHtmlEntities(item.title || 'Untitled'),
                     uri: item.url || '#',
-                    snippet: item.content || item.text || '',
-                    source: item.site || item.publisher || item.source || 'FMP'
+                    snippet: decodeHtmlEntities(item.content || item.text || ''),
+                    source: decodeHtmlEntities(item.site || item.publisher || item.source || 'FMP')
                 }));
             
             console.log(`Added ${newsItems.length} FMP general news items`);
@@ -298,10 +324,10 @@ const searchFMPPressReleases = async (symbols: string[], dateRange: { from?: str
                 const newsItems = data
                     .filter(item => item.title && item.url && isValidNewsUrl(item.url))
                     .map(item => ({
-                        title: item.title || 'Untitled',
+                        title: decodeHtmlEntities(item.title || 'Untitled'),
                         uri: item.url || '#',
-                        snippet: item.text || item.content || '',
-                        source: item.site || item.publisher || item.source || 'Press Release'
+                        snippet: decodeHtmlEntities(item.text || item.content || ''),
+                        source: decodeHtmlEntities(item.site || item.publisher || item.source || 'Press Release')
                     }));
                 
                 allNews.push(...newsItems);
