@@ -48,13 +48,9 @@ const searchGoogleImages = async (query: string, limit: number = 5): Promise<Ima
                     return hasValidUrl;
                 })
                 .map((item: any) => {
-                    // Prefer thumbnails for better CORS compatibility
-                    let imageUrl = item.image?.thumbnailLink || item.link;
-                    let thumbnailUrl = item.image?.thumbnailLink;
-                    
-                    // Ensure we have a working URL
-                    if (!imageUrl) imageUrl = item.link;
-                    if (!thumbnailUrl) thumbnailUrl = item.link;
+                    // Use the main image link directly
+                    const imageUrl = item.link;
+                    const thumbnailUrl = item.image?.thumbnailLink || item.link;
                     
                     return {
                         url: imageUrl,
@@ -100,29 +96,10 @@ const generateFallbackImages = (query: string, count: number): ImageResult[] => 
         const type = placeholderTypes[i % placeholderTypes.length];
         const shortQuery = query.substring(0, 20);
         
-        const svgImage = `data:image/svg+xml;base64,${btoa(`
-            <svg width="300" height="200" xmlns="http://www.w3.org/2000/svg">
-                <defs>
-                    <linearGradient id="grad${i}" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" style="stop-color:${type.bg};stop-opacity:1" />
-                        <stop offset="100%" style="stop-color:${type.bg}CC;stop-opacity:1" />
-                    </linearGradient>
-                </defs>
-                <rect width="300" height="200" fill="url(#grad${i})"/>
-                <text x="150" y="80" font-family="Arial, sans-serif" font-size="32" text-anchor="middle" fill="white">
-                    ${type.icon}
-                </text>
-                <text x="150" y="110" font-family="Arial, sans-serif" font-size="14" text-anchor="middle" fill="white" opacity="0.9">
-                    ${type.label}
-                </text>
-                <text x="150" y="130" font-family="Arial, sans-serif" font-size="12" text-anchor="middle" fill="white" opacity="0.7">
-                    ${shortQuery}
-                </text>
-            </svg>
-        `)}`;
+        const placeholderUrl = `https://via.placeholder.com/300x200/${type.bg.replace('#', '')}/${type.bg.replace('#', '')}?text=${encodeURIComponent(type.icon + ' ' + type.label)}`;
         
         fallbackImages.push({
-            url: svgImage,
+            url: placeholderUrl,
             title: `${type.label} - ${query}`,
             source: 'imagen3' as const
         });
