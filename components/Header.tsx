@@ -80,6 +80,10 @@ interface HeaderProps {
     handleChatbotInputUpdates?: (updates: any) => void;
     onSignInClick: () => void;
     userProfile: React.ReactNode;
+    onSyncData: () => void;
+    onViewHistory: () => void;
+    onViewChatrooms: () => void;
+    onOpenPaperTrading?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -93,6 +97,10 @@ export const Header: React.FC<HeaderProps> = ({
     onSignInClick,
     userProfile,
     handleChatbotInputUpdates,
+    onSyncData,
+    onViewHistory,
+    onViewChatrooms,
+    onOpenPaperTrading
 }) => {
     const { user, isLoading, isAuthRedirectPending } = useAuth();
     const [isChatbotOpen, setIsChatbotOpen] = useState(false);

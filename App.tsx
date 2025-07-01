@@ -834,7 +834,7 @@ function App() {
         if (updates.selectedMarket !== undefined) {
             console.log('🤖 Setting market to:', updates.selectedMarket);
             handleMarketChange(updates.selectedMarket);
-        }
+                }
 
         // Handle other updates
         if (updates.walletAmount !== undefined) {
