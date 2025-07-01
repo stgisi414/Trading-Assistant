@@ -103,42 +103,30 @@ body.dark {
   background: var(--color-primary);
 }
 
-/* VISIBLE neon grid background */
+/* NEON GRID BACKGROUND - FULLY VISIBLE */
 .neon-grid-background {
-  position: fixed !important;
-  top: 0 !important;
-  left: 0 !important;
-  width: 100vw !important;
-  height: 100vh !important;
-  z-index: 1 !important;
-  pointer-events: none !important;
-  opacity: 0.6 !important;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 1;
+  pointer-events: none;
   background: 
-    linear-gradient(rgba(99, 102, 241, 1) 2px, transparent 2px) 0 0 / 30px 30px,
-    linear-gradient(90deg, rgba(99, 102, 241, 1) 2px, transparent 2px) 0 0 / 30px 30px,
-    radial-gradient(circle at 15px 15px, rgba(139, 92, 246, 0.8) 3px, transparent 3px) 0 0 / 30px 30px !important;
-  animation: neon-grid-pulse 3s ease-in-out infinite !important;
-  filter: drop-shadow(0 0 15px rgba(99, 102, 241, 0.8)) !important;
+    linear-gradient(rgba(99, 102, 241, 0.8) 1px, transparent 1px) 0 0 / 40px 40px,
+    linear-gradient(90deg, rgba(99, 102, 241, 0.8) 1px, transparent 1px) 0 0 / 40px 40px;
+  animation: neon-grid-pulse 4s ease-in-out infinite;
 }
 
 .dark .neon-grid-background {
-  opacity: 0.7 !important;
   background: 
-    linear-gradient(rgba(129, 140, 248, 1) 2px, transparent 2px) 0 0 / 30px 30px,
-    linear-gradient(90deg, rgba(129, 140, 248, 1) 2px, transparent 2px) 0 0 / 30px 30px,
-    radial-gradient(circle at 15px 15px, rgba(168, 85, 247, 0.9) 3px, transparent 3px) 0 0 / 30px 30px !important;
-  filter: drop-shadow(0 0 20px rgba(129, 140, 248, 1)) !important;
+    linear-gradient(rgba(129, 140, 248, 0.8) 1px, transparent 1px) 0 0 / 40px 40px,
+    linear-gradient(90deg, rgba(129, 140, 248, 0.8) 1px, transparent 1px) 0 0 / 40px 40px;
 }
 
 @keyframes neon-grid-pulse {
-  0%, 100% { 
-    opacity: 0.6 !important;
-    filter: drop-shadow(0 0 15px rgba(99, 102, 241, 0.8)) !important;
-  }
-  50% { 
-    opacity: 0.9 !important;
-    filter: drop-shadow(0 0 25px rgba(99, 102, 241, 1)) !important;
-  }
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 0.8; }
 }
 
 /* Base styles */
