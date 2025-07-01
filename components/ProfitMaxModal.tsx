@@ -86,19 +86,19 @@ export const ProfitMaxModal: React.FC<ProfitMaxModalProps> = ({
             name: 'Light', 
             description: 'Quick optimization (~2-5 minutes)', 
             color: 'bg-green-100 dark:bg-green-900/50 border-green-300 dark:border-green-600',
-            textColor: 'text-green-800 dark:text-green-200'
+            textColor: 'text-green-900 dark:text-green-100'
         },
         pro: { 
             name: 'Pro', 
             description: 'Comprehensive optimization (~5-15 minutes)', 
             color: 'bg-blue-100 dark:bg-blue-900/50 border-blue-300 dark:border-blue-600',
-            textColor: 'text-blue-800 dark:text-blue-200'
+            textColor: 'text-blue-900 dark:text-blue-100'
         },
         ultra: { 
             name: 'Ultra', 
             description: 'Maximum optimization (~15-30 minutes)', 
             color: 'bg-purple-100 dark:bg-purple-900/50 border-purple-300 dark:border-purple-600',
-            textColor: 'text-purple-800 dark:text-purple-200'
+            textColor: 'text-purple-900 dark:text-purple-100'
         }
     };
 
