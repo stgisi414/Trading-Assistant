@@ -49,6 +49,8 @@ export const ImageGallery: React.FC<ImageGalleryProps> = ({ images, title, class
                             alt={image.title}
                             className="w-full h-24 object-cover group-hover:scale-105 transition-transform duration-300"
                             fallbackSrc={image.url !== image.thumbnail ? image.url : undefined}
+                            onError={() => handleImageError(image.url)}
+
                         />
 
                         <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all duration-300 flex items-center justify-center">

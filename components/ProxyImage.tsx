@@ -1,5 +1,13 @@
 import React, { useState, useEffect } from 'react';
 
+// Create a proxy URL for extfernal images to avoid CORS issues
+const getProxyUrl = (url: string) => {
+  if (!url || url.startsWith('data:') || url.startsWith('blob:')) {
+    return url;
+  }
+  return `/api/image-proxy?url=${encodeURIComponent(url)}`;
+};
+
 interface ProxyImageProps {
     src: string;
     alt: string;
@@ -17,7 +25,7 @@ export const ProxyImage: React.FC<ProxyImageProps> = ({
     onLoad,
     fallbackSrc
 }) => {
-    const [imageSrc, setImageSrc] = useState(src);
+    const [imageSrc, setImageSrc] = useState(getProxyUrl(src));
     const [hasError, setHasError] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
 
@@ -26,28 +34,6 @@ export const ProxyImage: React.FC<ProxyImageProps> = ({
         setHasError(false);
         setIsLoading(true);
     }, [src]);
-
-    // Create a proxy URL for external images to avoid CORS issues
-    const getProxyUrl = (url: string) => {
-        if (!url) return '';
-        
-        // If it's already a data URL or blob, return as is
-        if (url.startsWith('data:') || url.startsWith('blob:')) {
-            return url;
-        }
-        
-        // Use a CORS proxy service
-        const corsProxy = 'https://cors-anywhere.herokuapp.com/';
-        const imageProxy = 'https://images.weserv.nl/?url=';
-        
-        // Try to use weserv.nl image proxy which is more reliable for images
-        try {
-            const encodedUrl = encodeURIComponent(url);
-            return `${imageProxy}${encodedUrl}&w=400&h=300&fit=cover&we`;
-        } catch {
-            return url;
-        }
-    };
 
     const handleError = () => {
         console.log('Image failed to load:', imageSrc);

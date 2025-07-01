@@ -1,9 +1,13 @@
+import express from 'express';
+import cors from 'cors';
+import nodemailer from 'nodemailer';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import axios from 'axios';
+import 'dotenv/config';
 
-const express = require('express');
-const cors = require('cors');
-const nodemailer = require('nodemailer');
-const path = require('path');
-require('dotenv').config();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -100,14 +104,40 @@ Time: ${new Date().toISOString()}
   }
 });
 
+// Image Proxy Route
+app.get('/api/image-proxy', async (req, res) => {
+  const { url } = req.query;
+
+  if (!url) {
+    return res.status(400).send('URL is required');
+  }
+
+  try {
+    const response = await axios({
+      method: 'get',
+      url: decodeURIComponent(url),
+      responseType: 'stream',
+    });
+
+    response.data.pipe(res);
+  } catch (error) {
+    console.error('Image proxy error:', error.message);
+    res.status(500).send('Failed to fetch image');
+  }
+});
+
 // Health check endpoint
 app.get('/api/health', (req, res) => {
   res.json({ status: 'OK', timestamp: new Date().toISOString() });
 });
 
-// Handles any requests that don't match the ones above
+// Serve static files from the React app
+app.use(express.static(path.join(__dirname, '../dist')));
+
+// The "catchall" handler: for any request that doesn't match one above,
+// send back React's index.html file.
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../dist', 'index.html'));
+  res.sendFile(path.join(__dirname, '../dist/index.html'));
 });
 
 // Start server
