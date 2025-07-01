@@ -103,30 +103,30 @@ body.dark {
   background: var(--color-primary);
 }
 
-/* NEON GRID BACKGROUND - HIGHLY VISIBLE */
+/* NEON GRID BACKGROUND - FULLY VISIBLE */
 .neon-grid-background {
   position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
   height: 100vh;
-  z-index: 1;
+  z-index: 5;
   pointer-events: none;
   background: 
-    linear-gradient(rgba(99, 102, 241, 0.8) 1px, transparent 1px) 0 0 / 40px 40px,
-    linear-gradient(90deg, rgba(99, 102, 241, 0.8) 1px, transparent 1px) 0 0 / 40px 40px;
-  animation: neon-grid-pulse 2s ease-in-out infinite;
+    linear-gradient(rgba(99, 102, 241, 1) 1px, transparent 1px) 0 0 / 40px 40px,
+    linear-gradient(90deg, rgba(99, 102, 241, 1) 1px, transparent 1px) 0 0 / 40px 40px;
+  animation: neon-grid-pulse 3s ease-in-out infinite;
   opacity: 1;
 }
 
 .dark .neon-grid-background {
   background: 
-    linear-gradient(rgba(129, 140, 248, 0.9) 1px, transparent 1px) 0 0 / 40px 40px,
-    linear-gradient(90deg, rgba(129, 140, 248, 0.9) 1px, transparent 1px) 0 0 / 40px 40px;
+    linear-gradient(rgba(129, 140, 248, 1) 1px, transparent 1px) 0 0 / 40px 40px,
+    linear-gradient(90deg, rgba(129, 140, 248, 1) 1px, transparent 1px) 0 0 / 40px 40px;
 }
 
 @keyframes neon-grid-pulse {
-  0%, 100% { opacity: 0.8; }
+  0%, 100% { opacity: 0.6; }
   50% { opacity: 1; }
 }
 
@@ -149,6 +149,7 @@ body {
 #root {
   position: relative;
   z-index: 10;
+  background: transparent;
 }
 
 /* Make sure loading overlay is above everything */
