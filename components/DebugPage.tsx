@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { searchNews } from '../services/newsSearchService.ts';
 import { searchSymbolLogo, searchReasoningIllustration, searchFinancialImages } from '../services/imageSearchService.ts';
@@ -12,17 +11,17 @@ export const DebugPage: React.FC = () => {
         { symbol: 'AAPL', name: 'Apple Inc.' }
     ]);
     const [timeframe, setTimeframe] = useState('1M');
-    
+
     const [newsResults, setNewsResults] = useState<NewsArticle[]>([]);
     const [logoResults, setLogoResults] = useState<ImageResult[]>([]);
     const [illustrationResults, setIllustrationResults] = useState<ImageResult[]>([]);
     const [financialImageResults, setFinancialImageResults] = useState<ImageResult[]>([]);
-    
+
     const [newsLoading, setNewsLoading] = useState(false);
     const [logoLoading, setLogoLoading] = useState(false);
     const [illustrationLoading, setIllustrationLoading] = useState(false);
     const [financialImageLoading, setFinancialImageLoading] = useState(false);
-    
+
     const [newsError, setNewsError] = useState<string | null>(null);
     const [imageError, setImageError] = useState<string | null>(null);
 
@@ -150,7 +149,7 @@ export const DebugPage: React.FC = () => {
                 <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-4">
                     🔧 Debug Console - News & Images
                 </h1>
-                
+
                 {/* Environment Variables Check */}
                 <div className="mb-6 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
                     <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-3">
@@ -195,7 +194,7 @@ export const DebugPage: React.FC = () => {
                     <h2 className="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-4">
                         📰 News Search Testing
                     </h2>
-                    
+
                     <div className="flex flex-col md:flex-row gap-4 mb-4">
                         <select
                             value={timeframe}
@@ -264,7 +263,7 @@ export const DebugPage: React.FC = () => {
                     <h2 className="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-4">
                         🖼️ Image Search Testing
                     </h2>
-                    
+
                     <div className="flex flex-col md:flex-row gap-4 mb-4">
                         <div className="flex gap-2">
                             <button
