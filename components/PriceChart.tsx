@@ -616,7 +616,7 @@ export const PriceChart: React.FC<PriceChartProps> = ({ data, theme }) => {
                             onChange={(e) => setIndicators(prev => ({ ...prev, sma9: e.target.checked }))}
                             className="rounded border-gray-300 dark:border-gray-600"
                         />
-                        <label htmlFor="sma9" className="text-xs text-gray-600 dark:text-gray-400">SMA 9</label>
+                        <label htmlFor="sma9" className="text-xs text-white">SMA 9</label>
                         <div className="w-3 h-3 border-2 border-dashed" style={{ borderColor: '#ff6b6b' }}></div>
                     </div>
                     
@@ -628,7 +628,7 @@ export const PriceChart: React.FC<PriceChartProps> = ({ data, theme }) => {
                             onChange={(e) => setIndicators(prev => ({ ...prev, sma20: e.target.checked }))}
                             className="rounded border-gray-300 dark:border-gray-600"
                         />
-                        <label htmlFor="sma20" className="text-xs text-gray-600 dark:text-gray-400">SMA 20</label>
+                        <label htmlFor="sma20" className="text-xs text-white">SMA 20</label>
                         <div className="w-3 h-3 border-2" style={{ borderColor: '#4ecdc4' }}></div>
                     </div>
                     
@@ -640,7 +640,7 @@ export const PriceChart: React.FC<PriceChartProps> = ({ data, theme }) => {
                             onChange={(e) => setIndicators(prev => ({ ...prev, sma50: e.target.checked }))}
                             className="rounded border-gray-300 dark:border-gray-600"
                         />
-                        <label htmlFor="sma50" className="text-xs text-gray-600 dark:text-gray-400">SMA 50</label>
+                        <label htmlFor="sma50" className="text-xs text-white">SMA 50</label>
                         <div className="w-3 h-3 border-2" style={{ borderColor: '#45b7d1' }}></div>
                     </div>
                     
@@ -652,7 +652,7 @@ export const PriceChart: React.FC<PriceChartProps> = ({ data, theme }) => {
                             onChange={(e) => setIndicators(prev => ({ ...prev, sma200: e.target.checked }))}
                             className="rounded border-gray-300 dark:border-gray-600"
                         />
-                        <label htmlFor="sma200" className="text-xs text-gray-600 dark:text-gray-400">SMA 200</label>
+                        <label htmlFor="sma200" className="text-xs text-white">SMA 200</label>
                         <div className="w-3 h-3 border-2" style={{ borderColor: '#96ceb4' }}></div>
                     </div>
                     
@@ -664,7 +664,7 @@ export const PriceChart: React.FC<PriceChartProps> = ({ data, theme }) => {
                             onChange={(e) => setIndicators(prev => ({ ...prev, ema12: e.target.checked }))}
                             className="rounded border-gray-300 dark:border-gray-600"
                         />
-                        <label htmlFor="ema12" className="text-xs text-gray-600 dark:text-gray-400">EMA 12</label>
+                        <label htmlFor="ema12" className="text-xs text-white">EMA 12</label>
                         <div className="w-3 h-3 border-2 border-dashed" style={{ borderColor: '#feca57' }}></div>
                     </div>
                     
@@ -676,7 +676,7 @@ export const PriceChart: React.FC<PriceChartProps> = ({ data, theme }) => {
                             onChange={(e) => setIndicators(prev => ({ ...prev, ema26: e.target.checked }))}
                             className="rounded border-gray-300 dark:border-gray-600"
                         />
-                        <label htmlFor="ema26" className="text-xs text-gray-600 dark:text-gray-400">EMA 26</label>
+                        <label htmlFor="ema26" className="text-xs text-white">EMA 26</label>
                         <div className="w-3 h-3 border-2 border-dashed" style={{ borderColor: '#ff9ff3' }}></div>
                     </div>
                     
@@ -688,7 +688,7 @@ export const PriceChart: React.FC<PriceChartProps> = ({ data, theme }) => {
                             onChange={(e) => setIndicators(prev => ({ ...prev, vwap: e.target.checked }))}
                             className="rounded border-gray-300 dark:border-gray-600"
                         />
-                        <label htmlFor="vwap" className="text-xs text-gray-600 dark:text-gray-400">VWAP</label>
+                        <label htmlFor="vwap" className="text-xs text-white">VWAP</label>
                         <div className="w-3 h-3 border-2 border-dashed" style={{ borderColor: '#54a0ff' }}></div>
                     </div>
                     
@@ -700,7 +700,7 @@ export const PriceChart: React.FC<PriceChartProps> = ({ data, theme }) => {
                             onChange={(e) => setIndicators(prev => ({ ...prev, bollinger: e.target.checked }))}
                             className="rounded border-gray-300 dark:border-gray-600"
                         />
-                        <label htmlFor="bollinger" className="text-xs text-gray-600 dark:text-gray-400">Bollinger</label>
+                        <label htmlFor="bollinger" className="text-xs text-white">Bollinger</label>
                         <div className="w-3 h-3 border-2" style={{ borderColor: '#5f27cd' }}></div>
                     </div>
                 </div>
