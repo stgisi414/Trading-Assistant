@@ -88,14 +88,15 @@ export const InputSection: React.FC<InputSectionProps> = ({
     }, [selectedIndicators]);
 
     const inputClasses = `w-full p-3 bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-gray-200 placeholder-gray-400 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition [color-scheme:light] dark:[color-scheme:dark]`;
-    const labelClasses = "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1";
+    const labelClasses = "block text-sm font-medium mb-1";
+    const labelStyle = { color: 'var(--color-text-primary)' };
 
     return (
         <section>
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-x-4 gap-y-6 items-start">
                 <div className="flex flex-col gap-6 lg:col-span-1">
                     <div>
-                        <label htmlFor="marketTypeSelect" className={labelClasses}>Market Type</label>
+                        <label htmlFor="marketTypeSelect" className={labelClasses} style={labelStyle}>Market Type</label>
                         <select
                             id="marketTypeSelect"
                             value={selectedMarketType}
@@ -111,7 +112,7 @@ export const InputSection: React.FC<InputSectionProps> = ({
                     </div>
 
                     <div>
-                        <label htmlFor="marketSelect" className={labelClasses}>Market</label>
+                        <label htmlFor="marketSelect" className={labelClasses} style={labelStyle}>Market</label>
                         <select
                             id="marketSelect"
                             value={selectedMarket || ''}
@@ -136,7 +137,7 @@ export const InputSection: React.FC<InputSectionProps> = ({
                         market={selectedMarket}
                     />
                     <div>
-                        <label htmlFor="walletAmount" className={labelClasses}>Trading Wallet Amount ($)</label>
+                        <label htmlFor="walletAmount" className={labelClasses} style={labelStyle}>Trading Wallet Amount ($)</label>
                         <input
                             type="number"
                             id="walletAmount"
@@ -291,7 +292,7 @@ export const InputSection: React.FC<InputSectionProps> = ({
              {/* Confluence Analysis Display */}
              {confluenceAnalysis && selectedIndicators.length > 0 && (
                 <div className="space-y-4">
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                    <h3 className="text-lg font-semibold" style={{ color: 'var(--color-text-primary)' }}>
                         📊 Indicator Confluence Analysis
                     </h3>
                     <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-xl p-4 border border-blue-200 dark:border-blue-700">
@@ -316,7 +317,7 @@ export const InputSection: React.FC<InputSectionProps> = ({
                                 <div className="text-xs text-gray-600 dark:text-gray-400">Category Coverage:</div>
                                 {Object.entries(confluenceAnalysis.categoryScores).map(([category, score]) => (
                                     <div key={category} className="flex items-center justify-between text-xs">
-                                        <span className="capitalize text-gray-700 dark:text-gray-300">
+                                        <span className="capitalize" style={{ color: 'var(--color-text-primary)' }}>
                                             {category === 'trend' ? '📈 Trend' :
                                              category === 'momentum' ? '🚀 Momentum' :
                                              category === 'volatility' ? '📊 Volatility' : '📦 Volume'}
@@ -342,12 +343,12 @@ export const InputSection: React.FC<InputSectionProps> = ({
                         {/* Recommendations */}
                         {confluenceAnalysis.recommendations.length > 0 && (
                             <div className="mt-4 pt-3 border-t border-blue-200 dark:border-blue-700">
-                                <div className="text-xs font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                <div className="text-xs font-medium mb-2" style={{ color: 'var(--color-text-primary)' }}>
                                     💡 Optimization Suggestions:
                                 </div>
                                 <div className="space-y-1">
                                     {confluenceAnalysis.recommendations.slice(0, 2).map((rec, index) => (
-                                        <div key={index} className="text-xs text-gray-600 dark:text-gray-400">
+                                        <div key={index} className="text-xs" style={{ color: 'var(--color-text-secondary)' }}>
                                             • {rec}
                                         </div>
                                     ))}

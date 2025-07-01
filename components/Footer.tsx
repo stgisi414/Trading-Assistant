@@ -11,15 +11,16 @@ export const Footer: React.FC<FooterProps> = ({ className = '' }) => {
 
     return (
         <>
-            <footer className={`bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 py-4 px-6 ${className}`}>
+            <footer className={`border-t py-4 px-6 ${className}`} style={{ backgroundColor: 'var(--color-background)', borderColor: 'var(--color-border)' }}>
                 <div className="flex flex-col sm:flex-row items-center justify-between space-y-2 sm:space-y-0">
-                    <div className="text-sm text-gray-600 dark:text-gray-400">
-                        © 2025 <span className="font-semibold text-gray-900 dark:text-white signatex-embossed">Signatex.co</span>. All rights reserved.
+                    <div className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>
+                        © 2025 <span className="font-semibold signatex-embossed" style={{ color: 'var(--color-text-primary)' }}>Signatex.co</span>. All rights reserved.
                     </div>
                     <div className="flex items-center space-x-4">
                         <button
                             onClick={() => setIsContactModalOpen(true)}
-                            className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors"
+                            className="text-sm transition-colors"
+                            style={{ color: 'var(--color-primary)' }}
                         >
                             Contact Us
                         </button>

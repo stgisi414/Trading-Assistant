@@ -109,16 +109,16 @@ export const Header: React.FC<HeaderProps> = ({
                                     <img src="https://cdn.hugeicons.com/icons/analytics-02-bulk-rounded.svg" className="w-5 h-5 filter brightness-0 invert" />
                                 </div>
                                 <div>
-                                    <h1 className="text-xl font-bold text-gray-900 dark:text-white signatex-embossed">
+                                    <h1 className="text-xl font-bold signatex-embossed" style={{ color: 'var(--color-text-primary)' }}>
                                         Signatex
                                     </h1>
-                                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                                    <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>
                                         AI-Powered Trading Assistant
                                     </p>
                                 </div>
                             </div>
                             <div className="ml-10">
-                                <p className="text-xs sm:text-sm md:text-base lg:text-lg text-muted dark:text-gray-300 mb-2 sm:mb-4">
+                                <p className="text-xs sm:text-sm md:text-base lg:text-lg mb-2 sm:mb-4" style={{ color: 'var(--color-text-muted)' }}>
                                     <span className="hidden sm:block">Leveraging Gemini for Market Insights</span>
                                     <span className="block sm:hidden">Market Intelligence AI</span>
                                 </p>

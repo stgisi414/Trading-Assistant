@@ -117,6 +117,36 @@ body {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
+/* Ensure all text elements use proper theme colors */
+h1, h2, h3, h4, h5, h6 {
+  color: var(--color-text-primary) !important;
+}
+
+p, span, div, label, li {
+  color: var(--color-text-primary) !important;
+}
+
+/* Override specific text color classes */
+.text-white {
+  color: var(--color-text-primary) !important;
+}
+
+.text-gray-300,
+.text-gray-400,
+.text-gray-500 {
+  color: var(--color-text-muted) !important;
+}
+
+.text-gray-600,
+.text-gray-700 {
+  color: var(--color-text-secondary) !important;
+}
+
+.text-gray-800,
+.text-gray-900 {
+  color: var(--color-text-primary) !important;
+}
+
 /* Button styles */
 .btn-primary {
   background-color: var(--color-primary);
@@ -205,6 +235,75 @@ body {
 
 .bg-accent {
   background-color: var(--color-accent) !important;
+}
+
+/* Modal and component backgrounds */
+.bg-white {
+  background-color: var(--color-background) !important;
+}
+
+.bg-gray-50 {
+  background-color: var(--color-card) !important;
+}
+
+.bg-gray-100 {
+  background-color: var(--color-accent) !important;
+}
+
+.bg-gray-700 {
+  background-color: var(--color-card) !important;
+}
+
+.bg-gray-800 {
+  background-color: var(--color-background) !important;
+}
+
+/* Text color overrides for specific contexts */
+.text-blue-600,
+.text-blue-700,
+.text-blue-800 {
+  color: var(--color-primary) !important;
+}
+
+.text-green-600,
+.text-green-700,
+.text-green-800 {
+  color: #059669 !important;
+}
+
+.text-red-600,
+.text-red-700,
+.text-red-800 {
+  color: #dc2626 !important;
+}
+
+.text-yellow-600,
+.text-yellow-700,
+.text-yellow-800 {
+  color: #d97706 !important;
+}
+
+.text-purple-600,
+.text-purple-700,
+.text-purple-800 {
+  color: #9333ea !important;
+}
+
+/* Border colors */
+.border-gray-200 {
+  border-color: var(--color-border) !important;
+}
+
+.border-gray-300 {
+  border-color: var(--color-border) !important;
+}
+
+.border-gray-600 {
+  border-color: var(--color-border) !important;
+}
+
+.border-gray-700 {
+  border-color: var(--color-border) !important;
 }
 
 /* Animation utilities */

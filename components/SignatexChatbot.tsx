@@ -1220,15 +1220,15 @@ Try asking me about indicators, trading setups, or general trading advice. 🤖`
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-0 sm:p-4">
-            <div className="bg-white dark:bg-gray-800 rounded-none sm:rounded-2xl shadow-2xl w-full h-full sm:h-[100vh] sm:max-w-4xl flex flex-col">
+            <div className="rounded-none sm:rounded-2xl shadow-2xl w-full h-full sm:h-[100vh] sm:max-w-4xl flex flex-col" style={{ backgroundColor: 'var(--color-background)' }}>
                 {/* Header */}
-                <div className="flex items-center justify-between p-3 sm:p-4 border-b border-gray-200 dark:border-gray-700">
+                <div className="flex items-center justify-between p-3 sm:p-4 border-b" style={{ borderColor: 'var(--color-border)' }}>
                     <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
                         <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center flex-shrink-0">
                             <img src="https://cdn.hugeicons.com/icons/google-gemini-bulk-rounded.svg" alt="Gemini AI" className="w-5 h-5 sm:w-6 sm:h-6 filter brightness-0 invert" />
                         </div>
                         <div className="min-w-0 flex-1">
-                            <h2 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-1 sm:gap-2 flex-wrap">
+                            <h2 className="text-base sm:text-lg font-semibold flex items-center gap-1 sm:gap-2 flex-wrap" style={{ color: 'var(--color-text-primary)' }}>
                                 <span className="signatex-embossed">Signatex Assistant</span>
                                 <span className="inline-flex items-center gap-1 px-1 sm:px-2 py-0.5 sm:py-1 text-xs bg-green-100 dark:bg-green-500/20 text-green-700 dark:text-green-200 rounded-full border dark:border-green-400/30">
                                     <img src="https://cdn.hugeicons.com/icons/ai-cloud-stroke-rounded.svg" className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-green-500 dark:text-green-300 dark:filter dark:brightness-0 dark:invert" />
@@ -1260,7 +1260,7 @@ Try asking me about indicators, trading setups, or general trading advice. 🤖`
                                     </span>
                                 )}
                             </h2>
-                            <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 hidden sm:block">
+                            <p className="text-xs sm:text-sm hidden sm:block" style={{ color: 'var(--color-text-muted)' }}>
                                 AI Trading Expert • Natural Language Commands • Live Integration
                             </p>
                         </div>

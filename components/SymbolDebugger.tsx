@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { MarketType } from '../types.ts';
 import type { FmpSearchResult } from '../types.ts';
@@ -64,7 +63,7 @@ export const SymbolDebugger: React.FC<SymbolDebuggerProps> = ({
 
     const testAddSymbol = () => {
         addLog('INFO', `Testing symbol addition: ${testSymbol}`);
-        
+
         try {
             // Check if symbol already exists
             const existingSymbol = selectedSymbols.find(s => s.symbol === testSymbol);
@@ -80,12 +79,12 @@ export const SymbolDebugger: React.FC<SymbolDebuggerProps> = ({
             };
 
             addLog('INFO', 'Calling onAddSymbol function', symbolToAdd);
-            
+
             // Call the add function
             onAddSymbol(symbolToAdd);
-            
+
             addLog('SUCCESS', 'onAddSymbol called successfully', symbolToAdd);
-            
+
             // Check if it was actually added after a short delay
             setTimeout(() => {
                 const wasAdded = selectedSymbols.find(s => s.symbol === testSymbol);
@@ -95,7 +94,7 @@ export const SymbolDebugger: React.FC<SymbolDebuggerProps> = ({
                     addLog('ERROR', `Symbol ${testSymbol} was NOT added to state despite onAddSymbol call`);
                 }
             }, 100);
-            
+
         } catch (error) {
             addLog('ERROR', 'Error during symbol addition', error);
         }
@@ -109,11 +108,11 @@ export const SymbolDebugger: React.FC<SymbolDebuggerProps> = ({
 
         const symbolToRemove = selectedSymbols[0].symbol;
         addLog('INFO', `Testing symbol removal: ${symbolToRemove}`);
-        
+
         try {
             onRemoveSymbol(symbolToRemove);
             addLog('SUCCESS', 'onRemoveSymbol called successfully', symbolToRemove);
-            
+
             setTimeout(() => {
                 const stillExists = selectedSymbols.find(s => s.symbol === symbolToRemove);
                 if (!stillExists) {
@@ -122,7 +121,7 @@ export const SymbolDebugger: React.FC<SymbolDebuggerProps> = ({
                     addLog('ERROR', `Symbol ${symbolToRemove} still exists despite onRemoveSymbol call`);
                 }
             }, 100);
-            
+
         } catch (error) {
             addLog('ERROR', 'Error during symbol removal', error);
         }
