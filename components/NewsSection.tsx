@@ -38,7 +38,9 @@ export const NewsSection: React.FC<NewsSectionProps> = ({ news, theme }) => {
                             )}
                             {article.snippet && (
                                 <p className="text-sm text-gray-600 dark:text-gray-300">
-                                    {article.snippet}
+                                    {article.snippet.length > 200 
+                                        ? `${article.snippet.substring(0, 200)}...` 
+                                        : article.snippet}
                                 </p>
                             )}
                         </div>
