@@ -171,7 +171,7 @@ const searchFMPStockNews = async (symbols: string[], dateRange: { from?: string,
         // Search for each symbol (limit to first 3 to avoid rate limits)
         for (const symbol of symbols.slice(0, 3)) {
             const params = new URLSearchParams({
-                symbols: symbol,
+                tickers: symbol,
                 limit: '15',
                 apikey: FMP_API_KEY
             });
@@ -180,24 +180,28 @@ const searchFMPStockNews = async (symbols: string[], dateRange: { from?: string,
                 params.append('from', dateRange.from);
             }
             
-            const url = `${FMP_BASE_URL}/news/stock?${params.toString()}`;
-            console.log(`Fetching FMP stock news for ${symbol}`);
+            const url = `${FMP_BASE_URL}/stock_news?${params.toString()}`;
+            console.log(`Fetching FMP stock news for ${symbol} from: ${url}`);
             
             const response = await fetch(url);
             if (!response.ok) {
-                console.error(`FMP stock news failed for ${symbol}: ${response.status}`);
+                console.error(`FMP stock news failed for ${symbol}: ${response.status} ${response.statusText}`);
+                const errorText = await response.text();
+                console.error(`Error response: ${errorText}`);
                 continue;
             }
             
             const data = await response.json();
+            console.log(`FMP stock news response for ${symbol}:`, data);
+            
             if (Array.isArray(data)) {
                 const newsItems = data
                     .filter(item => item.title && item.url && isValidNewsUrl(item.url))
                     .map(item => ({
                         title: item.title || 'Untitled',
                         uri: item.url || '#',
-                        snippet: item.text || '',
-                        source: item.site || item.publisher || 'Unknown'
+                        snippet: item.text || item.content || '',
+                        source: item.site || item.publisher || item.source || 'Unknown'
                     }));
                 
                 allNews.push(...newsItems);
@@ -224,24 +228,28 @@ const searchFMPGeneralNews = async (limit: number = 10): Promise<NewsArticle[]> 
             apikey: FMP_API_KEY
         });
         
-        const url = `${FMP_BASE_URL}/news/general-latest?${params.toString()}`;
-        console.log("Fetching FMP general news");
+        const url = `${FMP_BASE_URL}/fmp/articles?${params.toString()}`;
+        console.log(`Fetching FMP general news from: ${url}`);
         
         const response = await fetch(url);
         if (!response.ok) {
-            console.error(`FMP general news failed: ${response.status}`);
+            console.error(`FMP general news failed: ${response.status} ${response.statusText}`);
+            const errorText = await response.text();
+            console.error(`Error response: ${errorText}`);
             return [];
         }
         
         const data = await response.json();
+        console.log("FMP general news response:", data);
+        
         if (Array.isArray(data)) {
             const newsItems = data
                 .filter(item => item.title && item.url && isValidNewsUrl(item.url))
                 .map(item => ({
                     title: item.title || 'Untitled',
                     uri: item.url || '#',
-                    snippet: item.text || '',
-                    source: item.site || item.publisher || 'Unknown'
+                    snippet: item.content || item.text || '',
+                    source: item.site || item.publisher || item.source || 'FMP'
                 }));
             
             console.log(`Added ${newsItems.length} FMP general news items`);
@@ -263,7 +271,7 @@ const searchFMPPressReleases = async (symbols: string[], dateRange: { from?: str
     try {
         for (const symbol of symbols.slice(0, 2)) { // Limit to 2 symbols for press releases
             const params = new URLSearchParams({
-                symbols: symbol,
+                symbol: symbol,
                 limit: '5',
                 apikey: FMP_API_KEY
             });
@@ -272,24 +280,28 @@ const searchFMPPressReleases = async (symbols: string[], dateRange: { from?: str
                 params.append('from', dateRange.from);
             }
             
-            const url = `${FMP_BASE_URL}/news/press-releases?${params.toString()}`;
-            console.log(`Fetching FMP press releases for ${symbol}`);
+            const url = `${FMP_BASE_URL}/press-releases/${symbol}?${params.toString()}`;
+            console.log(`Fetching FMP press releases for ${symbol} from: ${url}`);
             
             const response = await fetch(url);
             if (!response.ok) {
-                console.error(`FMP press releases failed for ${symbol}: ${response.status}`);
+                console.error(`FMP press releases failed for ${symbol}: ${response.status} ${response.statusText}`);
+                const errorText = await response.text();
+                console.error(`Error response: ${errorText}`);
                 continue;
             }
             
             const data = await response.json();
+            console.log(`FMP press releases response for ${symbol}:`, data);
+            
             if (Array.isArray(data)) {
                 const newsItems = data
                     .filter(item => item.title && item.url && isValidNewsUrl(item.url))
                     .map(item => ({
                         title: item.title || 'Untitled',
                         uri: item.url || '#',
-                        snippet: item.text || '',
-                        source: item.site || item.publisher || 'Press Release'
+                        snippet: item.text || item.content || '',
+                        source: item.site || item.publisher || item.source || 'Press Release'
                     }));
                 
                 allNews.push(...newsItems);
