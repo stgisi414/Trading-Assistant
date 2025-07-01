@@ -5,7 +5,7 @@
 @import "tailwindcss";
 
 :root {
-  /* Colors */
+  /* Light Mode Colors */
   --color-primary: #6366f1;
   --color-background: #ffffff;
   --color-foreground: #111827;
@@ -23,8 +23,27 @@
   --animate-spin-slow: spin 3s linear infinite;
 }
 
+/* Dark mode styles - applied when .dark class is present */
+:root.dark,
+.dark,
+html.dark,
+body.dark {
+  --color-primary: #818cf8;
+  --color-background: #111827;
+  --color-foreground: #f9fafb;
+  --color-card: #1f2937;
+  --color-border: #374151;
+  --color-muted: #9ca3af;
+  
+  /* Text Colors for Dark Mode */
+  --color-text-primary: #f9fafb;
+  --color-text-secondary: #e5e7eb;
+  --color-text-muted: #9ca3af;
+}
+
+/* System preference fallback */
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not(.light) {
     --color-primary: #818cf8;
     --color-background: #111827;
     --color-foreground: #f9fafb;
@@ -37,20 +56,6 @@
     --color-text-secondary: #e5e7eb;
     --color-text-muted: #9ca3af;
   }
-}
-
-.dark {
-  --color-primary: #818cf8;
-  --color-background: #111827;
-  --color-foreground: #f9fafb;
-  --color-card: #1f2937;
-  --color-border: #374151;
-  --color-muted: #9ca3af;
-  
-  /* Text Colors for Dark Mode */
-  --color-text-primary: #f9fafb;
-  --color-text-secondary: #e5e7eb;
-  --color-text-muted: #9ca3af;
 }
 
 /* Keyframes for animations */
@@ -99,12 +104,17 @@
 }
 
 /* Base styles */
+html {
+  color-scheme: light dark;
+}
+
 body {
   font-family: 'Inter', sans-serif;
-  color: var(--color-text-primary);
-  background-color: var(--color-background);
+  color: var(--color-text-primary) !important;
+  background-color: var(--color-background) !important;
   font-size: 14px;
   line-height: 1.5;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* Button styles */
@@ -165,15 +175,36 @@ body {
 
 /* Text utilities */
 .text-primary {
-  color: var(--color-text-primary);
+  color: var(--color-text-primary) !important;
 }
 
 .text-secondary {
-  color: var(--color-text-secondary);
+  color: var(--color-text-secondary) !important;
 }
 
 .text-muted {
-  color: var(--color-text-muted);
+  color: var(--color-text-muted) !important;
+}
+
+/* Tailwind overrides to use our custom variables */
+.bg-background {
+  background-color: var(--color-background) !important;
+}
+
+.text-foreground {
+  color: var(--color-foreground) !important;
+}
+
+.bg-card {
+  background-color: var(--color-card) !important;
+}
+
+.border-border {
+  border-color: var(--color-border) !important;
+}
+
+.bg-accent {
+  background-color: var(--color-accent) !important;
 }
 
 /* Animation utilities */

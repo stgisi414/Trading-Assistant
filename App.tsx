@@ -172,19 +172,27 @@ function App() {
     });
 
     useEffect(() => {
-        const root = window.document.documentElement;
+        const html = window.document.documentElement;
         const body = window.document.body;
 
         // Remove both theme classes first
-        root.classList.remove("light", "dark");
+        html.classList.remove("light", "dark");
         body.classList.remove("light", "dark");
 
-        // Add the current theme class
-        root.classList.add(theme);
+        // Add the current theme class to both html and body
+        html.classList.add(theme);
         body.classList.add(theme);
+        
+        // Also set the data attribute for additional CSS targeting
+        html.setAttribute('data-theme', theme);
+        body.setAttribute('data-theme', theme);
 
         // Update localStorage
         localStorage.setItem("theme", theme);
+        
+        console.log(`Theme switched to: ${theme}`);
+        console.log('HTML classes:', html.className);
+        console.log('Body classes:', body.className);
     }, [theme]);
 
     // Save selected symbols to localStorage whenever they change
