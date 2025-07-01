@@ -246,7 +246,7 @@ export const DebugPage: React.FC = () => {
                                         <p className="text-xs text-gray-600 dark:text-gray-300 mt-1">
                                             {article.snippet.length > 200 
                                                 ? `${article.snippet.substring(0, 200)}...` 
-                                                : article.snippet} 100)}...
+                                                : article.snippet}
                                         </p>
                                     </div>
                                 ))}
