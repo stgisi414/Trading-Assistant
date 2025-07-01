@@ -103,47 +103,53 @@ body.dark {
   background: var(--color-primary);
 }
 
-/* ULTRA VISIBLE NEON GRID - IMPOSSIBLE TO MISS */
+/* MAXIMUM VISIBILITY NEON GRID */
 .neon-grid-background {
   position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
   height: 100vh;
-  z-index: 1;
+  z-index: 9999;
   pointer-events: none;
-  opacity: 1;
-  background-color: rgba(0, 150, 255, 0.1);
-  background-image: 
-    linear-gradient(rgba(0, 255, 255, 0.6) 2px, transparent 2px),
-    linear-gradient(90deg, rgba(0, 255, 255, 0.6) 2px, transparent 2px),
-    radial-gradient(circle at 60px 60px, rgba(255, 0, 255, 0.8) 4px, transparent 4px);
-  background-size: 60px 60px, 60px 60px, 60px 60px;
-  animation: mega-grid-pulse 2s ease-in-out infinite;
-  filter: drop-shadow(0 0 20px rgba(0, 255, 255, 0.6)) brightness(1.5);
-  border: 3px solid rgba(0, 255, 255, 0.5);
+  opacity: 0.3;
+  background: 
+    linear-gradient(rgba(0, 255, 255, 0.8) 1px, transparent 1px) 0 0 / 40px 40px,
+    linear-gradient(90deg, rgba(0, 255, 255, 0.8) 1px, transparent 1px) 0 0 / 40px 40px,
+    radial-gradient(circle at 20px 20px, rgba(255, 0, 255, 1) 2px, transparent 2px) 0 0 / 40px 40px;
+  animation: intense-grid-pulse 3s ease-in-out infinite;
+  filter: 
+    drop-shadow(0 0 10px rgba(0, 255, 255, 0.8))
+    drop-shadow(0 0 20px rgba(255, 0, 255, 0.6))
+    brightness(1.8);
 }
 
 .dark .neon-grid-background {
-  background-color: rgba(255, 0, 255, 0.15);
-  background-image: 
-    linear-gradient(rgba(0, 255, 255, 0.8) 3px, transparent 3px),
-    linear-gradient(90deg, rgba(0, 255, 255, 0.8) 3px, transparent 3px),
-    radial-gradient(circle at 60px 60px, rgba(255, 0, 255, 1) 5px, transparent 5px);
-  filter: drop-shadow(0 0 30px rgba(0, 255, 255, 0.8)) brightness(2);
-  border: 3px solid rgba(255, 0, 255, 0.7);
+  opacity: 0.4;
+  background: 
+    linear-gradient(rgba(0, 255, 255, 1) 1px, transparent 1px) 0 0 / 40px 40px,
+    linear-gradient(90deg, rgba(0, 255, 255, 1) 1px, transparent 1px) 0 0 / 40px 40px,
+    radial-gradient(circle at 20px 20px, rgba(255, 0, 255, 1) 2px, transparent 2px) 0 0 / 40px 40px;
+  filter: 
+    drop-shadow(0 0 15px rgba(0, 255, 255, 1))
+    drop-shadow(0 0 25px rgba(255, 0, 255, 0.8))
+    brightness(2.2);
 }
 
-@keyframes mega-grid-pulse {
+@keyframes intense-grid-pulse {
   0%, 100% { 
-    opacity: 0.7;
-    transform: scale(1);
-    filter: drop-shadow(0 0 20px rgba(0, 255, 255, 0.6)) brightness(1.5);
+    opacity: 0.3;
+    filter: 
+      drop-shadow(0 0 10px rgba(0, 255, 255, 0.8))
+      drop-shadow(0 0 20px rgba(255, 0, 255, 0.6))
+      brightness(1.8);
   }
   50% { 
-    opacity: 1;
-    transform: scale(1.01);
-    filter: drop-shadow(0 0 40px rgba(0, 255, 255, 1)) brightness(2.5);
+    opacity: 0.6;
+    filter: 
+      drop-shadow(0 0 20px rgba(0, 255, 255, 1))
+      drop-shadow(0 0 40px rgba(255, 0, 255, 0.9))
+      brightness(2.5);
   }
 }
 
