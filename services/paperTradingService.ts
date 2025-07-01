@@ -343,20 +343,14 @@ class PaperTradingService {
     }
 
     if (tradeRequest.action === 'SELL') {
-      let positionKey: string;
-      if (tradeRequest.isOptions) {
-        positionKey = `${tradeRequest.symbol}_${tradeRequest.optionType}_${tradeRequest.strikePrice}_${tradeRequest.expirationDate?.toISOString()}`;
-      } else {
-        positionKey = tradeRequest.symbol;
-      }
-      
       const existingPosition = portfolio.positions.find(p => {
         if (tradeRequest.isOptions) {
           return p.symbol === tradeRequest.symbol && 
                  p.isOptions === true &&
                  p.optionType === tradeRequest.optionType &&
                  p.strikePrice === tradeRequest.strikePrice &&
-                 p.expirationDate?.toISOString() === tradeRequest.expirationDate?.toISOString();
+                 p.expirationDate && tradeRequest.expirationDate &&
+                 new Date(p.expirationDate).getTime() === tradeRequest.expirationDate.getTime();
         } else {
           return p.symbol === tradeRequest.symbol && !p.isOptions;
         }
@@ -397,23 +391,37 @@ class PaperTradingService {
       // Reduce cash balance
       updatedPortfolio.cashBalance -= totalCost;
       
-      // Add or update position
-      const existingPositionIndex = updatedPortfolio.positions.findIndex(p => p.symbol === tradeRequest.symbol);
+      // Find existing position using the same logic as for selling
+      const existingPositionIndex = updatedPortfolio.positions.findIndex(p => {
+        if (tradeRequest.isOptions) {
+          return p.symbol === tradeRequest.symbol && 
+                 p.isOptions === true &&
+                 p.optionType === tradeRequest.optionType &&
+                 p.strikePrice === tradeRequest.strikePrice &&
+                 p.expirationDate && tradeRequest.expirationDate &&
+                 new Date(p.expirationDate).getTime() === tradeRequest.expirationDate.getTime();
+        } else {
+          return p.symbol === tradeRequest.symbol && !p.isOptions;
+        }
+      });
+
       if (existingPositionIndex >= 0) {
         const existingPosition = updatedPortfolio.positions[existingPositionIndex];
-        const totalShares = existingPosition.quantity + tradeRequest.quantity;
-        const totalCost = (existingPosition.averagePrice * existingPosition.quantity) + (marketPrice * tradeRequest.quantity);
+        const totalQuantity = existingPosition.quantity + tradeRequest.quantity;
+        const totalPositionCost = (existingPosition.averagePrice * existingPosition.quantity * (existingPosition.contractSize || 1)) + totalCost;
         
         updatedPortfolio.positions[existingPositionIndex] = {
           ...existingPosition,
-          quantity: totalShares,
-          averagePrice: totalCost / totalShares,
-          marketValue: marketPrice * totalShares,
-          unrealizedPnL: (marketPrice * totalShares) - totalCost,
-          unrealizedPnLPercent: ((marketPrice * totalShares) - totalCost) / totalCost * 100
+          quantity: totalQuantity,
+          averagePrice: totalPositionCost / (totalQuantity * contractSize),
+          currentPrice: marketPrice,
+          marketValue: marketPrice * totalQuantity * contractSize,
+          unrealizedPnL: (marketPrice * totalQuantity * contractSize) - totalPositionCost,
+          unrealizedPnLPercent: ((marketPrice * totalQuantity * contractSize) - totalPositionCost) / totalPositionCost * 100
         };
       } else {
-        updatedPortfolio.positions.push({
+        // Create new position
+        const newPosition: any = {
           symbol: tradeRequest.symbol,
           quantity: tradeRequest.quantity,
           averagePrice: marketPrice,
@@ -421,17 +429,41 @@ class PaperTradingService {
           marketValue: totalCost,
           unrealizedPnL: 0,
           unrealizedPnLPercent: 0
-        });
+        };
+
+        // Add options-specific fields if this is an options trade
+        if (tradeRequest.isOptions) {
+          newPosition.isOptions = true;
+          newPosition.optionType = tradeRequest.optionType;
+          newPosition.strikePrice = tradeRequest.strikePrice;
+          newPosition.expirationDate = tradeRequest.expirationDate;
+          newPosition.contractSize = contractSize;
+        }
+
+        updatedPortfolio.positions.push(newPosition);
       }
     } else { // SELL
       // Add to cash balance
       updatedPortfolio.cashBalance += totalCost;
       
-      // Update position
-      const existingPositionIndex = updatedPortfolio.positions.findIndex(p => p.symbol === tradeRequest.symbol);
+      // Find existing position using the same logic as validation
+      const existingPositionIndex = updatedPortfolio.positions.findIndex(p => {
+        if (tradeRequest.isOptions) {
+          return p.symbol === tradeRequest.symbol && 
+                 p.isOptions === true &&
+                 p.optionType === tradeRequest.optionType &&
+                 p.strikePrice === tradeRequest.strikePrice &&
+                 p.expirationDate && tradeRequest.expirationDate &&
+                 new Date(p.expirationDate).getTime() === tradeRequest.expirationDate.getTime();
+        } else {
+          return p.symbol === tradeRequest.symbol && !p.isOptions;
+        }
+      });
+
       if (existingPositionIndex >= 0) {
         const existingPosition = updatedPortfolio.positions[existingPositionIndex];
         const newQuantity = existingPosition.quantity - tradeRequest.quantity;
+        const positionContractSize = existingPosition.contractSize || 1;
         
         if (newQuantity === 0) {
           // Remove position entirely
@@ -441,14 +473,15 @@ class PaperTradingService {
           updatedPortfolio.positions[existingPositionIndex] = {
             ...existingPosition,
             quantity: newQuantity,
-            marketValue: marketPrice * newQuantity,
-            unrealizedPnL: (marketPrice * newQuantity) - (existingPosition.averagePrice * newQuantity),
-            unrealizedPnLPercent: ((marketPrice * newQuantity) - (existingPosition.averagePrice * newQuantity)) / (existingPosition.averagePrice * newQuantity) * 100
+            currentPrice: marketPrice,
+            marketValue: marketPrice * newQuantity * positionContractSize,
+            unrealizedPnL: (marketPrice * newQuantity * positionContractSize) - (existingPosition.averagePrice * newQuantity * positionContractSize),
+            unrealizedPnLPercent: ((marketPrice * newQuantity * positionContractSize) - (existingPosition.averagePrice * newQuantity * positionContractSize)) / (existingPosition.averagePrice * newQuantity * positionContractSize) * 100
           };
         }
         
-        // Calculate realized P&L for the sold shares
-        const realizedPnL = (marketPrice - existingPosition.averagePrice) * tradeRequest.quantity;
+        // Calculate realized P&L for the sold contracts/shares
+        const realizedPnL = (marketPrice - existingPosition.averagePrice) * tradeRequest.quantity * positionContractSize;
         trade.realizedPnL = realizedPnL;
       }
     }
@@ -482,7 +515,12 @@ class PaperTradingService {
       action: closeAction,
       quantity: trade.quantity,
       orderType: 'MARKET',
-      reasoning: `Closing position for trade ${tradeId}`
+      reasoning: `Closing position for trade ${tradeId}`,
+      // Include options parameters if this is an options trade
+      isOptions: trade.isOptions,
+      optionType: trade.optionType,
+      strikePrice: trade.strikePrice,
+      expirationDate: trade.expirationDate
     });
 
     // Update original trade status
