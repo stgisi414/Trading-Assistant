@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { X, TrendingUp, TrendingDown, DollarSign, PieChart, BarChart3, Plus, Trash2, Eye, RefreshCw, Search } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
@@ -36,7 +37,7 @@ export const PaperTradingModal: React.FC<PaperTradingModalProps> = ({ isOpen, on
   const [availableExpirations, setAvailableExpirations] = useState<Date[]>([]);
   const [showPortfolioSummary, setShowPortfolioSummary] = useState(false);
   const [loadingOptionsChain, setLoadingOptionsChain] = useState(false);
-
+  
   // Symbol search and validation
   const [symbolQuery, setSymbolQuery] = useState('');
   const [symbolSuggestions, setSymbolSuggestions] = useState<FmpSearchResult[]>([]);
@@ -52,7 +53,7 @@ export const PaperTradingModal: React.FC<PaperTradingModalProps> = ({ isOpen, on
 
   const loadPortfolioData = async () => {
     if (!user) return;
-
+    
     setIsLoading(true);
     try {
       const [portfolioData, tradesData] = await Promise.all([
@@ -116,7 +117,7 @@ export const PaperTradingModal: React.FC<PaperTradingModalProps> = ({ isOpen, on
     setNewTrade(prev => ({ ...prev, symbol: symbol.symbol }));
     setSymbolSuggestions([]);
     setIsSymbolValid(true);
-
+    
     // Load options chain if needed
     if (newTrade.isOptions) {
       loadOptionsChain(symbol.symbol);
@@ -125,7 +126,7 @@ export const PaperTradingModal: React.FC<PaperTradingModalProps> = ({ isOpen, on
 
   const loadOptionsChain = async (symbol: string) => {
     if (!symbol || !newTrade.isOptions) return;
-
+    
     setLoadingOptionsChain(true);
     try {
       const chains = await paperTradingService.getOptionsChain(symbol);
@@ -134,7 +135,7 @@ export const PaperTradingModal: React.FC<PaperTradingModalProps> = ({ isOpen, on
         const expirations = chains.map(c => c.expirationDate).sort((a, b) => a.getTime() - b.getTime());
         setAvailableStrikes(strikes);
         setAvailableExpirations(expirations);
-
+        
         // Set default values only if not already set
         if (strikes.length > 0 && newTrade.strikePrice === 0) {
           setNewTrade(prev => ({ ...prev, strikePrice: strikes[Math.floor(strikes.length / 2)] }));
@@ -195,7 +196,7 @@ export const PaperTradingModal: React.FC<PaperTradingModalProps> = ({ isOpen, on
       alert('Please select a valid symbol from the suggestions');
       return;
     }
-
+    
     if (newTrade.isOptions && (!newTrade.strikePrice || !newTrade.expirationDate)) {
       alert('Please select strike price and expiration date for options trades');
       return;
@@ -375,7 +376,7 @@ export const PaperTradingModal: React.FC<PaperTradingModalProps> = ({ isOpen, on
                     <DollarSign className="w-8 h-8 text-blue-600" />
                   </div>
                 </div>
-
+                
                 <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
                   <div className="flex items-center justify-between">
                     <div>
@@ -663,7 +664,7 @@ export const PaperTradingModal: React.FC<PaperTradingModalProps> = ({ isOpen, on
           {activeTab === 'orders' && (
             <div className="max-w-2xl mx-auto">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">Place New Order</h3>
-
+              
               <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6 space-y-4">
                 {/* Trade Type Selection */}
                 <div className="flex items-center space-x-4 mb-4">
@@ -732,7 +733,7 @@ export const PaperTradingModal: React.FC<PaperTradingModalProps> = ({ isOpen, on
                         )}
                       </div>
                     </div>
-
+                    
                     {/* Symbol suggestions dropdown */}
                     {symbolSuggestions.length > 0 && (
                       <div className="absolute z-10 w-full mt-1 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg max-h-60 overflow-y-auto">
@@ -749,7 +750,7 @@ export const PaperTradingModal: React.FC<PaperTradingModalProps> = ({ isOpen, on
                         ))}
                       </div>
                     )}
-
+                    
                     {selectedSymbol && (
                       <div className="mt-1 text-sm text-green-600 dark:text-green-400">
                         ✓ {selectedSymbol.symbol} - {selectedSymbol.name}
@@ -889,14 +890,14 @@ export const PaperTradingModal: React.FC<PaperTradingModalProps> = ({ isOpen, on
                     <p><strong>Limit Order:</strong> Only executes when price reaches your limit price or better</p>
                     <p className="text-blue-600 dark:text-blue-400">💡 For options, limit orders are recommended due to wide bid-ask spreads!</p>
                   </div>
-
+                  
                   <div className="space-y-1">
                     <p className="font-medium text-blue-800 dark:text-blue-300">🛡️ Risk Management:</p>
                     <p><strong>Stop Loss:</strong> Automatically sells if price drops to this level (limits losses)</p>
                     <p><strong>Take Profit:</strong> Automatically sells if price rises to this level (locks in gains)</p>
                     <p className="text-green-600 dark:text-green-400">✅ These work independently and monitor your position 24/7</p>
                   </div>
-
+                  
                   {newTrade.isOptions && (
                     <div className="space-y-1">
                       <p className="font-medium text-yellow-800 dark:text-yellow-300">⚠️ Options Trading:</p>
@@ -906,7 +907,7 @@ export const PaperTradingModal: React.FC<PaperTradingModalProps> = ({ isOpen, on
                         const expDate = new Date(newTrade.expirationDate);
                         const today = new Date();
                         const daysToExpiry = Math.ceil((expDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-
+                        
                         if (daysToExpiry <= 0) {
                           return <p className="text-red-600 font-medium">⚠️ This option has already expired!</p>;
                         } else if (daysToExpiry <= 7) {
