@@ -877,26 +877,10 @@ function App() {
         <>
             <LoadingOverlay isVisible={isInitialLoading} />
             {/* Neon Grid Background */}
-            <div className="neon-grid-background"></div>
-            <div className="bg-background text-foreground min-h-screen p-2 sm:p-4 md:p-6 lg:p-8 relative overflow-hidden" style={{zIndex: 10}}>
-            {/* Animated shooting streaks background */}
-            <div className="shooting-streaks">
-                <div className="streak streak-blue streak-1"></div>
-                <div className="streak streak-purple streak-2"></div>
-                <div className="streak streak-blue streak-3"></div>
-                <div className="streak streak-purple streak-4"></div>
-                <div className="streak streak-blue streak-5"></div>
-                <div className="streak streak-purple streak-6"></div>
-                <div className="streak streak-blue streak-7"></div>
-                <div className="streak streak-purple streak-8"></div>
-                <div className="streak streak-blue streak-9"></div>
-                <div className="streak streak-purple streak-10"></div>
-                <div className="streak streak-blue streak-11"></div>
-                <div className="streak streak-purple streak-12"></div>
-                <div className="streak streak-blue streak-13"></div>
-                <div className="streak streak-purple streak-14"></div>
-                <div className="streak streak-purple streak-15"></div>
-            </div>
+            <div class="relative min-h-screen overflow-hidden bg-background p-2 text-foreground sm:p-4 md:p-6 lg:p-8 [background-image:linear-gradient(to_right,hsl(0_0%_50%_/_0.05)_1px,transparent_1px),linear-gradient(to_bottom,hsl(0_0%_50%_/_0.05)_1px,transparent_1px)] [background-size:8rem_8rem]">
+
+
+
 
             <div className="relative z-10 max-w-7xl mx-auto flex flex-col gap-3 sm:gap-6 md:gap-8">
                  <Header 
