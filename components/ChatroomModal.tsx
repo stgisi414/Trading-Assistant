@@ -2,7 +2,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { X, Send, Users, MessageCircle, TrendingUp, TrendingDown, Zap, RotateCcw, Clock, Shield, Ban, UserX, AlertTriangle, Trash2 } from 'lucide-react';
+import { X, Send, Users, MessageCircle, TrendingUp, TrendingDown, Zap, RotateCcw, Clock, Shield, Ban, UserX, AlertTriangle, Trash2, Menu } from 'lucide-react';
 
 interface Message {
   id: string;
@@ -54,6 +54,7 @@ export const ChatroomModal: React.FC<ChatroomModalProps> = ({ isOpen, onClose })
   const [banDuration, setBanDuration] = useState(24);
   const [messageToDelete, setMessageToDelete] = useState<string | null>(null);
   const [deletionReason, setDeletionReason] = useState('');
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const unsubscribeRef = useRef<(() => void) | null>(null);
@@ -256,15 +257,21 @@ export const ChatroomModal: React.FC<ChatroomModalProps> = ({ isOpen, onClose })
 
   return createPortal(
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-6xl h-[100vh] flex flex-col">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-6xl h-[90vh] md:h-[85vh] flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
           <div className="flex items-center space-x-3">
+            <button
+              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+              className="md:hidden p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+            >
+              <Menu className="w-5 h-5 text-gray-700 dark:text-gray-300" />
+            </button>
             <MessageCircle className="w-6 h-6 text-blue-500" />
             <h2 className="text-xl font-bold text-gray-900 dark:text-white">
               Trading Chatrooms
             </h2>
-            <span className="text-sm text-gray-500 dark:text-gray-400">
+            <span className="hidden sm:inline text-sm text-gray-500 dark:text-gray-400">
               Messages expire after 48 hours
             </span>
           </div>
@@ -276,9 +283,11 @@ export const ChatroomModal: React.FC<ChatroomModalProps> = ({ isOpen, onClose })
           </button>
         </div>
 
-        <div className="flex flex-1 overflow-hidden">
+        <div className="flex flex-1 overflow-hidden relative">
           {/* Channel Sidebar */}
-          <div className="w-64 bg-gray-50 dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 p-4">
+          <div className={`${
+            isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
+          } md:translate-x-0 fixed md:relative z-30 w-64 h-full bg-gray-50 dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 p-4 transition-transform duration-300 ease-in-out md:transition-none`}>
             <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
               Trading Channels
             </h3>
@@ -288,7 +297,10 @@ export const ChatroomModal: React.FC<ChatroomModalProps> = ({ isOpen, onClose })
                 return (
                   <button
                     key={channel.id}
-                    onClick={() => setActiveChannel(channel.id)}
+                    onClick={() => {
+                      setActiveChannel(channel.id);
+                      setIsSidebarOpen(false); // Close sidebar on mobile after selection
+                    }}
                     className={`w-full flex items-center space-x-3 p-3 rounded-lg transition-colors text-left ${
                       activeChannel === channel.id
                         ? 'bg-blue-100 dark:bg-blue-900 text-blue-900 dark:text-blue-100'
@@ -318,8 +330,16 @@ export const ChatroomModal: React.FC<ChatroomModalProps> = ({ isOpen, onClose })
             </div>
           </div>
 
+          {/* Sidebar Overlay for Mobile */}
+          {isSidebarOpen && (
+            <div 
+              className="md:hidden fixed inset-0 bg-black/50 z-20"
+              onClick={() => setIsSidebarOpen(false)}
+            />
+          )}
+
           {/* Chat Area */}
-          <div className="flex-1 flex flex-col">
+          <div className="flex-1 flex flex-col md:ml-0">
             {/* Channel Header */}
             <div className="p-4 border-b border-gray-200 dark:border-gray-700 min-h-[80px]">
               <div className="flex items-center justify-between h-full">
