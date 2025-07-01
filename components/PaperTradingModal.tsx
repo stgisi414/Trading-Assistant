@@ -532,9 +532,78 @@ export const PaperTradingModal: React.FC<PaperTradingModalProps> = ({ isOpen, on
           )}
 
           {activeTab === 'positions' && (
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Active Positions</h3>
-              {activeTrades.length > 0 ? (
+            <div className="space-y-6">
+              {/* Pending Orders Section */}
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Pending Orders</h3>
+                {trades.filter(t => t.status === 'pending').length > 0 ? (
+                  <div className="space-y-3">
+                    {trades.filter(t => t.status === 'pending').map(trade => (
+                      <div key={trade.id} className="bg-yellow-50 dark:bg-yellow-900/20 rounded-lg p-4 border border-yellow-200 dark:border-yellow-700">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <div className="flex items-center space-x-2">
+                              <span className="font-semibold text-gray-900 dark:text-white">{trade.symbol}</span>
+                              <span className={`px-2 py-1 rounded text-xs font-medium ${
+                                trade.action === 'BUY' 
+                                  ? 'bg-green-100 text-green-600 dark:bg-green-900/20 dark:text-green-400' 
+                                  : 'bg-red-100 text-red-600 dark:bg-red-900/20 dark:text-red-400'
+                              }`}>
+                                {trade.action}
+                              </span>
+                              <span className="px-2 py-1 rounded text-xs font-medium bg-yellow-100 text-yellow-600 dark:bg-yellow-900/20 dark:text-yellow-400">
+                                PENDING
+                              </span>
+                              {trade.isOptions && (
+                                <span className={`px-2 py-1 rounded text-xs font-medium ${
+                                  trade.optionType === 'CALL' 
+                                    ? 'bg-blue-100 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400' 
+                                    : 'bg-purple-100 text-purple-600 dark:bg-purple-900/20 dark:text-purple-400'
+                                }`}>
+                                  {trade.optionType}
+                                </span>
+                              )}
+                            </div>
+                            <p className="text-sm text-gray-500">
+                              {trade.quantity} {trade.isOptions ? 'contracts' : 'shares'} @ limit ${trade.limitPrice?.toFixed(2) || 'N/A'}
+                            </p>
+                            {trade.isOptions && (
+                              <p className="text-xs text-gray-400">
+                                Strike: ${trade.strikePrice} | Exp: {trade.expirationDate ? new Date(trade.expirationDate).toLocaleDateString() : 'N/A'}
+                              </p>
+                            )}
+                            <p className="text-xs text-yellow-600 dark:text-yellow-400 mt-1">
+                              Waiting for {trade.action === 'BUY' ? 'price to drop to' : 'price to rise to'} ${trade.limitPrice?.toFixed(2)}
+                            </p>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <button
+                              onClick={() => handleCloseTrade(trade.id)}
+                              className="px-3 py-1 bg-gray-600 text-white rounded text-sm hover:bg-gray-700"
+                            >
+                              Cancel Order
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-8">
+                    <div className="w-12 h-12 bg-yellow-100 dark:bg-yellow-900/20 rounded-lg flex items-center justify-center mx-auto mb-3">
+                      <svg className="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    </div>
+                    <p className="text-gray-500 dark:text-gray-400">No pending limit orders</p>
+                  </div>
+                )}
+              </div>
+
+              {/* Active Positions Section */}
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Active Positions</h3>
+                {activeTrades.length > 0 ? (
                 <div className="space-y-4">
                   {activeTrades.map(trade => (
                     <div key={trade.id} className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
@@ -814,14 +883,26 @@ export const PaperTradingModal: React.FC<PaperTradingModalProps> = ({ isOpen, on
                   </div>
                 )}
 
-                <div className="text-xs text-gray-500 dark:text-gray-400 space-y-1">
+                <div className="text-xs text-gray-500 dark:text-gray-400 space-y-2 p-3 bg-blue-50 dark:bg-blue-900/20 rounded border border-blue-200 dark:border-blue-700">
+                  <div className="space-y-1">
+                    <p className="font-medium text-blue-800 dark:text-blue-300">📚 Order Types Explained:</p>
+                    <p><strong>Market Order:</strong> Executes immediately at current market price</p>
+                    <p><strong>Limit Order:</strong> Only executes when price reaches your limit price or better</p>
+                    <p className="text-blue-600 dark:text-blue-400">💡 For options, limit orders are recommended due to wide bid-ask spreads!</p>
+                  </div>
+                  
+                  <div className="space-y-1">
+                    <p className="font-medium text-blue-800 dark:text-blue-300">🛡️ Risk Management:</p>
+                    <p><strong>Stop Loss:</strong> Automatically sells if price drops to this level (limits losses)</p>
+                    <p><strong>Take Profit:</strong> Automatically sells if price rises to this level (locks in gains)</p>
+                    <p className="text-green-600 dark:text-green-400">✅ These work independently and monitor your position 24/7</p>
+                  </div>
+                  
                   {newTrade.isOptions && (
-                    <>
-                      <p>Note: Each option contract represents 100 shares. Quantity refers to number of contracts.</p>
-                      <p className="text-yellow-600 dark:text-yellow-400">
-                        ⚠️ Options automatically expire at market close on expiration date. 
-                        Worthless options (OTM) are removed, ITM options settle at intrinsic value.
-                      </p>
+                    <div className="space-y-1">
+                      <p className="font-medium text-yellow-800 dark:text-yellow-300">⚠️ Options Trading:</p>
+                      <p>Each contract = 100 shares. Quantity = number of contracts.</p>
+                      <p>Options expire automatically - ITM options settle at intrinsic value.</p>
                       {newTrade.expirationDate && (() => {
                         const expDate = new Date(newTrade.expirationDate);
                         const today = new Date();
@@ -834,7 +915,7 @@ export const PaperTradingModal: React.FC<PaperTradingModalProps> = ({ isOpen, on
                         }
                         return <p className="text-blue-600">Option expires in {daysToExpiry} days</p>;
                       })()}
-                    </>
+                    </div>
                   )}
                 </div>
 

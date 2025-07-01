@@ -217,6 +217,10 @@ class PaperTradingService {
   // Get user's portfolio
   async getPortfolio(): Promise<PaperTradingPortfolio> {
     try {
+      // Check pending orders and stop loss/take profit conditions
+      await this.checkPendingOrders();
+      await this.checkStopLossAndTakeProfit();
+      
       const portfolio = await firebaseService.loadPaperTradingPortfolio();
       if (!portfolio) {
         return await this.initializePortfolio();
@@ -350,6 +354,158 @@ class PaperTradingService {
     }
   }
 
+  // Check and execute pending limit orders
+  private async checkPendingOrders(): Promise<void> {
+    try {
+      const trades = await firebaseService.loadPaperTrades();
+      const pendingTrades = trades.filter(t => t.status === 'pending');
+      
+      for (const trade of pendingTrades) {
+        let currentPrice: number;
+        
+        if (trade.isOptions && trade.optionType && trade.strikePrice && trade.expirationDate) {
+          const optionData = await this.getOptionPrice(
+            trade.symbol,
+            trade.optionType,
+            trade.strikePrice,
+            trade.expirationDate
+          );
+          currentPrice = optionData.price;
+        } else {
+          currentPrice = await this.getMarketPrice(trade.symbol);
+        }
+        
+        let shouldExecute = false;
+        
+        if (trade.limitPrice) {
+          if (trade.action === 'BUY' && currentPrice <= trade.limitPrice) {
+            shouldExecute = true;
+          } else if (trade.action === 'SELL' && currentPrice >= trade.limitPrice) {
+            shouldExecute = true;
+          }
+        }
+        
+        if (shouldExecute) {
+          // Execute the trade at current market price (simulating partial fill)
+          const executionPrice = currentPrice;
+          await this.executeTrade(trade, executionPrice);
+        }
+      }
+    } catch (error) {
+      console.error('Error checking pending orders:', error);
+    }
+  }
+
+  // Execute a pending trade
+  private async executeTrade(trade: PaperTrade, executionPrice: number): Promise<void> {
+    const portfolio = await this.getPortfolio();
+    const contractSize = trade.contractSize || 1;
+    const totalCost = executionPrice * trade.quantity * contractSize;
+    
+    // Validate execution
+    if (trade.action === 'BUY' && totalCost > portfolio.cashBalance) {
+      // Cancel order due to insufficient funds
+      const cancelledTrade = {
+        ...trade,
+        status: 'cancelled' as const,
+        reasoning: (trade.reasoning || '') + ' [Cancelled: Insufficient funds]'
+      };
+      await firebaseService.savePaperTrade(cancelledTrade);
+      return;
+    }
+    
+    // Update trade status and execution price
+    const executedTrade = {
+      ...trade,
+      status: 'active' as const,
+      price: executionPrice,
+      timestamp: new Date()
+    };
+    
+    // Update portfolio positions (similar to existing logic)
+    await this.updatePortfolioAfterTrade(trade, executionPrice);
+    await firebaseService.savePaperTrade(executedTrade);
+  }
+
+  // Check stop loss and take profit conditions for active positions
+  private async checkStopLossAndTakeProfit(): Promise<void> {
+    try {
+      const trades = await firebaseService.loadPaperTrades();
+      const activeTrades = trades.filter(t => t.status === 'active' && (t.stopLoss || t.takeProfit));
+      
+      for (const trade of activeTrades) {
+        let currentPrice: number;
+        
+        if (trade.isOptions && trade.optionType && trade.strikePrice && trade.expirationDate) {
+          const optionData = await this.getOptionPrice(
+            trade.symbol,
+            trade.optionType,
+            trade.strikePrice,
+            trade.expirationDate
+          );
+          currentPrice = optionData.price;
+        } else {
+          currentPrice = await this.getMarketPrice(trade.symbol);
+        }
+        
+        let shouldClose = false;
+        let reason = '';
+        
+        // Check stop loss
+        if (trade.stopLoss) {
+          if ((trade.action === 'BUY' && currentPrice <= trade.stopLoss) ||
+              (trade.action === 'SELL' && currentPrice >= trade.stopLoss)) {
+            shouldClose = true;
+            reason = 'Stop Loss triggered';
+          }
+        }
+        
+        // Check take profit
+        if (trade.takeProfit && !shouldClose) {
+          if ((trade.action === 'BUY' && currentPrice >= trade.takeProfit) ||
+              (trade.action === 'SELL' && currentPrice <= trade.takeProfit)) {
+            shouldClose = true;
+            reason = 'Take Profit triggered';
+          }
+        }
+        
+        if (shouldClose) {
+          await this.autoCloseTrade(trade, currentPrice, reason);
+        }
+      }
+    } catch (error) {
+      console.error('Error checking stop loss/take profit:', error);
+    }
+  }
+
+  // Auto-close a trade due to stop loss or take profit
+  private async autoCloseTrade(trade: PaperTrade, currentPrice: number, reason: string): Promise<void> {
+    const closeAction = trade.action === 'BUY' ? 'SELL' : 'BUY';
+    
+    // Place closing trade at current market price
+    await this.placeTrade({
+      symbol: trade.symbol,
+      action: closeAction,
+      quantity: trade.quantity,
+      orderType: 'MARKET',
+      reasoning: `${reason} - Auto-closing trade ${trade.id}`,
+      isOptions: trade.isOptions,
+      optionType: trade.optionType,
+      strikePrice: trade.strikePrice,
+      expirationDate: trade.expirationDate
+    });
+    
+    // Update original trade
+    const updatedTrade = {
+      ...trade,
+      status: 'closed' as const,
+      closedAt: new Date(),
+      reasoning: (trade.reasoning || '') + ` [${reason}]`
+    };
+    
+    await firebaseService.savePaperTrade(updatedTrade);
+  }
+
   // Place a new trade
   async placeTrade(tradeRequest: {
     symbol: string;
@@ -370,26 +526,43 @@ class PaperTradingService {
     
     let marketPrice: number;
     let contractSize = 1;
+    let executeImmediately = false;
     
     if (tradeRequest.isOptions && tradeRequest.optionType && tradeRequest.strikePrice && tradeRequest.expirationDate) {
       // Options trading
       contractSize = 100; // Standard option contract size
+      const optionData = await this.getOptionPrice(
+        tradeRequest.symbol,
+        tradeRequest.optionType,
+        tradeRequest.strikePrice,
+        tradeRequest.expirationDate
+      );
+      marketPrice = optionData.price;
+      
       if (tradeRequest.orderType === 'LIMIT' && tradeRequest.limitPrice) {
-        marketPrice = tradeRequest.limitPrice;
+        // Check if limit order can be executed immediately
+        if ((tradeRequest.action === 'BUY' && tradeRequest.limitPrice >= marketPrice) ||
+            (tradeRequest.action === 'SELL' && tradeRequest.limitPrice <= marketPrice)) {
+          executeImmediately = true;
+          marketPrice = tradeRequest.limitPrice;
+        }
       } else {
-        const optionData = await this.getOptionPrice(
-          tradeRequest.symbol,
-          tradeRequest.optionType,
-          tradeRequest.strikePrice,
-          tradeRequest.expirationDate
-        );
-        marketPrice = optionData.price;
+        executeImmediately = true;
       }
     } else {
       // Stock trading
-      marketPrice = tradeRequest.orderType === 'LIMIT' && tradeRequest.limitPrice 
-        ? tradeRequest.limitPrice 
-        : await this.getMarketPrice(tradeRequest.symbol);
+      marketPrice = await this.getMarketPrice(tradeRequest.symbol);
+      
+      if (tradeRequest.orderType === 'LIMIT' && tradeRequest.limitPrice) {
+        // Check if limit order can be executed immediately
+        if ((tradeRequest.action === 'BUY' && tradeRequest.limitPrice >= marketPrice) ||
+            (tradeRequest.action === 'SELL' && tradeRequest.limitPrice <= marketPrice)) {
+          executeImmediately = true;
+          marketPrice = tradeRequest.limitPrice;
+        }
+      } else {
+        executeImmediately = true;
+      }
     }
 
     const totalCost = marketPrice * tradeRequest.quantity * contractSize;
@@ -425,14 +598,14 @@ class PaperTradingService {
       symbol: tradeRequest.symbol,
       action: tradeRequest.action,
       quantity: tradeRequest.quantity,
-      price: marketPrice,
+      price: executeImmediately ? marketPrice : 0, // Set to 0 for pending orders
       orderType: tradeRequest.orderType,
       limitPrice: tradeRequest.limitPrice,
       stopLoss: tradeRequest.stopLoss,
       takeProfit: tradeRequest.takeProfit,
       reasoning: tradeRequest.reasoning,
       timestamp: new Date(),
-      status: 'active',
+      status: executeImmediately ? 'active' : 'pending',
       // Options fields
       isOptions: tradeRequest.isOptions,
       optionType: tradeRequest.optionType,
@@ -440,6 +613,12 @@ class PaperTradingService {
       expirationDate: tradeRequest.expirationDate,
       contractSize: contractSize
     };
+
+    // If it's a pending limit order, just save it and return
+    if (!executeImmediately) {
+      await firebaseService.savePaperTrade(trade);
+      return trade.id;
+    }
 
     // Update portfolio
     const updatedPortfolio = { ...portfolio };
@@ -555,6 +734,107 @@ class PaperTradingService {
     ]);
 
     return trade.id;
+  }
+
+  // Helper method to update portfolio after trade execution
+  private async updatePortfolioAfterTrade(trade: PaperTrade, executionPrice: number): Promise<void> {
+    const portfolio = await this.getPortfolio();
+    const contractSize = trade.contractSize || 1;
+    const totalCost = executionPrice * trade.quantity * contractSize;
+    
+    const updatedPortfolio = { ...portfolio };
+    
+    if (trade.action === 'BUY') {
+      updatedPortfolio.cashBalance -= totalCost;
+      
+      const existingPositionIndex = updatedPortfolio.positions.findIndex(p => {
+        if (trade.isOptions) {
+          return p.symbol === trade.symbol && 
+                 p.isOptions === true &&
+                 p.optionType === trade.optionType &&
+                 p.strikePrice === trade.strikePrice &&
+                 p.expirationDate && trade.expirationDate &&
+                 new Date(p.expirationDate).getTime() === trade.expirationDate.getTime();
+        } else {
+          return p.symbol === trade.symbol && !p.isOptions;
+        }
+      });
+
+      if (existingPositionIndex >= 0) {
+        const existingPosition = updatedPortfolio.positions[existingPositionIndex];
+        const totalQuantity = existingPosition.quantity + trade.quantity;
+        const totalPositionCost = (existingPosition.averagePrice * existingPosition.quantity * (existingPosition.contractSize || 1)) + totalCost;
+        
+        updatedPortfolio.positions[existingPositionIndex] = {
+          ...existingPosition,
+          quantity: totalQuantity,
+          averagePrice: totalPositionCost / (totalQuantity * contractSize),
+          currentPrice: executionPrice,
+          marketValue: executionPrice * totalQuantity * contractSize,
+          unrealizedPnL: (executionPrice * totalQuantity * contractSize) - totalPositionCost,
+          unrealizedPnLPercent: ((executionPrice * totalQuantity * contractSize) - totalPositionCost) / totalPositionCost * 100
+        };
+      } else {
+        const newPosition: any = {
+          symbol: trade.symbol,
+          quantity: trade.quantity,
+          averagePrice: executionPrice,
+          currentPrice: executionPrice,
+          marketValue: totalCost,
+          unrealizedPnL: 0,
+          unrealizedPnLPercent: 0
+        };
+
+        if (trade.isOptions) {
+          newPosition.isOptions = true;
+          newPosition.optionType = trade.optionType;
+          newPosition.strikePrice = trade.strikePrice;
+          newPosition.expirationDate = trade.expirationDate;
+          newPosition.contractSize = contractSize;
+        }
+
+        updatedPortfolio.positions.push(newPosition);
+      }
+    } else { // SELL
+      updatedPortfolio.cashBalance += totalCost;
+      
+      const existingPositionIndex = updatedPortfolio.positions.findIndex(p => {
+        if (trade.isOptions) {
+          return p.symbol === trade.symbol && 
+                 p.isOptions === true &&
+                 p.optionType === trade.optionType &&
+                 p.strikePrice === trade.strikePrice &&
+                 p.expirationDate && trade.expirationDate &&
+                 new Date(p.expirationDate).getTime() === trade.expirationDate.getTime();
+        } else {
+          return p.symbol === trade.symbol && !p.isOptions;
+        }
+      });
+
+      if (existingPositionIndex >= 0) {
+        const existingPosition = updatedPortfolio.positions[existingPositionIndex];
+        const newQuantity = existingPosition.quantity - trade.quantity;
+        
+        if (newQuantity === 0) {
+          updatedPortfolio.positions.splice(existingPositionIndex, 1);
+        } else {
+          updatedPortfolio.positions[existingPositionIndex] = {
+            ...existingPosition,
+            quantity: newQuantity,
+            currentPrice: executionPrice,
+            marketValue: executionPrice * newQuantity * contractSize,
+            unrealizedPnL: (executionPrice * newQuantity * contractSize) - (existingPosition.averagePrice * newQuantity * contractSize),
+            unrealizedPnLPercent: ((executionPrice * newQuantity * contractSize) - (existingPosition.averagePrice * newQuantity * contractSize)) / (existingPosition.averagePrice * newQuantity * contractSize) * 100
+          };
+        }
+      }
+    }
+
+    const totalPositionValue = updatedPortfolio.positions.reduce((sum, pos) => sum + pos.marketValue, 0);
+    updatedPortfolio.totalValue = updatedPortfolio.cashBalance + totalPositionValue;
+    updatedPortfolio.updatedAt = new Date();
+
+    await firebaseService.savePaperTradingPortfolio(updatedPortfolio);
   }
 
   // Close a trade (for active positions)
