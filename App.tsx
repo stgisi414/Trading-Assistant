@@ -940,10 +940,6 @@ function App() {
                                     onViewHistory={handleViewHistory}
                                     onViewChatrooms={handleViewChatrooms}
                                     onOpenPaperTrading={handleOpenPaperTrading}
-                                    onSyncData={handleSyncData} // This should now work
-                                    onViewHistory={handleViewHistory}
-                                    onViewChatrooms={handleViewChatrooms}
-                                    onOpenPaperTrading={handleOpenPaperTrading}
                                 />
                             }
                 />

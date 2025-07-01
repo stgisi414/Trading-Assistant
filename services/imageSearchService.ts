@@ -22,7 +22,8 @@ export interface ImageResult {
 // Search Google Custom Search for images
 const searchGoogleImages = async (query: string, limit: number = 5): Promise<ImageResult[]> => {
     if (!GOOGLE_CUSTOM_SEARCH_API_KEY || !IMAGE_CUSTOM_SEARCH_CX) {
-        return [];
+        console.log('No Google API keys, returning fallback images');
+        return generateFallbackImages(query, limit);
     }
 
     try {
@@ -30,13 +31,12 @@ const searchGoogleImages = async (query: string, limit: number = 5): Promise<Ima
         const url = `${GOOGLE_CUSTOM_SEARCH_URL}?key=${GOOGLE_CUSTOM_SEARCH_API_KEY}&cx=${IMAGE_CUSTOM_SEARCH_CX}&q=${searchQuery}&searchType=image&num=${limit}&imgType=photo&imgSize=medium&safe=active&fileType=jpg,png,gif,webp`;
         
         console.log(`Searching Google Images for: "${query}"`);
-        console.log('Search URL:', url);
         
         const response = await fetch(url);
         if (!response.ok) {
             const errorText = await response.text();
             console.error(`Google Image search failed: ${response.status}`, errorText);
-            return [];
+            return generateFallbackImages(query, limit);
         }
 
         const data = await response.json();
@@ -45,39 +45,90 @@ const searchGoogleImages = async (query: string, limit: number = 5): Promise<Ima
                 .filter((item: any) => {
                     // Filter out items without valid image URLs
                     const hasValidUrl = item.link || item.image?.thumbnailLink;
-                    const hasValidFormat = item.link && 
-                        (item.link.match(/\.(jpg|jpeg|png|gif|webp|svg)$/i) || 
-                         item.image?.thumbnailLink);
-                    return hasValidUrl && hasValidFormat;
+                    return hasValidUrl;
                 })
                 .map((item: any) => {
-                    // Prefer direct image links over thumbnails for better quality
-                    let imageUrl = item.link;
+                    // Prefer thumbnails for better CORS compatibility
+                    let imageUrl = item.image?.thumbnailLink || item.link;
                     let thumbnailUrl = item.image?.thumbnailLink;
                     
-                    // If the main link is not a direct image, use thumbnail
-                    if (!imageUrl?.match(/\.(jpg|jpeg|png|gif|webp|svg)$/i)) {
-                        imageUrl = thumbnailUrl;
-                    }
+                    // Ensure we have a working URL
+                    if (!imageUrl) imageUrl = item.link;
+                    if (!thumbnailUrl) thumbnailUrl = item.link;
                     
                     return {
-                        url: imageUrl || thumbnailUrl,
-                        title: item.title || 'Untitled',
+                        url: imageUrl,
+                        title: item.title || 'Financial Image',
                         source: 'google' as const,
-                        thumbnail: thumbnailUrl || imageUrl,
+                        thumbnail: thumbnailUrl,
                         contextLink: item.image?.contextLink
                     };
                 })
                 .filter((image: any) => image.url); // Remove any items without URLs
             
             console.log(`Found ${images.length} valid images from Google`);
+            
+            // If we got results but they might have CORS issues, add fallback images
+            if (images.length > 0 && images.length < limit) {
+                const fallbackImages = generateFallbackImages(query, limit - images.length);
+                images.push(...fallbackImages);
+            }
+            
             return images;
         }
     } catch (error) {
         console.error("Error searching Google Images:", error);
     }
     
-    return [];
+    return generateFallbackImages(query, limit);
+};
+
+// Generate fallback images when Google search fails or returns no results
+const generateFallbackImages = (query: string, count: number): ImageResult[] => {
+    const fallbackImages: ImageResult[] = [];
+    
+    // Create different types of placeholder images
+    const placeholderTypes = [
+        { bg: '#3B82F6', icon: '📊', label: 'Chart' },
+        { bg: '#10B981', icon: '💹', label: 'Trading' },
+        { bg: '#8B5CF6', icon: '📈', label: 'Analysis' },
+        { bg: '#F59E0B', icon: '💰', label: 'Finance' },
+        { bg: '#EF4444', icon: '🏢', label: 'Company' }
+    ];
+    
+    for (let i = 0; i < count; i++) {
+        const type = placeholderTypes[i % placeholderTypes.length];
+        const shortQuery = query.substring(0, 20);
+        
+        const svgImage = `data:image/svg+xml;base64,${btoa(`
+            <svg width="300" height="200" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <linearGradient id="grad${i}" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:${type.bg};stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:${type.bg}CC;stop-opacity:1" />
+                    </linearGradient>
+                </defs>
+                <rect width="300" height="200" fill="url(#grad${i})"/>
+                <text x="150" y="80" font-family="Arial, sans-serif" font-size="32" text-anchor="middle" fill="white">
+                    ${type.icon}
+                </text>
+                <text x="150" y="110" font-family="Arial, sans-serif" font-size="14" text-anchor="middle" fill="white" opacity="0.9">
+                    ${type.label}
+                </text>
+                <text x="150" y="130" font-family="Arial, sans-serif" font-size="12" text-anchor="middle" fill="white" opacity="0.7">
+                    ${shortQuery}
+                </text>
+            </svg>
+        `)}`;
+        
+        fallbackImages.push({
+            url: svgImage,
+            title: `${type.label} - ${query}`,
+            source: 'imagen3' as const
+        });
+    }
+    
+    return fallbackImages;
 };
 
 // Generate images using Imagen3 via Gemini
