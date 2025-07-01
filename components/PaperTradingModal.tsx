@@ -802,25 +802,44 @@ export const PaperTradingModal: React.FC<PaperTradingModalProps> = ({
                             const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
                             const marketTimeZone = 'America/New_York';
 
-                            // If the user is in the same timezone, no conversion is needed.
-                            if (userTimeZone === marketTimeZone) {
-                              return '09:30 AM - 04:00 PM (Local Time)';
-                            }
+                            // Helper function to get a specific time in a specific timezone for today
+                            const getMarketTime = (hour: number, minute: number): Date => {
+                                const now = new Date();
+                                // Get today's date parts in the market's timezone
+                                const parts = new Intl.DateTimeFormat('en-US', {
+                                    timeZone: marketTimeZone,
+                                    year: 'numeric', month: 'numeric', day: 'numeric',
+                                    hour: 'numeric', minute: 'numeric', second: 'numeric'
+                                }).formatToParts(now);
+
+                                const findValue = (type: string) => parts.find(p => p.type === type)?.value || '0';
+
+                                // Construct a date object representing today in the market's timezone
+                                const marketDate = new Date(
+                                    parseInt(findValue('year')),
+                                    parseInt(findValue('month')) - 1,
+                                    parseInt(findValue('day')),
+                                    hour,
+                                    minute
+                                );
+
+                                // This date is created in the local timezone but represents the wall-clock time in the market timezone.
+                                // We need to account for the offset.
+                                const localDateForSameTime = new Date();
+                                localDateForSameTime.setHours(hour, minute, 0, 0);
+
+                                const localOffset = localDateForSameTime.getTimezoneOffset();
+                                const marketOffset = new Date(now.toLocaleString('en-US', { timeZone: marketTimeZone })).getTimezoneOffset();
+
+                                const offsetDiff = (localOffset - marketOffset) * 60 * 1000;
+
+                                return new Date(marketDate.getTime() - offsetDiff);
+                            };
 
                             try {
-                                const now = new Date();
+                                const openTime = getMarketTime(9, 30);
+                                const closeTime = getMarketTime(16, 0);
 
-                                // Create a date object representing today's date in the market's timezone.
-                                const todayInMarketTimeZone = new Date(now.toLocaleString('en-US', { timeZone: marketTimeZone }));
-
-                                // Set the time for market open and close.
-                                const openTime = new Date(todayInMarketTimeZone);
-                                openTime.setHours(9, 30, 0, 0);
-
-                                const closeTime = new Date(todayInMarketTimeZone);
-                                closeTime.setHours(16, 0, 0, 0);
-
-                                // Format these times into the user's local timezone.
                                 const localTimeFormatter = new Intl.DateTimeFormat('en-US', {
                                     hour: 'numeric',
                                     minute: 'numeric',
@@ -830,9 +849,8 @@ export const PaperTradingModal: React.FC<PaperTradingModalProps> = ({
 
                                 return `${localTimeFormatter.format(openTime)} - ${localTimeFormatter.format(closeTime)} (Local Time)`;
                             } catch (e) {
-                                console.error('Error formatting market hours:', e);
-                                // Fallback for safety.
-                                return '09:30 AM - 04:00 PM (EST)';
+                                console.error("Error formatting market hours:", e);
+                                return '09:30 AM - 04:00 PM (EST)'; // Fallback
                             }
                           })()}
                         </p>
