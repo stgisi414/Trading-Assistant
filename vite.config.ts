@@ -29,7 +29,7 @@ export default defineConfig(({ mode }) => {
       host: '0.0.0.0',
       port: 5173,
       proxy: {
-        '/api': 'http://localhost:5000'
+        '/api': 'http://0.0.0.0:5000'
       },
       allowedHosts: [
         'd68f20ac-76f0-436f-a3dd-99c21f05ab26-00-1d3z3kk8shxff.janeway.replit.dev', 'signatex.co', 'signatex-stefdgisi.replit.app'

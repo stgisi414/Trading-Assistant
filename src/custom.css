@@ -1,4 +1,3 @@
-
 /* Theme Configuration */
 :root {
   /* Light Mode Palette */
@@ -7,15 +6,12 @@
   --color-foreground: #111827; /* Gray-900 - Dark text for light mode */
   --color-card: #F9FAFB; /* Gray-50 */
   --color-border: #E5E7EB; /* Gray-200 */
-  --color-muted: #374151; /* Gray-700 - Darker for better contrast */
-  --color-accent: #F3F4F6; /* Gray-100 */
-  --color-text-primary: #111827; /* Primary text - very dark */
-  --color-text-secondary: #374151; /* Secondary text - dark gray */
-  --color-text-muted: #6B7280; /* Muted text - medium gray */
-  --color-text-light: #9CA3AF; /* Light text - light gray */
+  --color-muted: #6B7280; /* Muted text - medium gray */
+  --color-text-primary: #111827;
+  --color-text-secondary: #374151;
+  --color-text-muted: #6B7280;
 }
 
-:root.dark,
 .dark {
   /* Dark Mode Palette */
   --color-primary: #60A5FA; /* Blue-400 */
@@ -23,13 +19,13 @@
   --color-foreground: #F9FAFB; /* Gray-50 - Light text for dark mode */
   --color-card: #1F2937; /* Gray-800 */
   --color-border: #374151; /* Gray-700 */
-  --color-muted: #9CA3AF; /* Gray-400 */
-  --color-accent: #374151; /* Gray-700 */
-  --color-text-primary: #F9FAFB; /* Primary text - very light */
-  --color-text-secondary: #E5E7EB; /* Secondary text - light gray */
-  --color-text-muted: #9CA3AF; /* Muted text - medium gray */
-  --color-text-light: #6B7280; /* Light text - darker gray */
+  --color-muted: #9CA3AF; /* Muted text - medium gray */
+  --color-text-primary: #F9FAFB;
+  --color-text-secondary: #E5E7EB;
+  --color-text-muted: #9CA3AF;
 }
+
+/* Base styles */
 
 /* Custom glass effect using theme variables */
 .glass-effect {
@@ -46,8 +42,8 @@
 
 body {
   font-family: 'Inter', sans-serif;
-  color: var(--color-text-primary);
   background-color: var(--color-background);
+  color: var(--color-text-primary);
   font-size: 14px;
 }
 

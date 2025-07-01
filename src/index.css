@@ -370,3 +370,18 @@ p, span, div, label, li {
   }
 }
 
+p, span, div, label, li, h1, h2, h3, h4, h5, h6 {
+  color: var(--color-text-primary);
+}
+
+.text-gray-500, .text-gray-600, .text-gray-400 {
+    color: var(--color-text-muted) !important;
+}
+
+.text-gray-700, .text-gray-800, .text-gray-900 {
+    color: var(--color-text-secondary) !important;
+}
+
+.dark .text-gray-300, .dark .text-gray-200 {
+    color: var(--color-text-secondary) !important;
+}
