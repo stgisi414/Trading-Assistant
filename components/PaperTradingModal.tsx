@@ -235,6 +235,24 @@ export const PaperTradingModal: React.FC<PaperTradingModalProps> = ({ isOpen, on
     }
   };
 
+  const handleResetPortfolio = async () => {
+    if (!window.confirm('Are you sure you want to reset your paper trading portfolio? This will delete all trades and positions and reset your balance to $100,000. This action cannot be undone.')) {
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      await paperTradingService.resetPortfolio();
+      await loadPortfolioData();
+      alert('Portfolio has been reset successfully!');
+    } catch (error) {
+      console.error('Error resetting portfolio:', error);
+      alert('Error resetting portfolio: ' + (error as Error).message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -402,14 +420,24 @@ export const PaperTradingModal: React.FC<PaperTradingModalProps> = ({ isOpen, on
             <div className="space-y-6">
               <div className="flex items-center justify-between">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Portfolio Overview</h3>
-                <button
-                  onClick={loadPortfolioData}
-                  disabled={isLoading}
-                  className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
-                >
-                  <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
-                  <span>Refresh</span>
-                </button>
+                <div className="flex items-center space-x-2">
+                  <button
+                    onClick={handleResetPortfolio}
+                    disabled={isLoading}
+                    className="flex items-center space-x-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                    <span className="hidden sm:inline">Reset</span>
+                  </button>
+                  <button
+                    onClick={loadPortfolioData}
+                    disabled={isLoading}
+                    className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                  >
+                    <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
+                    <span>Refresh</span>
+                  </button>
+                </div>
               </div>
 
               {portfolio?.positions && portfolio.positions.length > 0 ? (
