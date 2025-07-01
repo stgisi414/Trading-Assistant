@@ -1,4 +1,3 @@
-
 import React from 'react';
 import type { CompanyProfile } from '../types.ts';
 

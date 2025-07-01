@@ -39,7 +39,7 @@ export const AssetResultCard: React.FC<AssetResultCardProps> = ({ analysis, them
                     {analysis.companyProfile && (
                         <CompanyProfileComponent profile={analysis.companyProfile} theme={theme} />
                     )}
-                    
+
                     {/* Analysis Results - includes logos and illustrations */}
                     {analysis.analysisResult && (
                         <PositionResult result={analysis.analysisResult} theme={theme} />

@@ -24,7 +24,7 @@ export const ImageGallery: React.FC<ImageGalleryProps> = ({ images, title, class
     return (
         <div className={className}>
             <h3 className="text-lg font-semibold mb-3 flex items-center text-primary">
-                <span className="material-symbols-outlined mr-2">image</span>
+                <span className="material-symbols-outlined mr-2">image_search</span>
                 {title}
             </h3>
 
