@@ -9,7 +9,8 @@ import { PatternAnalysisSection } from './PatternAnalysisSection';
 import { OptionsAnalysisSection } from './OptionsAnalysisSection.tsx';
 import { OrderAnalysisSection } from './OrderAnalysisSection.tsx';
 import { OpenInterestSection } from './OpenInterestSection.tsx';
-import { CompanyProfileComponent } from './CompanyProfile.tsx';
+import { CompanyProfile } from './CompanyProfile.tsx';
+import { TenKAnalysisSection } from './TenKAnalysisSection.tsx';
 
 interface AssetResultCardProps {
     analysis: AssetAnalysis;
@@ -37,7 +38,7 @@ export const AssetResultCard: React.FC<AssetResultCardProps> = ({ analysis, them
                 <div className="flex flex-col gap-6">
                     {/* Company Profile */}
                     {analysis.companyProfile && (
-                        <CompanyProfileComponent profile={analysis.companyProfile} theme={theme} />
+                        <CompanyProfile profile={analysis.companyProfile} theme={theme} />
                     )}
 
                     {/* Analysis Results - includes logos and illustrations */}
@@ -58,6 +59,9 @@ export const AssetResultCard: React.FC<AssetResultCardProps> = ({ analysis, them
                     )}
                     {analysisResult.openInterestAnalysis && (
                         <OpenInterestSection openInterestAnalysis={analysisResult.openInterestAnalysis} />
+                    )}
+                     {analysis.tenKAnalysis && (
+                        <TenKAnalysisSection analysis={analysis.tenKAnalysis} />
                     )}
                 </div>
             );

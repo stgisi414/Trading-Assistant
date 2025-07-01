@@ -119,6 +119,10 @@ function App() {
         const saved = localStorage.getItem("tradingApp_includeOrderAnalysis");
         return saved ? JSON.parse(saved) : false;
     });
+    const [include10KAnalysis, setInclude10KAnalysis] = useState(() => {
+        const saved = localStorage.getItem("tradingApp_include10KAnalysis");
+        return saved ? JSON.parse(saved) : false;
+    });
     const [selectedMarketType, setSelectedMarketType] = useState<MarketType>(
         () => {
             const saved = localStorage.getItem("tradingApp_selectedMarketType");
@@ -263,6 +267,13 @@ function App() {
 
     useEffect(() => {
         localStorage.setItem(
+            "tradingApp_include10KAnalysis",
+            JSON.stringify(include10KAnalysis),
+        );
+    }, [include10KAnalysis]);
+
+    useEffect(() => {
+        localStorage.setItem(
             "tradingApp_selectedMarketType",
             JSON.stringify(selectedMarketType),
         );
@@ -291,6 +302,7 @@ function App() {
             const savedIncludeCallOptions = localStorage.getItem('tradingApp_includeCallOptions');
             const savedIncludePutOptions = localStorage.getItem('tradingApp_includePutOptions');
             const savedIncludeOrderAnalysis = localStorage.getItem('tradingApp_includeOrderAnalysis');
+            const savedInclude10KAnalysis = localStorage.getItem('tradingApp_include10KAnalysis');
 
             if (savedWalletAmount) setWalletAmount(savedWalletAmount);
             if (savedIndicators) setSelectedIndicators(JSON.parse(savedIndicators));
@@ -302,6 +314,7 @@ function App() {
             if (savedIncludeCallOptions) setIncludeCallOptions(JSON.parse(savedIncludeCallOptions));
             if (savedIncludePutOptions) setIncludePutOptions(JSON.parse(savedIncludePutOptions));
             if (savedIncludeOrderAnalysis) setIncludeOrderAnalysis(JSON.parse(savedIncludeOrderAnalysis));
+            if (savedInclude10KAnalysis) setInclude10KAnalysis(JSON.parse(savedInclude10KAnalysis));
         } catch (error) {
             console.error('❌ Error loading from localStorage:', error);
         }
@@ -641,6 +654,18 @@ function App() {
                             `Analyzing ${symbol.symbol} with ${historicalData.length} data points`,
                         );
 
+                        // Perform 10-K analysis if enabled
+                        let tenKAnalysis = null;
+                        if (include10KAnalysis && selectedMarketType === MarketType.STOCKS) {
+                            try {
+                                const { performComplete10KAnalysis } = await import("./services/tenKAnalysisService.ts");
+                                tenKAnalysis = await performComplete10KAnalysis(symbol.symbol);
+                                console.log(`10-K analysis ${tenKAnalysis ? 'completed' : 'not available'} for ${symbol.symbol}`);
+                            } catch (tenKError) {
+                                console.warn(`10-K analysis failed for ${symbol.symbol}:`, tenKError);
+                            }
+                        }
+
                         // Get news articles for the symbol
                         let newsArticles = [];
                         try {
@@ -689,7 +714,7 @@ function App() {
 
                         setAnalyses(prev => prev.map(a => 
                             a.symbol.symbol === symbol.symbol 
-                                ? { ...a, isLoading: false, analysisResult: result, historicalData, patternDetails: patterns, companyProfile }
+                                ? { ...a, isLoading: false, analysisResult: result, historicalData, patternDetails: patterns, companyProfile, tenKAnalysis }
                                 : a
                         ));
                     } catch (err) {
@@ -760,6 +785,7 @@ function App() {
         includeCallOptions,
         includePutOptions,
         includeOrderAnalysis,
+        include10KAnalysis,
         dates,
         theme
     });
@@ -776,6 +802,7 @@ function App() {
         if (data.includeCallOptions !== undefined) setIncludeCallOptions(data.includeCallOptions);
         if (data.includePutOptions !== undefined) setIncludePutOptions(data.includePutOptions);
         if (data.includeOrderAnalysis !== undefined) setIncludeOrderAnalysis(data.includeOrderAnalysis);
+        if (data.include10KAnalysis !== undefined) setInclude10KAnalysis(data.include10KAnalysis);
         if (data.dates) setDates(data.dates);
         if (data.theme) setTheme(data.theme);
     };
@@ -925,6 +952,7 @@ function App() {
                         includeCallOptions,
                         includePutOptions,
                         includeOrderAnalysis,
+                        include10KAnalysis,
                         startDate: dates.startDate,
                         endDate: dates.endDate
                     }}
@@ -1018,6 +1046,8 @@ function App() {
                                         setIncludeOrderAnalysis={
                                             setIncludeOrderAnalysis
                                         }
+                                        include10KAnalysis={include10KAnalysis}
+                                        setInclude10KAnalysis={setInclude10KAnalysis}
                                         onAnalyze={handleAnalyze}
                                         isLoading={isLoading}
                                         onProfitMaxClick={() => setIsProfitMaxModalOpen(true)}

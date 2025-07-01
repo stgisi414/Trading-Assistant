@@ -38,6 +38,20 @@ export interface ImageResult {
     contextLink?: string;
 }
 
+export interface TenKAnalysis {
+    symbol: string;
+    reportDate: string;
+    keyFindings: string[];
+    riskFactors: string[];
+    businessOverview: string;
+    financialHighlights: string;
+    managementDiscussion: string;
+    competitivePosition: string;
+    futureOutlook: string;
+    investmentImplications: string;
+    analysisConfidence: number;
+}
+
 export interface AnalysisResult {
     position: Position;
     confidence: string;
@@ -48,6 +62,7 @@ export interface AnalysisResult {
     optionsAnalysis?: OptionsAnalysis;
     orderAnalysis?: OrderAnalysis;
     openInterestAnalysis?: OpenInterestAnalysis;
+    tenKAnalysis?: TenKAnalysis;
 }
 
 export interface OpenInterestAnalysis {
@@ -180,6 +195,7 @@ export interface AssetAnalysis {
     error?: string;
     patternDetails?: PatternDetails[];
     companyProfile?: CompanyProfile | null;
+    tenKAnalysis?: TenKAnalysis | null;
 }
 
 // Authentication and Cloud Storage Types
