@@ -90,55 +90,47 @@ export const PaperTradingModal: React.FC<PaperTradingModalProps> = ({
 
   const fetchMarketHours = async () => {
     const FMP_API_KEY = import.meta.env.VITE_FMP_API_KEY || process.env.FMP_API_KEY;
+    const exchange = portfolio?.positions[0]?.exchange || 'NYSE'; // Default to NYSE if no positions
 
     if (!FMP_API_KEY) {
-      // Fallback to mock market hours if no API key
+      console.warn("FMP API key not available. Using estimated market hours.");
+      // Fallback to estimated market status if no API key
       const now = new Date();
-      const currentHour = now.getHours();
-      const currentMinutes = now.getMinutes();
-      const currentTime = currentHour * 60 + currentMinutes; // Convert to minutes
-      const marketOpen = 9 * 60 + 30; // 9:30 AM
-      const marketClose = 16 * 60; // 4:00 PM
-      const isWeekday = now.getDay() >= 1 && now.getDay() <= 5;
+      const estTime = new Date(now.toLocaleString('en-US', { timeZone: 'America/New_York' }));
+      const currentHour = estTime.getHours();
+      const marketOpen = 9;
+      const marketClose = 16;
+      const isWeekday = estTime.getDay() >= 1 && estTime.getDay() <= 5;
 
       setMarketHours({
-        exchange: "NASDAQ",
-        name: "NASDAQ Global Market",
-        openingHour: "09:30 AM -04:00",
-        closingHour: "04:00 PM -04:00",
+        exchange: "NASDAQ/NYSE",
+        name: "US Markets (Estimated)",
+        openingHour: "09:30 AM",
+        closingHour: "04:00 PM",
         timezone: "America/New_York",
-        isMarketOpen: isWeekday && currentTime >= marketOpen && currentTime < marketClose
+        isMarketOpen: isWeekday && currentHour >= marketOpen && currentHour < marketClose
       });
       return;
     }
 
     try {
-      const response = await fetch(`https://financialmodelingprep.com/api/v3/exchange-market-hours?exchange=NASDAQ&apikey=${FMP_API_KEY}`);
+      const response = await fetch(`https://financialmodelingprep.com/api/v3/market-hours/${exchange}?apikey=${FMP_API_KEY}`);
       if (response.ok) {
         const data = await response.json();
         if (Array.isArray(data) && data.length > 0) {
           setMarketHours(data[0]);
+        } else {
+          // If API returns empty array, use fallback
+          fetchMarketHours();
         }
+      } else {
+        // If API call fails, use fallback
+        console.warn(`Failed to fetch market hours for ${exchange}, using fallback.`);
+        fetchMarketHours();
       }
     } catch (error) {
-      console.warn('Failed to fetch market hours:', error);
-      // Fallback to estimated market status
-      const now = new Date();
-      const currentHour = now.getHours();
-      const currentMinutes = now.getMinutes();
-      const currentTime = currentHour * 60 + currentMinutes;
-      const marketOpen = 9 * 60 + 30;
-      const marketClose = 16 * 60;
-      const isWeekday = now.getDay() >= 1 && now.getDay() <= 5;
-
-      setMarketHours({
-        exchange: "NASDAQ",
-        name: "NASDAQ Global Market", 
-        openingHour: "09:30 AM -04:00",
-        closingHour: "04:00 PM -04:00",
-        timezone: "America/New_York",
-        isMarketOpen: isWeekday && currentTime >= marketOpen && currentTime < marketClose
-      });
+      console.error('Error fetching market hours:', error);
+      fetchMarketHours(); // Use fallback on any error
     }
   };
 
@@ -476,6 +468,60 @@ export const PaperTradingModal: React.FC<PaperTradingModalProps> = ({
                     <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
                       Portfolio Summary
                     </h3>
+                    {/* Market Status Display */}
+                    {marketHours && (
+                      <div className={`border rounded-lg p-4 mb-6 ${
+                        marketHours.isMarketOpen 
+                          ? "bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800"
+                          : "bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800"
+                      }`}>
+                        <div className="flex items-start gap-3">
+                          <div className="flex-shrink-0">
+                            {marketHours.isMarketOpen ? (
+                              <svg className="w-5 h-5 text-green-600 dark:text-green-400 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                              </svg>
+                            ) : (
+                              <svg className="w-5 h-5 text-red-600 dark:text-red-400 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                              </svg>
+                            )}
+                          </div>
+                          <div className="flex-1">
+                            <h4 className={`text-sm font-medium mb-1 ${
+                              marketHours.isMarketOpen 
+                                ? "text-green-800 dark:text-green-200"
+                                : "text-red-800 dark:text-red-200"
+                            }`}>
+                              {marketHours.isMarketOpen ? "Market Open" : "Market Closed"}
+                            </h4>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
+                              <p className={`${
+                                marketHours.isMarketOpen 
+                                  ? "text-green-700 dark:text-green-300"
+                                  : "text-red-700 dark:text-red-300"
+                              }`}>
+                                <strong>{marketHours.name}</strong> ({marketHours.exchange})
+                              </p>
+                              <p className={`${
+                                marketHours.isMarketOpen 
+                                  ? "text-green-700 dark:text-green-300"
+                                  : "text-red-700 dark:text-red-300"
+                              }`}>
+                                📅 Trading Hours: {marketHours.openingHour} - {marketHours.closingHour}
+                              </p>
+                            </div>
+                            <p className={`text-xs mt-1 ${
+                              marketHours.isMarketOpen 
+                                ? "text-green-600 dark:text-green-400"
+                                : "text-red-600 dark:text-red-400"
+                            }`}>
+                              🌍 {marketHours.timezone}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                     <p className="text-sm text-gray-500 dark:text-gray-400">
                       {formatCurrency(portfolio.totalValue)}
                     </p>
@@ -641,61 +687,6 @@ export const PaperTradingModal: React.FC<PaperTradingModalProps> = ({
                   </button>
                 </div>
               </div>
-
-              {/* Market Status Display */}
-              {marketHours && (
-                <div className={`border rounded-lg p-4 mb-6 ${
-                  marketHours.isMarketOpen 
-                    ? "bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800"
-                    : "bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800"
-                }`}>
-                  <div className="flex items-start gap-3">
-                    <div className="flex-shrink-0">
-                      {marketHours.isMarketOpen ? (
-                        <svg className="w-5 h-5 text-green-600 dark:text-green-400 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                        </svg>
-                      ) : (
-                        <svg className="w-5 h-5 text-amber-600 dark:text-amber-400 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                        </svg>
-                      )}
-                    </div>
-                    <div className="flex-1">
-                      <h4 className={`text-sm font-medium mb-1 ${
-                        marketHours.isMarketOpen 
-                          ? "text-green-800 dark:text-green-200"
-                          : "text-amber-800 dark:text-amber-200"
-                      }`}>
-                        {marketHours.isMarketOpen ? "🟢 Market Open" : "🔴 Market Closed"}
-                      </h4>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
-                        <p className={`${
-                          marketHours.isMarketOpen 
-                            ? "text-green-700 dark:text-green-300"
-                            : "text-amber-700 dark:text-amber-300"
-                        }`}>
-                          <strong>{marketHours.name}</strong> ({marketHours.exchange})
-                        </p>
-                        <p className={`${
-                          marketHours.isMarketOpen 
-                            ? "text-green-700 dark:text-green-300"
-                            : "text-amber-700 dark:text-amber-300"
-                        }`}>
-                          📅 {marketHours.openingHour} - {marketHours.closingHour}
-                        </p>
-                      </div>
-                      <p className={`text-xs mt-1 ${
-                        marketHours.isMarketOpen 
-                          ? "text-green-600 dark:text-green-400"
-                          : "text-amber-600 dark:text-amber-400"
-                      }`}>
-                        🌍 {marketHours.timezone}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              )}
 
               {portfolio?.positions && portfolio.positions.length > 0 ? (
                 <div className="grid gap-4">
@@ -1008,7 +999,7 @@ export const PaperTradingModal: React.FC<PaperTradingModalProps> = ({
                           ? "text-green-800 dark:text-green-200"
                           : "text-amber-800 dark:text-amber-200"
                       }`}>
-                        {marketHours.isMarketOpen ? "🟢 Market Open" : "🔴 Market Closed"}
+                        {marketHours.isMarketOpen ? "Market Open" : "Market Closed"}
                       </h4>
                       <p className={`text-sm ${
                         marketHours.isMarketOpen 
@@ -1031,16 +1022,6 @@ export const PaperTradingModal: React.FC<PaperTradingModalProps> = ({
                       }`}>
                         🌍 Timezone: {marketHours.timezone}
                       </p>
-                      {!marketHours.isMarketOpen && (
-                        <p className="text-sm text-amber-700 dark:text-amber-300 mt-2">
-                          💡 You can still place limit orders that will be executed when the market opens.
-                        </p>
-                      )}
-                      {marketHours.isMarketOpen && (
-                        <p className="text-sm text-green-700 dark:text-green-300 mt-2">
-                          ✅ Live trading is active. Market orders will execute immediately.
-                        </p>
-                      )}
                     </div>
                   </div>
                 </div>
